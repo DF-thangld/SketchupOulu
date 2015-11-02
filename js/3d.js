@@ -11,8 +11,8 @@ var dimensions = [window.innerWidth, window.innerHeight]; // Größe der Darstel
 var canvasid = '3dmodell'; // Name des Canvas-Containers
 var rotate = [0.0005, 0.01, 0.0005]; // Geschwindigkeit der Animation (X-, Y-, Z-Achse)
 var rotateManual = 0.1; // manuelle Drehung per Tastatur
-var cameraZoom = 50; // manuelle Änderung der Zoomstufe
-var play = true; // nach dem Laden sofort animieren?
+var cameraZoom = 50; // manually change the zoom level
+var play = false; // animate immediately after loading?
 // ab hier nichts ändern
 
 var camera, scene, renderer, dae, skin, lastFrame;
@@ -21,19 +21,19 @@ window.addEventListener('load', function() {
 
  // Collada-Modell
  var loader = new THREE.ColladaLoader();
- if (tilted) loader.options.upAxis = 'X'; // Drehung um 90 Grad
- loader.options.convertUpAxis = true; // an der Y-Achse ausrichten
+ if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
+ loader.options.convertUpAxis = true; // Align the Y-axis
  loader.load(file, function (collada) {
   dae = collada.scene;
   dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
-  scene = new THREE.Scene(); // initiiert die Szene
+  scene = new THREE.Scene(); // initiated the scene
   scene.add(dae);
 
-  // Kamera
+  // Camera
   camera = new THREE.PerspectiveCamera(cameraInitialVector, dimensions[0]/dimensions[1], 1, 10000);
   camera.position.z = cameraPositionZ;
 
-  // Lichter
+  // Light
   var directionalLight1 = new THREE.DirectionalLight(colorLight[0], 1.0);
   directionalLight1.position.set(1, 0, 0);
   var directionalLight2 = new THREE.DirectionalLight(colorLight[1], 2.0);
@@ -51,8 +51,8 @@ window.addEventListener('load', function() {
  });
 
  var animate = function() {
-  requestAnimationFrame(animate); // Animationsschleife
-  if (play) { // Drehen, wenn Play-Status == true
+  requestAnimationFrame(animate); // animation loop
+  if (play) { // rotating when play status == true
    dae.rotation.x += rotate[0];
    dae.rotation.y += rotate[1];
    dae.rotation.z += rotate[2];
@@ -93,11 +93,11 @@ window.addEventListener('load', function() {
     play = play? false : true;
     e.preventDefault();
     break;
-   case 187: // plus
+   case 36: // home
     camera.position.z -= cameraZoom;
     e.preventDefault();
     break;
-   case 189: // minus
+   case 35: // end
     camera.position.z += cameraZoom;
     e.preventDefault();
     break;
