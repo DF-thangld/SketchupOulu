@@ -6,7 +6,7 @@ var modelScale = 0.1; // abhängig von der Größe des Modells
 var cameraPositionZ = 1500; // Abstand der Kamera
 var cameraInitialVector = 30; // field of view
 var colorLight = [0xffffaa, 0xffffaa]; // Farben der beiden Lichter
-var colorBackground = 0x000000; // Hintergrundfarbe
+var colorBackground = 0xCCFFCC; // background color
 var dimensions = [window.innerWidth, window.innerHeight]; // used for aspect ratio
 var canvasid = '3dmodell'; // Name des Canvas-Containers
 var rotate = [0.0005, 0.01, 0.0005]; // Geschwindigkeit der Animation (X-, Y-, Z-Achse)
@@ -51,6 +51,7 @@ window.addEventListener('load', function() {
 		dae = collada.scene;
 		dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
 		dae.position.x = 200;
+		dae.rotation.x += rotateManual*3;
 		scene.add(dae);
 	});
 	//church
@@ -60,21 +61,10 @@ window.addEventListener('load', function() {
 	loader.load(file, function (collada) {
 		dae = collada.scene;
 		dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
+		dae.position.x = -200;
+		dae.rotation.x += rotateManual*3;
 		scene.add(dae);
-		//animate();
 	});
-
-
-
-	/*var animate = function() {
-		requestAnimationFrame(animate); // animation loop
-		if (play) { // rotating when play status == true
-			dae.rotation.x += rotate[0];
-			dae.rotation.y += rotate[1];
-			dae.rotation.z += rotate[2];
-		}
-		renderer.render(scene, camera);
-	};*/
 	
 
 	function render() {
