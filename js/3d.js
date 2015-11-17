@@ -8,7 +8,7 @@ var cameraInitialVector = 30; // field of view
 var colorLight = [0xffffaa, 0xffffaa]; // Farben der beiden Lichter
 var colorBackground = 0xCCFFCC; // background color
 var dimensions = [window.innerWidth, window.innerHeight]; // used for aspect ratio
-var canvasid = '3dmodell'; // Name des Canvas-Containers
+var canvasid = 'threedmodell'; // Name des Canvas-Containers
 var rotate = [0.0005, 0.01, 0.0005]; // Geschwindigkeit der Animation (X-, Y-, Z-Achse)
 var rotateManual = 0.1; // manuelle Drehung per Tastatur
 var cameraZoom = 50; // manually change the zoom level
@@ -40,6 +40,7 @@ window.addEventListener('load', function() {
 	renderer.setClearColor(colorBackground);
 	renderer.setSize(dimensions[0], dimensions[1]);
 	// add the renderer element to our HTML document. This is a <canvas> element the renderer uses to display the scene to us.
+	renderer.setSize(1050,459);
 	document.getElementById(canvasid).appendChild(renderer.domElement);
 
 	//----------Load Collada-Modell------------
