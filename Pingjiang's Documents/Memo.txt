@@ -1,3 +1,13 @@
+TO DO:
+
+1. communication module: get information from server.
+2. control button UI
+3. Dynamicly display models
+4. Choose Models -- add/delete models
+
+
+---------------------------------------------------------------------------------------------------------------
+
 1. to display the 3D city, we need the path of the model and the  position of the model.
 so we could use a Array to store it:
 
@@ -26,3 +36,7 @@ var text = '{ "employees" : [' +
 '{ "firstName":"Peter" , "lastName":"Jones" } ]}';
 
 var obj = JSON.parse(text);
+
+2. All the function at the first version is using keyboard for time-saving. Next step, convenient UI will be designed.
+
+3.Don't need to worry about download the model to lcoal , it does automatically. just need to worry about how to use a process bar to show process.
