@@ -18,4 +18,8 @@ The code structure:
   - 
   
 ### Definition of Terms
+
+  - Scenario: 3D model of a big area
+  - Base scenario: public scenario from moderators so other users can clone and edit to the model
+  - Custom model: a 3D model of a building
 maybe we need to discuss later to decide which term to be used, for example, it we say "project", we don't know it means one specific design for a big area or one design project which contain several users' designs.
