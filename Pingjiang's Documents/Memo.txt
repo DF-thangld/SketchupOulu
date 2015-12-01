@@ -1,0 +1,28 @@
+1. to display the 3D city, we need the path of the model and the  position of the model.
+so we could use a Array to store it:
+
+var model_x= {
+    modelName:"church",
+    modelPath:"/Model/church.dae",
+    position_x:50,
+    position_y:100,
+}; 
+
+
+ModelsArray[1]=model_1;
+ModelsArray[2]=model_2;
+ModelsArray[3]=model_3;
+ModelsArray[4]=model_4;
+ModelsArray[5]=model_5;
+
+ModelsArray[2].modelName;
+
+For  the server side, they need to deliver all the information in a format of JSON
+
+Converting a JSON Text to a JavaScript Object:
+var text = '{ "employees" : [' +
+'{ "firstName":"John" , "lastName":"Doe" },' +
+'{ "firstName":"Anna" , "lastName":"Smith" },' +
+'{ "firstName":"Peter" , "lastName":"Jones" } ]}';
+
+var obj = JSON.parse(text);
