@@ -2,3 +2,5 @@ pip install Flask
 pip install flask-restful
 pip install MySQL-python
 #windows: pip install MySQL_python-1.2.5-cp27-none-win32.whl
+pip install SQLAlchemy
+pip install Flask-SQLAlchemy
