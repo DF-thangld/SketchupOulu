@@ -44,28 +44,46 @@ window.addEventListener('load', function() {
 	document.getElementById(canvasid).appendChild(renderer.domElement);
 
 	//----------Load Collada-Modell------------
-	// second
-	loader = new THREE.ColladaLoader();
-	if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
-	loader.options.convertUpAxis = true; // Align the Y-axis
-	loader.load('./collada/Building.dae', function (collada) {
-		dae = collada.scene;
-		dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
-		dae.position.x = 200;
-		dae.rotation.x += rotateManual*3;
-		scene.add(dae);
-	});
-	//church
-	var loader = new THREE.ColladaLoader();
-	if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
-	loader.options.convertUpAxis = true; // Align the Y-axis
-	loader.load(file, function (collada) {
-		dae = collada.scene;
-		dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
-		dae.position.x = -200;
-		dae.rotation.x += rotateManual*3;
-		scene.add(dae);
-	});
+
+	var ModelsArray = Communicator.getModelsFromDB("Project's name");
+
+	for (var i = 0; i < ModelsArray.length; i++) {
+		var loader = new THREE.ColladaLoader();
+		if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
+		loader.options.convertUpAxis = true; // Align the Y-axis
+
+		var model = ModelsArray[i];
+		loader.load( model.modelPath, function (collada) {
+			dae = collada.scene;
+			dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
+			dae.position.x = model.position_x;
+			dae.position.y = model.position_y;
+			dae.rotation.x += rotateManual*3;
+			scene.add(dae);
+		});
+	}
+	// // second
+	// var loader = new THREE.ColladaLoader();
+	// if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
+	// loader.options.convertUpAxis = true; // Align the Y-axis
+	// loader.load('./collada/Building.dae', function (collada) {
+	// 	dae = collada.scene;
+	// 	dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
+	// 	dae.position.x = 200;
+	// 	dae.rotation.x += rotateManual*3;
+	// 	scene.add(dae);
+	// });
+	// //church
+	// loader = new THREE.ColladaLoader();
+	// if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
+	// loader.options.convertUpAxis = true; // Align the Y-axis
+	// loader.load(file, function (collada) {
+	// 	var dae = collada.scene;
+	// 	dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
+	// 	dae.position.x = -200;
+	// 	dae.rotation.x += rotateManual*3;
+	// 	scene.add(dae);
+	// });
 	
 
 	function render() {
