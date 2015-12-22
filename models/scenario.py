@@ -9,8 +9,9 @@ class Scenario(db.Model):
     data_file = db.Column(db.String(80), unique=False)
     addition_information = db.Column(db.Text())
     description = db.Column(db.Text())
+    is_base_scenario = db.Column(db.Boolean)
 
-    def __init__(self, name, owner_id, created_time, last_edited_time, data_file, addition_information, description):
+    def __init__(self, name, owner_id, created_time, last_edited_time, data_file, addition_information, description, is_base_scenario=False):
         self.name = name
         self.owner_id = owner_id
         self.created_time = created_time
@@ -18,6 +19,7 @@ class Scenario(db.Model):
         self.data_file = data_file
         self.addition_information = addition_information
         self.description = description
+        self.is_base_scenario = is_base_scenario
 
     def __repr__(self):
         return '<Scenario %r>' % self.name
