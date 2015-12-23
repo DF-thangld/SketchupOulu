@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - interactive - voxel painter</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#oldie { background-color: #ddd !important }
+		</style>
+	</head>
+	<body>
+
+		<script src="js/three.min.js"></script>
+
+		<script src="js/stats.min.js"></script>
+
+		<script>
+			//constant
+			var WORLD_SIZE = 500;
+			var BLOCK_SIZE = 50;
+			var MOVING_SPEED = 10;
+			
+			/* 
+			1x. build a grid
+			2x. move around the grid
+				2.1x move around the grid 
+				2.2x rotate the grid
+				2.3x move around the rotated grid
+			3. add object to grid
+			4. manipulate object 
+				4.1 select object
+				4.2 move object to another position
+				4.3 rotate object 
+				4.4 delete object
+			5. add terrain to grid
+			*/
+			
+			// threejs variables
+			var container;
+			var camera, scene, renderer;
+			
+			// keyboard control variables
+			var move_forward = false, move_backward = false, move_left = false, move_right = false, move_up = false, move_down = false, is_rotating = false;
+			var rotate_angle = 0;
+			var current_view = 0;
+			var views = [{'x': 0, 'y':150, 'z': -1*WORLD_SIZE-500},
+						{'x': WORLD_SIZE+500, 'y':150, 'z': 0},
+						{'x': 0, 'y':150, 'z': WORLD_SIZE+500},
+						{'x': -1*WORLD_SIZE-500, 'y':150, 'z': 0}];
+			var center_position = new THREE.Vector3( 0, 150, 0 );
+			
+			// threejs functions
+			init();
+			animate();
+			
+			function init() 
+			{
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.set( views[0].x, views[0].y, views[0].z );
+				camera.target = center_position;
+				camera.lookAt( camera.target );
+
+				scene = new THREE.Scene();
+				
+				//1. build a grid
+				var size = WORLD_SIZE, step = BLOCK_SIZE;
+
+				var geometry = new THREE.Geometry();
+
+				for ( var i = - size; i <= size; i += step ) {
+
+					geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+					geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+
+					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+
+				}
+
+				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5 } );
+
+				var line = new THREE.Line( geometry, material );
+				line.type = THREE.LinePieces;
+				scene.add( line );
+				
+				// put an object to bottom left edge of the grid as anchor
+				
+				var object_geometry = new THREE.IcosahedronGeometry( 25, 1 );
+
+				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
+				var sphere = new THREE.Mesh( object_geometry, object_material );
+
+				sphere.position.x = -1*WORLD_SIZE+25;
+				sphere.position.y = 25;
+				sphere.position.z = -1*WORLD_SIZE+25;
+
+				sphere.scale.x = sphere.scale.y = sphere.scale.z = 1;
+
+				scene.add( sphere );
+				
+				// add keyboard events to mode
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+				
+				// display the scene
+				renderer = new THREE.CanvasRenderer();
+				renderer.setClearColor( 0xffffff );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				
+				renderer.render( scene, camera);
+			}
+			
+			function onDocumentKeyDown(event)
+			{
+				switch ( event.keyCode ) {
+
+					case 38: move_forward = true; break; // up
+					case 40: move_backward = true; break; // down
+					case 37: move_left = true; break; // left
+					case 39: move_right = true; break; // right
+					case 87: move_up = true; break; // w
+					case 83: move_down = true; break; // s
+					//case 65: targetMoveLeft = true; break; // a
+					//case 68: targetMoveRight = true; break; // d
+					
+					case 90: is_rotating = true; break; // z
+
+				}
+			}
+			
+			function onDocumentKeyUp(event)
+			{
+				switch ( event.keyCode ) {
+
+					case 38: move_forward = false; break; // up
+					case 40: move_backward = false; break; // down
+					case 37: move_left = false; break; // left
+					case 39: move_right = false; break; // right
+					case 87: move_up = false; break; // w
+					case 83: move_down = false; break; // s
+					//case 65: targetMoveLeft = false; break; // a
+					//case 68: targetMoveRight = false; break; // d
+					
+					case 90: is_rotating = false; break; // z
+
+				}
+			}
+			
+			// change window size
+			function onWindowResize()
+			{
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+			
+			function render() 
+			{
+			
+				// 2.1 move around the scene
+				if (move_forward)
+				{
+					switch(current_view)
+					{
+						case 0: camera.position.z += MOVING_SPEED; break;
+						case 1: camera.position.x -= MOVING_SPEED; break;
+						case 2: camera.position.z -= MOVING_SPEED; break;
+						case 3: camera.position.x += MOVING_SPEED; break;
+					}
+				}
+				if (move_backward)
+				{
+					switch(current_view)
+					{
+						case 0: camera.position.z -= MOVING_SPEED; break;
+						case 1: camera.position.x += MOVING_SPEED; break;
+						case 2: camera.position.z += MOVING_SPEED; break;
+						case 3: camera.position.x -= MOVING_SPEED; break;
+					}
+				}
+				if (move_left)
+				{
+					switch(current_view)
+					{
+						case 0: camera.position.x += MOVING_SPEED; break;
+						case 1: camera.position.z += MOVING_SPEED; break;
+						case 2: camera.position.x -= MOVING_SPEED; break;
+						case 3: camera.position.z -= MOVING_SPEED; break;
+					}
+				}
+				if (move_right)
+				{
+					switch(current_view)
+					{
+						case 0: camera.position.x -= MOVING_SPEED; break;
+						case 1: camera.position.z -= MOVING_SPEED; break;
+						case 2: camera.position.x += MOVING_SPEED; break;
+						case 3: camera.position.z += MOVING_SPEED; break;
+					}
+				}
+				if (move_up)
+				{
+					camera.position.y += MOVING_SPEED;
+				}
+				if (move_down)
+				{
+					camera.position.y -= MOVING_SPEED;
+				}
+				
+				// 2.2 rotating
+				if (is_rotating)
+				{
+					current_view++;
+					if (current_view >= views.length)
+						current_view = 0;
+					
+					// remember current position
+					var current_x = camera.position.x;
+					var current_y = camera.position.y;
+					var current_z = camera.position.z;
+					
+					// go to pre-defined position
+					camera.position.x = views[current_view].x;
+					camera.position.y = views[current_view].y;
+					camera.position.z = views[current_view].z;
+					
+					camera.target = center_position;
+					camera.lookAt( camera.target );
+					
+					// go back to current position
+					camera.position.x = current_x;
+					camera.position.y = current_y;
+					camera.position.z = current_z;
+					
+					// only rotate one time per click
+					is_rotating = false;
+					
+				}
+				
+				// random stuffs
+				//console.log(camera.target);
+				
+				// update the scene
+				renderer.render( scene, camera );
+			}
+		</script>
+
+	</body>
+</html>

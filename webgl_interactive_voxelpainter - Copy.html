@@ -23,7 +23,7 @@
 
 		<script>
 			//constant
-			var WORLD_SIZE = 500;
+			var WORLD_SIZE = 1000;
 			var BLOCK_SIZE = 50;
 			var MOVING_SPEED = 10;
 
@@ -157,6 +157,7 @@
 			}
 
 			function getRealIntersector( intersects ) {
+				
 
 				for( i = 0; i < intersects.length; i++ ) {
 
@@ -351,15 +352,15 @@
 				}
 
 				raycaster = projector.pickingRay( mouse2D.clone(), camera );
-
+				
 				var intersects = raycaster.intersectObjects( objects );
-
+				
 				if ( intersects.length > 0 ) {
 
 					intersector = getRealIntersector( intersects );
 
 					if ( intersector ) {
-
+						
 						setVoxelPosition( intersector );
 						rollOverMesh.position.copy( voxelPosition );
 

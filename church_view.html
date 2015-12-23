@@ -11,7 +11,6 @@
         <script src="js/ColladaLoader.js" type="text/javascript"></script>
         <script src="js/Communication.js" type="text/javascript"></script>
         
-        <script src="js/3d.js" type="text/javascript"></script>
         <style type="text/css">
           html, body {
             margin: 0;
@@ -31,6 +30,25 @@
             color: yellow;
           }
         </style>
+		
+		<script>
+			
+			$( document ).ready( function(){
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+				
+			} );
+			
+			function onDocumentKeyDown(event)
+			{
+				document.getElementById('model_iframe').contentWindow.onDocumentKeyDown(event);
+			}
+			function onDocumentKeyUp(event)
+			{
+				document.getElementById('model_iframe').contentWindow.onDocumentKeyUp(event);
+			}
+        
+        </script>
     </head>
     <body>
     	<div id="wrap">
@@ -47,7 +65,9 @@
 				<div id="top_padding"></div>
 
         <div id="content_top"></div>  
-				<div id="threedmodell"></div>
+		<div id="threedmodell">
+			<iframe id="model_iframe" src="model.html" width="1050" height="459"></iframe>
+		</div>
         <div id="content_bottom"></div>
         <div id="info">
         Control the animation using the keyboard:
