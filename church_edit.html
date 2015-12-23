@@ -6,10 +6,13 @@
         <meta name="keywords" content="" />
         <meta name="description" content="" />
         <link href="styles.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="js/jquery-2.1.4.min.js" type="text/javascript"></script>
         <script src="js/three.min.js" type="text/javascript"></script>
+        <script src="js/stats.min.js" type="text/javascript"></script>
         <script src="js/Detector.js" type="text/javascript"></script>
         <script src="js/ColladaLoader.js" type="text/javascript"></script>
-        <script src="js/3d.js" type="text/javascript"></script>
+        <script src="js/Communication.js" type="text/javascript"></script>
+        
         <style type="text/css">
           html, body {
             margin: 0;
@@ -29,6 +32,25 @@
             color: yellow;
           }
         </style>
+        
+        <script>
+			
+			$( document ).ready( function(){
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+				
+			} );
+			
+			function onDocumentKeyDown(event)
+			{
+				document.getElementById('model_iframe').contentWindow.onDocumentKeyDown(event);
+			}
+			function onDocumentKeyUp(event)
+			{
+				document.getElementById('model_iframe').contentWindow.onDocumentKeyUp(event);
+			}
+        
+        </script>
     </head>
     <body>
     	<div id="wrap">
@@ -45,7 +67,9 @@
 				<div id="top_padding"></div>
 
         <div id="content_top"></div>  
-				<div id="threedmodell"></div>
+		<div id="threedmodell" style="width:1050px; height:459px;">
+			<iframe id="model_iframe" src="webgl_interactive_voxelpainter.html" width="1050" height="459"></iframe>
+		</div>
         <div id="content_bottom"></div>
         <div id="blueprint">
           <br>
