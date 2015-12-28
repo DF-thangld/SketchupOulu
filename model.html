@@ -18,14 +18,18 @@
 	<body>
 
 		<script src="js/three.min.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+		<script src="js/renderers/Projector.js"></script>
 
 		<script src="js/stats.min.js"></script>
 
 		<script>
 			//constant
-			var WORLD_SIZE = 500;
+			var WORLD_SIZE = 1000;
 			var BLOCK_SIZE = 50;
 			var MOVING_SPEED = 10;
+			var DEFAULT_HEIGHT = 1000;
+			var DEFAULT_DISTANCE = 100;
 			
 			/* 
 			1x. build a grid
@@ -34,6 +38,9 @@
 				2.2x rotate the grid
 				2.3x move around the rotated grid
 			3. add object to grid
+				3.1 highlight the point in the grid
+				3.2 create "blur" image of the model on mouse move
+				3.3 actually save the model to grid
 			4. manipulate object 
 				4.1 select object
 				4.2 move object to another position
@@ -50,11 +57,24 @@
 			var move_forward = false, move_backward = false, move_left = false, move_right = false, move_up = false, move_down = false, is_rotating = false;
 			var rotate_angle = 0;
 			var current_view = 0;
-			var views = [{'x': 0, 'y':150, 'z': -1*WORLD_SIZE-500},
-						{'x': WORLD_SIZE+500, 'y':150, 'z': 0},
-						{'x': 0, 'y':150, 'z': WORLD_SIZE+500},
-						{'x': -1*WORLD_SIZE-500, 'y':150, 'z': 0}];
-			var center_position = new THREE.Vector3( 0, 150, 0 );
+			var views = [{'x': 0, 'y':DEFAULT_HEIGHT, 'z': -1*WORLD_SIZE-DEFAULT_DISTANCE},
+						{'x': WORLD_SIZE+DEFAULT_DISTANCE, 'y':DEFAULT_HEIGHT, 'z': 0},
+						{'x': 0, 'y':DEFAULT_HEIGHT, 'z': WORLD_SIZE+DEFAULT_DISTANCE},
+						{'x': -1*WORLD_SIZE-DEFAULT_DISTANCE, 'y':DEFAULT_HEIGHT, 'z': 0}];
+			var center_position = new THREE.Vector3( 0, 0, 0 );
+			
+			var mouse_start_positions = [];
+			var mouse_position;
+			
+			var raycaster = new THREE.Raycaster(); // create once and reuse
+			var mouse = new THREE.Vector2(); // create once and reuse
+			
+			var projector;
+			
+			var meshes = [];
+			
+			//temp variables in development phase
+			var temp_object;
 			
 			// threejs functions
 			init();
@@ -75,7 +95,7 @@
 				//1. build a grid
 				var size = WORLD_SIZE, step = BLOCK_SIZE;
 
-				var geometry = new THREE.Geometry();
+				var geometry = new THREE.PlaneGeometry();
 
 				for ( var i = - size; i <= size; i += step ) {
 
@@ -84,17 +104,29 @@
 
 					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
 					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-
+					
+					for (var j = -size; j <= size; j += step)
+						meshes.push({'min_x': i, 'max_x': i+step, 'min_z': j, 'max_z': j+step});
 				}
+				console.log(geometry.vertices[0]);
+				console.log(geometry.vertices[1]);
+				
+				/*for ( var i = 0; i < geometry.vertices.length; i++ ) 
+				{
+					face = geometry.vertices[ i ];	
+					
+					face.color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
+				}*/
+				
+				
+				//console.log(meshes.length);
 
 				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5 } );
 
-				var line = new THREE.Line( geometry, material );
-				line.type = THREE.LinePieces;
+				var line = new THREE.LineSegments( geometry, material );
 				scene.add( line );
 				
 				// put an object to bottom left edge of the grid as anchor
-				
 				var object_geometry = new THREE.IcosahedronGeometry( 25, 1 );
 
 				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
@@ -108,10 +140,25 @@
 
 				scene.add( sphere );
 				
+				// create temp object
+				var object_geometry = new THREE.IcosahedronGeometry( 5, 1 );
+				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
+				temp_object = new THREE.Mesh( object_geometry, object_material );
+
+				temp_object.scale.x = temp_object.scale.y = temp_object.scale.z = 1;
+				temp_object.position.x = temp_object.position.y = temp_object.position.z = 0;
+
+				scene.add( temp_object );
+				
 				// add keyboard events to mode
 				document.addEventListener( 'keydown', onDocumentKeyDown, false );
 				document.addEventListener( 'keyup', onDocumentKeyUp, false );
 				window.addEventListener( 'resize', onWindowResize, false );
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				
+				// initialize mouse 
+				mouse_position = new THREE.Vector3( 0, 10000, 0.5 );
+				projector = new THREE.Projector();
 				
 				// display the scene
 				renderer = new THREE.CanvasRenderer();
@@ -120,6 +167,44 @@
 				container.appendChild( renderer.domElement );
 				
 				renderer.render( scene, camera);
+			}
+			
+			function onDocumentMouseMove(event)
+			{
+				event.preventDefault();
+
+				/*mouse_position.x = - ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse_position.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				
+				mouse_position.unproject( camera )
+				
+				// move the temp object to mouse position
+				temp_object.position.x = WORLD_SIZE*mouse_position.x + WORLD_SIZE*2;
+				temp_object.position.z = WORLD_SIZE*mouse_position.y;
+				//console.log(event.clientX, event.clientY);*/
+				
+				mouse_position.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse_position.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				
+				var vector = new THREE.Vector3( mouse_position.x, mouse_position.y, 1 );
+				//projector.unprojectVector( vector, camera );
+				vector.unproject( camera );
+				
+				var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+				// create an array containing all objects in the scene with which the ray intersects
+				var intersects = ray.intersectObjects( scene.children );
+				if ( intersects.length > 0 )
+				{
+					//console.log(intersects[0].point);
+					temp_object.position.x = intersects[0].point.x;
+					temp_object.position.y = intersects[0].point.y;
+					temp_object.position.z = intersects[0].point.z;
+				}
+				
+				
+				
+				//console.log(temp_object.position.x, temp_object.position.y, temp_object.position.z);
 			}
 			
 			function onDocumentKeyDown(event)
@@ -252,9 +337,9 @@
 					camera.lookAt( camera.target );
 					
 					// go back to current position
-					camera.position.x = current_x;
+					/*camera.position.x = current_x;
 					camera.position.y = current_y;
-					camera.position.z = current_z;
+					camera.position.z = current_z;*/
 					
 					// only rotate one time per click
 					is_rotating = false;
@@ -262,7 +347,7 @@
 				}
 				
 				// random stuffs
-				//console.log(camera.target);
+				
 				
 				// update the scene
 				renderer.render( scene, camera );

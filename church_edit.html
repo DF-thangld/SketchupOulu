@@ -34,6 +34,21 @@
         </style>
         
         <script>
+		
+			THREEx.FullScreen.request   = function(element)
+			{
+				element = element   || document.body;
+				if( this._hasWebkitFullScreen ){
+					element.webkitRequestFullScreen();
+					console.log("f");
+				}else if( this._hasMozFullScreen ){
+					element.mozRequestFullScreen();
+					console.log("g");
+				}else{
+					console.assert(false);
+				}
+			}
+		
 			
 			$( document ).ready( function(){
 				document.addEventListener( 'keydown', onDocumentKeyDown, false );
@@ -48,6 +63,7 @@
 			function onDocumentKeyUp(event)
 			{
 				document.getElementById('model_iframe').contentWindow.onDocumentKeyUp(event);
+				THREEx.FullScreen.request();
 			}
         
         </script>
