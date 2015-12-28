@@ -172,19 +172,10 @@
 			function onDocumentMouseMove(event)
 			{
 				event.preventDefault();
-
-				/*mouse_position.x = - ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse_position.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-				
-				mouse_position.unproject( camera )
-				
-				// move the temp object to mouse position
-				temp_object.position.x = WORLD_SIZE*mouse_position.x + WORLD_SIZE*2;
-				temp_object.position.z = WORLD_SIZE*mouse_position.y;
-				//console.log(event.clientX, event.clientY);*/
 				
 				mouse_position.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 				mouse_position.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				
 				
 				var vector = new THREE.Vector3( mouse_position.x, mouse_position.y, 1 );
 				//projector.unprojectVector( vector, camera );
@@ -201,7 +192,6 @@
 					temp_object.position.y = intersects[0].point.y;
 					temp_object.position.z = intersects[0].point.z;
 				}
-				
 				
 				
 				//console.log(temp_object.position.x, temp_object.position.y, temp_object.position.z);
@@ -345,6 +335,9 @@
 					is_rotating = false;
 					
 				}
+				
+				//mouse position
+				
 				
 				// random stuffs
 				
