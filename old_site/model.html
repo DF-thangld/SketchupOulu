@@ -75,7 +75,10 @@
 			
 			//temp variables in development phase
 			var temp_object;
-			
+
+			//all the vasiable objects in the scene
+			var objects = [];
+
 			// threejs functions
 			init();
 			animate();
@@ -125,9 +128,10 @@
 
 				var line = new THREE.LineSegments( geometry, material );
 				scene.add( line );
+				objects.push( line );
 				
 				// put an object to bottom left edge of the grid as anchor
-				var object_geometry = new THREE.IcosahedronGeometry( 25, 1 );
+				/*var object_geometry = new THREE.IcosahedronGeometry( 25, 1 );
 
 				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
 				var sphere = new THREE.Mesh( object_geometry, object_material );
@@ -138,11 +142,14 @@
 
 				sphere.scale.x = sphere.scale.y = sphere.scale.z = 1;
 
-				scene.add( sphere );
+				scene.add( sphere );*/
 				
 				// create temp object
-				var object_geometry = new THREE.IcosahedronGeometry( 5, 1 );
-				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
+				// var object_geometry = new THREE.IcosahedronGeometry( 30,1 );
+				var object_geometry = new THREE.CubeGeometry(30, 30, 30, 10, 10, 10);
+	
+				// var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
+				var object_material = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
 				temp_object = new THREE.Mesh( object_geometry, object_material );
 
 				temp_object.scale.x = temp_object.scale.y = temp_object.scale.z = 1;
@@ -183,8 +190,11 @@
 				
 				var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 
+
 				// create an array containing all objects in the scene with which the ray intersects
-				var intersects = ray.intersectObjects( scene.children );
+				//var intersects = ray.intersectObjects( scene.children );//bugs
+				// use object array instead include all the children of the scene
+				var intersects = ray.intersectObjects( objects );	
 				if ( intersects.length > 0 )
 				{
 					//console.log(intersects[0].point);
@@ -194,7 +204,7 @@
 				}
 				
 				
-				//console.log(temp_object.position.x, temp_object.position.y, temp_object.position.z);
+				console.log(temp_object.position.x, temp_object.position.y, temp_object.position.z);
 			}
 			
 			function onDocumentKeyDown(event)
