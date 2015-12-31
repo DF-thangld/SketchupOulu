@@ -1,0 +1,583 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"sin",
+				"sin"
+			],
+			[
+				"y",
+				"y"
+			],
+			[
+				"re",
+				"return"
+			],
+			[
+				"new",
+				"newData"
+			],
+			[
+				"in",
+				"index"
+			],
+			[
+				"win",
+				"windowSize"
+			],
+			[
+				"ca",
+				"cacheSize"
+			],
+			[
+				"ma",
+				"margin-right"
+			],
+			[
+				"margi",
+				"margin-left"
+			],
+			[
+				"Plac",
+				"places"
+			],
+			[
+				"han",
+				"handleMessage"
+			],
+			[
+				"navigatio",
+				"navigationInputDisplay"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/L/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 160,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "Package Control: ",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				":q",
+				"BracketHighlighter: Swap Quotes"
+			],
+			[
+				":w",
+				":w - Save"
+			],
+			[
+				"CodeIntel",
+				"Package Control: Advanced Install Package"
+			]
+		],
+		"width": 528.0
+	},
+	"console":
+	{
+		"height": 146.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/E/Project/GitHub/SketchupOulu/old_site/model.html",
+		"/E/Users/L/Desktop/three.js-master/examples/webgl_interactive_voxelpainter.html",
+		"/E/Project/GitHub/SketchupOulu/old_site/model2.html",
+		"/E/Project/GitHub/SketchupOulu/old_site/webgl_interactive_voxelpainter - Copy.html",
+		"/E/Users/L/Desktop/three.js-master/examples/canvas_interactive_voxelpainter.html",
+		"/E/Project/GitHub/SketchupOulu/old_site/church.html",
+		"/E/Project/GitHub/SketchupOulu/README.md",
+		"/E/Project/GitHub/SketchupOulu/run.py",
+		"/C/Users/L/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/E/Users/L/Desktop/Master Thesis/index.html",
+		"/E/Project/GitHub/SketchupOulu/js/Communication.js",
+		"/E/Project/GitHub/SketchupOulu/js/3d.js",
+		"/E/Project/GitHub/SketchupOulu/js/three.js",
+		"/E/Users/L/Desktop/Master Thesis/webgl_gpu_particle_system.html",
+		"/E/Project/OUSPG/index.html",
+		"/E/Project/GitHub/SketchupOulu/Pingjiang's Documents/cesium.html",
+		"/E/VisualStudio2015/OpenCV/SmartParking/SmartParking/SmartParking.cpp",
+		"/E/Project/GitHub/SketchupOulu/church_edit - Test - Pingjiang.html",
+		"/E/Users/L/Desktop/OpenCVExample.cpp",
+		"/C/Users/L/Dropbox/smartParking/preliminary code/C++version/OpenCVExample/OpenCVExample.cpp",
+		"/C/Users/L/AppData/Local/Temp/bg_sub.cpp",
+		"/E/Users/L/Desktop/three.js-master/examples/models/animated/monster/monster.js",
+		"/E/Project/GitHub/SketchupOulu/js/Detector.js",
+		"/E/Project/GitHub/SketchupOulu/js/three.min.js",
+		"/E/Project/GitHub/SketchupOulu/js/ColladaLoader.js",
+		"/E/Users/L/Desktop/OpenCVExample.py",
+		"/E/Users/L/Desktop/SketchupOulu-master/church_edit.html",
+		"/C/Users/L/Desktop/Window-LFU.java",
+		"/D/games/我的世界1.8.1/.minecraft/assets/indexes/1.8.json",
+		"/D/games/我的世界1.8.1/.minecraft/assets/indexes/1.7.10.json",
+		"/C/Users/L/Desktop/Piano/freepiano.cfg",
+		"/D/OneDrive - Oulun yliopisto/Course/Applied Computer Science/RabbitMQ/receive.php",
+		"/D/OneDrive - Oulun yliopisto/Course/Applied Computer Science/RabbitMQ/send.php",
+		"/D/OneDrive - Oulun yliopisto/Course/Distributed System/LAMP(配置).php",
+		"/C/Users/L/Desktop/MainActivity.java",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.427/AwesomeA.java",
+		"/E/Project/Android/aware-plugin/app/src/androidTest/java/com/aware/plugin/InOutDetection/ApplicationTest.java",
+		"/E/Project/ubitraffic/Info.php",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.572/GeneratorFrameListener.cpp",
+		"/E/Project/ubitraffic/default.php",
+		"/E/wamp/www/ftp.php",
+		"/E/Project/pwp/deliverable4/exam/resources.py",
+		"/E/Project/pwp/deliverable4/exam/database.py",
+		"/E/wamp/www/ubitraffic/default.php",
+		"/E/Project/ogre/PlanetGenerator - Test/main.cpp",
+		"/E/Project/deliverable4/exam/resources.py",
+		"/E/Project/deliverable4/exam/database.py",
+		"/E/wamp/www/ubitraffic/javascript/ubitraffic_menu.js",
+		"/E/Project/ogre/PlanetGenerator-master/GeneratorFrameListener.h",
+		"/C/Users/L/Google 云端硬盘/Android Note/Thread.java",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.553/OgreDebugPanel.overlay",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.357/GeneratorFrameListener.h",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.177/ResourceParameter.h",
+		"/C/Users/L/Desktop/old.cpp",
+		"/E/OGRE1.9/bin/debug/media/Fonts/Garamond.fontdef",
+		"/E/OGRE1.9/media/materials/scripts/Ogre.material",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.667/BaseApplication.cpp",
+		"/E/OGRE1.9/bin/debug/media/Fonts/Batang-18.font",
+		"/E/OGRE1.9/bin/debug/resources.cfg",
+		"/E/OGRE1.9/bin/debug/resources_d.cfg",
+		"/E/OGRE1.9/bin/debug/media/packs/OgreCore/OgreDebugPanel.overlay",
+		"/E/OGRE1.9/bin/debug/media/overlays/Info.overlay",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/Info.overlay",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/Debug.overlay",
+		"/E/Visual Studio 2010 Project/Planet/Win32/Debug/resources.cfg",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/skyboxs.material",
+		"/E/OGRE1.9/media/materials/scripts/Examples.material",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/Box.material",
+		"/E/Project/ogre/PlanetGenerator-master/resources.cfg",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/Examples.material",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/ram_skin.material",
+		"/E/OGRE1.9/bin/debug/media/materials/scripts/Material.001.material",
+		"/E/Project/ogre/PlanetGenerator/NewMOC.cpp",
+		"/C/Users/L/Desktop/new-minimal-ogre-collision/NewMOC.h",
+		"/E/Visual Studio 2010 Project/Planet/Win32/Debug/media/materials/scripts/ram_skin.material",
+		"/E/Visual Studio 2010 Project/Planet/Win32/Debug/media/materials/scripts/Material.001.material",
+		"/E/Project/ogre/PlanetGenerator-master/PSphere.cpp",
+		"/E/Project/ogre/PlanetGenerator-master/ObjectInfo.cpp",
+		"/C/Users/L/Desktop/new-minimal-ogre-collision/NewMOC.cpp",
+		"/E/wamp/www/ubitraffic/bigdump/bigdump_linux.php",
+		"/E/Project/ogre/PlanetGenerator/GeneratorFrameListener.cpp",
+		"/E/OGRE1.9/bin/Release/resources.cfg",
+		"/E/Project/Visual Studio 2010 Project/PlanetGen/Debug/resources_d.cfg",
+		"/E/Project/ogre/PlanetGenerator/GeneratorFrameListener.h",
+		"/C/Users/L/Desktop/Piano/曲谱/功夫/AllEffectData.h",
+		"/E/Project/ogre/PlanetGenerator/HeightMap.h",
+		"/E/Project/ogre/Ogredemo/main.cpp",
+		"/E/wamp/www/ubitraffic/javascript/ubitraffic_traffic_places.js",
+		"/E/wamp/www/ubitraffic/bigdump/bigdump.php",
+		"/E/wamp/www/ubitraffic/default2.php",
+		"/E/wamp/www/ubitraffic/css/ModernBlue.css",
+		"/E/wamp/www/ubitraffic/css/style4.css",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.160/ubitraffic-master/javascript/ubitraffic_menu.js",
+		"/E/wamp/www/ubitraffic/css/style.css",
+		"/C/Users/L/Desktop/123/css/style4.css",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.592/ubitraffic-master/javascript/ubitraffic_menu.js",
+		"/E/wamp/www/ubitraffic/css/demo.css",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.837/ubitraffic-master/javascript/ubitraffic_menu.js",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.414/ubitraffic-master/javascript/ubitraffic_menu.js",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.580/ubitraffic-master/default.php",
+		"/E/wamp/www/ubitraffic/big_panel_map.php",
+		"/C/Users/L/Desktop/123/index4.html",
+		"/C/Users/L/Desktop/123/css/demo.css",
+		"/E/wamp/www/ubitraffic/default - Copy.php",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.085/index4.html",
+		"/C/Users/L/AppData/Local/Temp/Rar$DRa0.536/index4.html",
+		"/E/Project/ogre/PlanetGenerator/initOgre.h",
+		"/E/Project/ogre/PlanetGenerator/initOgre.cpp",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.490/CollisionTools.h",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.040/SampleApp.h",
+		"/C/Users/L/Desktop/Source/SampleApp.cpp",
+		"/C/Users/L/Desktop/Source/CollisionTools.cpp",
+		"/C/Users/L/Desktop/Source/CollisionHandler.cpp",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.940/SampleApp.h",
+		"/E/OGRE1.9/bullet3-Bullet-2.83-alpha/Demos/OpenGL/Win32DemoApplication.cpp",
+		"/E/OGRE1.9/bullet3-Bullet-2.83-alpha/Demos/CcdPhysicsDemo/main.cpp",
+		"/E/OGRE1.9/bullet3-Bullet-2.83-alpha/Demos/CcdPhysicsDemo/CcdPhysicsDemo.h",
+		"/E/OGRE1.9/bullet3-Bullet-2.83-alpha/Demos/CcdPhysicsDemo/CcdPhysicsDemo.cpp",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.097/CollisionTools.h",
+		"/C/Users/L/AppData/Local/Temp/Rar$DIa0.808/ArtifexLoader.h",
+		"/E/Project/ogre/PlanetGenerator/CollisionTools.cpp",
+		"/C/Users/L/Desktop/Source/Main.cpp",
+		"/E/wamp/www/Ubi/Info.php",
+		"/E/Project/ubitraffic/default.html",
+		"/C/Users/L/Desktop/chat/index.html",
+		"/E/Project/default.html",
+		"/C/Users/L/Desktop/chat/stomp.js",
+		"/C/Users/L/Desktop/chat/Info.html"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"views",
+			"Detector",
+			"rollOverMesh",
+			"objects",
+			"temp",
+			"scene",
+			"objects",
+			"raycaster",
+			"temp_object",
+			"\\",
+			"temp_object",
+			"windowHalfX",
+			"envmap",
+			"Spheres",
+			"frame",
+			"dumped_first_frame",
+			"frame_copy",
+			"keyboard",
+			"loadTexture",
+			"dae",
+			"loader",
+			"Detector",
+			"System.date",
+			",",
+			"Ubi Traffic",
+			"excp",
+			"print",
+			"print ",
+			"if __name__ == '__main__':",
+			"appli",
+			"ftp_connect($ftp_server)",
+			"selectedObject",
+			"kc_u",
+			"jc_u",
+			"Render",
+			"RenderSystemList",
+			"configure",
+			"initialise",
+			"chooseSceneManager",
+			"overlay",
+			"reateResourceListener",
+			"createScene",
+			"loadResources",
+			"setupResources",
+			"createViewports",
+			"setSceneAndRun",
+			"chooseSceneManager",
+			"StatsBlockBorder",
+			"Core",
+			"DebugOverlay",
+			"sky",
+			"derived",
+			"mesh",
+			"300",
+			"max",
+			"traffic_congestion_menu",
+			"click",
+			"css('",
+			"parking",
+			"css('dis",
+			"change_sub_menu",
+			"click",
+			"addDomListener",
+			"display",
+			"css('display'",
+			"changePointOfInterestType",
+			"restaurant",
+			"navigation_left_panel",
+			"From",
+			"navigation",
+			"alert",
+			"alter",
+			"<script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?libraries=places\"></script>",
+			"point_of_interest_service",
+			"alert",
+			"newmoc",
+			"bus_timetable_menu",
+			"change_sub_menu",
+			"bus_timetable_button",
+			"time",
+			"server",
+			"max",
+			"300",
+			"db_server",
+			"connection",
+			"$host",
+			".png",
+			"traffic_congestion_button.png",
+			"navigation",
+			"color",
+			"zoom_menu",
+			"ico",
+			"zoom",
+			"$container",
+			"#container",
+			"point_of_interest_menu",
+			"main_menu",
+			"innerContainer",
+			"css",
+			"main_menu",
+			"display",
+			"//$('#",
+			"main_menu",
+			"disp",
+			"container",
+			"menu",
+			"*/\n",
+			"main_menu",
+			"show_menu",
+			"innerContainer",
+			"margin",
+			"button-wrapper",
+			"DIV",
+			"a-btn-slide-text",
+			"Animated Buttons",
+			"downloadToPhone",
+			"big",
+			"download",
+			"pickEntity",
+			"arg",
+			"mRenderWin",
+			"raycastFromCamera",
+			"collidesWithEntity",
+			"raycastFromCamera",
+			"mCollision",
+			"collisionTool",
+			"mCollision",
+			"collisionTools"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"new    Date(System.currentTimeMillis());",
+			"^P"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/L/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 160,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								157,
+								157
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 30.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "model.sublime-project",
+	"replace":
+	{
+		"height": 80.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 188.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

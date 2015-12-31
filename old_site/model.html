@@ -25,7 +25,7 @@
 
 		<script>
 			//constant
-			var WORLD_SIZE = 1000;
+			var WORLD_SIZE = 1000; //side length of the square world
 			var BLOCK_SIZE = 50;
 			var MOVING_SPEED = 10;
 			var DEFAULT_HEIGHT = 1000;
@@ -96,7 +96,7 @@
 				scene = new THREE.Scene();
 				
 				//1. build a grid
-				var size = WORLD_SIZE, step = BLOCK_SIZE;
+				var size = WORLD_SIZE/2, step = BLOCK_SIZE;
 
 				var geometry = new THREE.PlaneGeometry();
 
@@ -111,40 +111,25 @@
 					for (var j = -size; j <= size; j += step)
 						meshes.push({'min_x': i, 'max_x': i+step, 'min_z': j, 'max_z': j+step});
 				}
-				console.log(geometry.vertices[0]);
-				console.log(geometry.vertices[1]);
 				
-				/*for ( var i = 0; i < geometry.vertices.length; i++ ) 
-				{
-					face = geometry.vertices[ i ];	
-					
-					face.color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
-				}*/
-				
-				
-				//console.log(meshes.length);
 
-				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5 } );
+				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.3 } );
 
 				var line = new THREE.LineSegments( geometry, material );
 				scene.add( line );
-				objects.push( line );
 				
-				// put an object to bottom left edge of the grid as anchor
-				/*var object_geometry = new THREE.IcosahedronGeometry( 25, 1 );
 
-				var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
-				var sphere = new THREE.Mesh( object_geometry, object_material );
+				//create the lowest base, unvisible, just used for detect where to place the models
+				geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
+				geometry.rotateX( - Math.PI / 2 );
 
-				sphere.position.x = -1*WORLD_SIZE+25;
-				sphere.position.y = 25;
-				sphere.position.z = -1*WORLD_SIZE+25;
+				var plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+				scene.add( plane );
 
-				sphere.scale.x = sphere.scale.y = sphere.scale.z = 1;
+				objects.push( plane ); 
 
-				scene.add( sphere );*/
 				
-				// create temp object
+				// create temporary object for preview
 				// var object_geometry = new THREE.IcosahedronGeometry( 30,1 );
 				var object_geometry = new THREE.CubeGeometry(30, 30, 30, 10, 10, 10);
 	
