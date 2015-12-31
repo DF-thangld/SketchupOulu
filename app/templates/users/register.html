@@ -7,9 +7,7 @@
 {% endblock %} 
 
 {% block onload_script %}
-	{% for category, msg in get_flashed_messages(with_categories=true) %}
-		window.alert('{{ msg }}');</p>
-	{% endfor %}
+
 {% endblock %} 
 {% block main_content %}
 <div class="row" style="margin-top: 20px;">
@@ -24,12 +22,23 @@
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
 			<h2 class="setup-form-title">Create your personal account</h2>
+
+           {% if errors|length > 0 %}
+            <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container">
+                  There were problems creating your account:
+                      {% for error in errors %}
+                          <div>- {{ error }}</div>
+                      {% endfor %}
+                  </div>
+            </div>
+            {% endif %}
 			<dl class="form">
 				<dt class="input-label">
 					{{ form.name.label(autocapitalize="off", autofocus="autofocus") }}
 				</dt>
 				<dd>
-                    {{ form.name(autocapitalize="off", autofocus="autofocus", size="30") }}
+                    {{ form.name(autocapitalize="off", autofocus="autofocus", size="30", value=form.name.data) }}
 				</dd>
 			</dl>
 			<dl class="form">
@@ -37,7 +46,7 @@
 					{{ form.email.label(autocapitalize="off") }}
 				</dt>
 				<dd>
-                    {{ form.email(autocapitalize="off", size="30") }}
+                    {{ form.email(autocapitalize="off", size="30", value=form.name.data) }}
 				</dd>
 			</dl>
 

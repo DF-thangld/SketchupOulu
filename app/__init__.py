@@ -1,8 +1,8 @@
 import os
 import sys
 
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy 
+from flask import Flask, render_template, g, session
+from flask_sqlalchemy import SQLAlchemy
 
 import config
 

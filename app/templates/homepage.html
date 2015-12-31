@@ -64,6 +64,11 @@
 				<li><a class="page-scroll" href="#services">Services</a></li>
 				<li><a class="page-scroll" href="#portfolio">Scenario</a></li>
 				<li><a class="page-scroll" href="#contact">Contact</a></li>
+                {% if session['user_id'] %}
+                <li><a href="{{  url_for('users.profile')}}">Profile</a></li>
+                {% else %}
+                <li><a href="{{ url_for('users.login') }}">Login</a></li>
+                {% endif %}
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->

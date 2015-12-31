@@ -37,6 +37,8 @@
     
     <!-- jQuery -->
     <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.css') }}">
+    <script src="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.min.js') }}"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
@@ -55,6 +57,9 @@
     	
     	
     });
+    {% block js_script %}
+
+    {% endblock %}
     </script>
     
     <style>

@@ -15,13 +15,29 @@
 	<div class="col-lg-1 col-centered">
 		<img src="{{ url_for('static', filename='images/oulu_logo_1.png') }}" style="height:30px;"/>
 	</div>
+
+
+
 	<div class="col-lg-3 col-centered" style="margin-top:10px;font-weight: 300;font-size: 24px;letter-spacing: -0.5px;">
 		<div style="margin-left:75px;">Sign in to System</div>
 	</div>
+
+    {% if errors|length > 0 %}
+    <div id="js-flash-container" class="col-lg-3 col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+          <div class="container">
+            <button class="flash-close js-flash-close" type="button">
+              <span class="octicon octicon-x"></span>
+            </button>
+              {% for error in errors %}
+                  <div>{{ error }}</div>
+              {% endfor %}
+          </div>
+    </div>
+    {% endif %}
+
 	<div class="col-lg-3 col-centered" style="margin-top:20px;font-size: 14px;background-color: #fff;border: 1px solid #d8dee2;border-radius: 5px;">
 		<form method="POST" action="{{ url_for('users.login') }}">
 			{{ form.csrf_token }}
-
 			<div class="auth-form-body">
 				<label for="login_field" style="font-weight: normal;margin-bottom: 0px;">{{ form.email.label.text }}</label>
 				{{ form.email(class='input-block', autocapitalize="off", autocorrect="off", autofocus="autofocus", tabindex="1") }}
@@ -30,7 +46,6 @@
 				<div style="clear:both"></div>
 				</label>
 				{{ form.password(class='input-block', tabindex="2") }}
-				<input id="return_to" name="return_to" type="hidden" value="/join"> 
 				<input class="btn btn-primary btn-block" data-disable-with="Signing in" name="commit" tabindex="3" type="submit" value="Sign in">
 			</div>
 
