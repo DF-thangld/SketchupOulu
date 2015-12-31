@@ -1,0 +1,37 @@
+<div class="header header-logged-out" role="banner">
+	<div class="container clearfix">
+
+		<a class="header-logo-wordmark" href="https://github.com/"
+			data-ga-click="(Logged out) Header, go to homepage, icon:logo-wordmark">
+			<img style="float:left; height:25px;" src="{{ url_for('static', filename='images/oulu_logo_1.png') }}"/>
+		</a>
+
+		<div class="header-actions" role="navigation">
+			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
+				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
+				up</a> <a class="btn" href="{{ url_for('users.login') }}"
+				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
+				in</a>
+		</div>
+
+		<ul class="header-nav left" role="navigation">
+			<li class="header-nav-item"><a class="header-nav-link"
+				href="/explore"
+				data-ga-click="(Logged out) Header, go to explore, text:explore">Explore</a>
+			</li>
+			<li class="header-nav-item"><a class="header-nav-link"
+				href="/features"
+				data-ga-click="(Logged out) Header, go to features, text:features">Features</a>
+			</li>
+			<li class="header-nav-item"><a class="header-nav-link"
+				href="https://enterprise.github.com/"
+				data-ga-click="(Logged out) Header, go to enterprise, text:enterprise">Enterprise</a>
+			</li>
+			<li class="header-nav-item"><a class="header-nav-link"
+				href="/pricing"
+				data-ga-click="(Logged out) Header, go to pricing, text:pricing">Pricing</a>
+			</li>
+		</ul>
+
+	</div>
+</div>

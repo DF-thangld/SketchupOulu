@@ -46,14 +46,19 @@ def register():
     """
     Registration Form
     """
+    
+    test_user = User.query.filter_by(id=1)
+
+    
     form = RegisterForm(request.form)
+
     if form.validate_on_submit():
         # create an user instance not yet stored in the database
-        user = User(name=form.name.data, email=form.email.data, \
+        user = User(name=form.name.data, email=form.email.data, 
           password=generate_password_hash(form.password.data))
         # Insert the record in our database and commit it
-        db.session.add(user)  # @UndefinedVariable
-        db.session.commit()  # @UndefinedVariable
+        db.session.add(user)  
+        db.session.commit()  
         
         # Log the user in, as he now has an id
         session['user_id'] = user.id
@@ -61,5 +66,9 @@ def register():
         # flash will display a message to the user
         flash('Thanks for registering')
         # redirect user to the 'home' method of the user module.
-        return redirect(url_for('users.home'))
+        return redirect(url_for('index'))
     return render_template("users/register.html", form=form)
+
+@mod.route('/reset_password/', methods=['GET', 'POST'])
+def reset_password():
+    return "TODO"
