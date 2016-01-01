@@ -54,7 +54,6 @@ function update_user(user_id) {
 		'phone_number': $('#phone_number').val(),
 		'birthdate': $('#birthdate').val()
 	};
-	$('#user_data_form').fadeOut('fast');
 	$.ajax({
 		type: "POST",
 		url: "{{ url_for('users.user_profile') }}",
@@ -63,7 +62,7 @@ function update_user(user_id) {
 			// return success
 			if (data.length > 0) {
 				$('#user_data_form').html(data);
-				$('#user_data_form').fadeIn('fast');
+                show_alert('alert-success', 'Update success!');
 			}
 		}
 	});

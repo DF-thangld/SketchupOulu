@@ -57,6 +57,18 @@
     	
     	
     });
+
+    function show_alert(alert_type, alert_content)
+    {
+        $('#alert_panel').addClass(alert_type);
+        $('#alert_content').html(alert_content);
+        $('#alert_panel').fadeIn();
+        setTimeout(function(){
+            $('#alert_panel').fadeOut();
+            $('#alert_panel').removeClass(alert_type);
+        }, 3000);
+    }
+
     {% block js_script %}
 
     {% endblock %}
@@ -71,7 +83,12 @@
 </head>
 
 <body id="page-top">
-
+<div id="alert_panel" class="alert alert-dismissible" style="display:none;position: fixed;top: 1em;right:1em" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <span id="alert_content"></span>
+</div>
 	{% block menu %}
 	
 	{% endblock %}

@@ -135,9 +135,6 @@ def user_profile():
         user.fullname = form.fullname.data
         user.address = form.address.data
         user.phone_number = form.phone_number.data
-        #user.birthdate = form.birthdate.data
-
-
 
         g.user = user
 
