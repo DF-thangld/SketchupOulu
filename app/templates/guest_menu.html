@@ -1,0 +1,43 @@
+<div class="header header-logged-out" role="banner">
+	<div class="container clearfix">
+
+		<a class="header-logo-wordmark" href="{{ url_for('index') }}"
+			data-ga-click="(Logged out) Header, go to homepage, icon:logo-wordmark">
+			<img style="float:left; height:25px;" src="{{ url_for('static', filename='images/oulu_logo_1.png') }}"/>
+		</a>
+
+		<div class="header-actions" role="navigation">
+			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
+				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
+				up</a> <a class="btn" href="{{ url_for('users.login') }}"
+				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
+				in</a>
+		</div>
+
+		<ul class="header-nav left" role="navigation">
+
+
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">Home</a>
+			</li>
+			<li class="header-nav-item"><a class="header-nav-link" href="#">Base scenarios</a>
+			</li>
+            <li class="header-nav-item dropdown">
+                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">Admin</a>
+
+                <ul class="dropdown-menu">
+                    <li class="dropdown-header">System control</li>
+                    <li><a href="http://vm0106.virtues.fi/fablab/reservations/basic_schedule">General settings</a></li>
+                    <li class="divider"></li>
+                    <li class="dropdown-header">User control</li>
+                    <li><a href="http://vm0106.virtues.fi/fablab/reservations/active">User management</a></li>
+                    <li><a href="http://vm0106.virtues.fi/fablab/reservations/reserve">Send email</a></li>
+                </ul>
+
+			</li>
+			<li class="header-nav-item"><a class="header-nav-link" href="#">Contact us</a>
+			</li>
+
+		</ul>
+
+	</div>
+</div>

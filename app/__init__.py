@@ -1,8 +1,8 @@
 import os
 import sys
 
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy 
+from flask import Flask, render_template, g, session
+from flask_sqlalchemy import SQLAlchemy
 
 import config
 
@@ -41,6 +41,11 @@ if not app.config['DEBUG']:
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
+
+@app.route('/')
+def index():
+    return render_template('homepage.html'), 200
+
 
 from app.users.views import mod as usersModule
 app.register_blueprint(usersModule)

@@ -6,7 +6,8 @@ DEBUG = False
 ADMINS = frozenset(['youremail@yourdomain.com'])
 SECRET_KEY = 'This string will be replaced with a proper key in production.'
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://sketchup_oulu:abcxyz@vm0106.virtues.fi:7557/sketchup_oulu'
+
 DATABASE_CONNECT_OPTIONS = {}
 
 THREADS_PER_PAGE = 8

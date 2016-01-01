@@ -1,0 +1,71 @@
+<div id="user_data_form" style="display: block;">
+    <h3>User data</h3>
+    <div id="user_content">
+        <div id="tab-content" class="tab-content">
+            <div class="tab-pane active" id="basic">
+                <form class="form-horizontal" id="basic_form" action="{{ url_for('users.user_profile') }}">
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        {{ form.email.label(class="control-label col-xs-3") }}
+                        <div class="col-xs-9">
+                            {{ form.email(class="form-control", placeholder="Email", readonly="", value=form.email.data) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         {{ form.username.label(class="control-label col-xs-3") }}
+                        <div class="col-xs-9">
+                            {{ form.username(class="form-control", placeholder="Username", readonly="", value=form.username.data) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         {{ form.fullname.label(class="control-label col-xs-3") }}
+                        <div class="col-xs-9">
+                            {{ form.fullname(class="form-control", placeholder="Full name", value=form.fullname.data) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         {{ form.address.label(class="control-label col-xs-3") }}
+                        <div class="col-xs-9">
+                            {{ form.address(class="form-control", placeholder="Address", value=form.address.data) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         {{ form.phone_number.label(class="control-label col-xs-3") }}
+                        <div class="col-xs-9">
+                            {{ form.phone_number(class="form-control", placeholder=form.phone_number.label.text, value=form.phone_number.data) }}
+                        </div>
+                    </div>
+
+                    <a href="javascript:update_user();" type="submit" class="btn btn-success"> <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                        Save
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+
+
+
+function update_user(user_id) {
+	var post_data = {
+		'fullname': $('#fullname').val(),
+		'address': $('#address').val(),
+		'phone_number': $('#phone_number').val(),
+		'birthdate': $('#birthdate').val()
+	};
+	$('#user_data_form').fadeOut('fast');
+	$.ajax({
+		type: "POST",
+		url: "{{ url_for('users.user_profile') }}",
+		data: post_data,
+		success: function(data) {
+			// return success
+			if (data.length > 0) {
+				$('#user_data_form').html(data);
+				$('#user_data_form').fadeIn('fast');
+			}
+		}
+	});
+}
+</script></div>

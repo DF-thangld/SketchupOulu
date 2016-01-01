@@ -1,4 +1,67 @@
-   {% extends "base.html" %}
-   {% block content %}
-     Hi {{ user.name }}!
-   {% endblock %}
+{% extends "base.html" %} 
+{% block custom_css %} 
+
+{% endblock %} 
+{% block menu %} 
+	{% include 'user_menu.html' %}
+{% endblock %} 
+
+{% block js_script %}
+
+    $(document).on('click', '#profile_menu li', function() {
+	   $("#profile_menu li").removeClass("active");
+	   $(this).addClass("active");
+	});
+
+
+    function get_user_profile()
+    {
+        $('#user_data_form').fadeOut('fast');
+		$.ajax({
+			type: "GET",
+			url: "{{ url_for('users.user_profile') }}",
+			success: function(data) {
+				// return success
+				if (data.length > 0) {
+					$('#user_data_form').html(data);
+					$('#user_data_form').fadeIn('fast');
+				}
+			}
+		});
+    }
+
+    function get_user_scenarios()
+    {
+
+    }
+
+    function get_building_models()
+    {
+
+    }
+
+{% endblock %}
+
+{% block main_content %}
+<div class="container">
+	<div class="row" style="margin-top: 20px;">
+	<div class="col-lg-12 col-centered">
+		<h2 style="font-size: 45px;">{{ g.user.username }}'s profile</h2>
+
+        <div class="col-md-3">
+			<ul class="nav nav-pills nav-stacked" id="profile_menu">
+					<li class="active"><a href="#" onclick="get_user_profile();">Profile</a></li>
+					<li class=""><a href="#" onclick="get_user_scenarios();">Scenarios</a></li>
+					<li class=""><a href="#" onclick="get_building_models();">Building models</a></li>
+				</ul>
+		</div>
+
+        <div class="col-md-9" id="user_data_form">
+
+		</div>
+
+    </div>
+</div>
+
+
+{% endblock %}
