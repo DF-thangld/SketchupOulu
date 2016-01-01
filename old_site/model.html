@@ -1,3 +1,16 @@
+<!-- 
+Pingjiang's Memo
+----------------------------------------
+1/1/2016
+reorgnized the code structure and delete redundant variables
+click to add building, shift to delete(not done yet)
+need to do:
+1.delete building
+2.choose building from a list
+----------------------------------------
+
+
+ -->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -20,10 +33,30 @@
 		<script src="js/three.min.js"></script>
 		<script src="js/renderers/CanvasRenderer.js"></script>
 		<script src="js/renderers/Projector.js"></script>
-
-		<script src="js/stats.min.js"></script>
+		<script src="js/Detector.js"></script>
+		<!-- <script src="js/stats.min.js"></script> -->
 
 		<script>
+		/* 
+			1x. build a grid( or can use plane instead, as grid is just for visual assistance)
+			2x. move around the ground
+				2.1x move around the ground 
+				2.2x rotate the ground
+				2.3x move around the rotated ground
+			3. add object to ground
+				3.1 highlight the point in the ground
+				3.2 create "blur" image of the model on mouse move
+				3.3 actually save the model to ground
+			4. manipulate object 
+				4.1 select object
+				4.2 move object to another position
+				4.3 rotate object 
+				4.4 delete object
+			5. add terrain to ground
+			*/
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
 			//constant
 			var WORLD_SIZE = 1000; //side length of the square world
 			var BLOCK_SIZE = 50;
@@ -31,23 +64,7 @@
 			var DEFAULT_HEIGHT = 1000;
 			var DEFAULT_DISTANCE = 100;
 			
-			/* 
-			1x. build a grid
-			2x. move around the grid
-				2.1x move around the grid 
-				2.2x rotate the grid
-				2.3x move around the rotated grid
-			3. add object to grid
-				3.1 highlight the point in the grid
-				3.2 create "blur" image of the model on mouse move
-				3.3 actually save the model to grid
-			4. manipulate object 
-				4.1 select object
-				4.2 move object to another position
-				4.3 rotate object 
-				4.4 delete object
-			5. add terrain to grid
-			*/
+			
 			
 			// threejs variables
 			var container;
@@ -63,18 +80,19 @@
 						{'x': -1*WORLD_SIZE-DEFAULT_DISTANCE, 'y':DEFAULT_HEIGHT, 'z': 0}];
 			var center_position = new THREE.Vector3( 0, 0, 0 );
 			
+			//
 			var mouse_start_positions = [];
-			var mouse_position;
 			
 			var raycaster = new THREE.Raycaster(); // create once and reuse
 			var mouse = new THREE.Vector2(); // create once and reuse
+			var isShiftDown = false;
 			
 			var projector;
 			
-			var meshes = [];
 			
-			//temp variables in development phase
-			var temp_object;
+			
+			//current object the user choose
+			var current_object;
 
 			//all the vasiable objects in the scene
 			var objects = [];
@@ -95,10 +113,11 @@
 
 				scene = new THREE.Scene();
 				
-				//1. build a grid
+				//1. build the grid
+
 				var size = WORLD_SIZE/2, step = BLOCK_SIZE;
 
-				var geometry = new THREE.PlaneGeometry();
+				var geometry = new THREE.Geometry();
 
 				for ( var i = - size; i <= size; i += step ) {
 
@@ -108,12 +127,9 @@
 					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
 					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
 					
-					for (var j = -size; j <= size; j += step)
-						meshes.push({'min_x': i, 'max_x': i+step, 'min_z': j, 'max_z': j+step});
 				}
 				
-
-				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.3 } );
+				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
 
 				var line = new THREE.LineSegments( geometry, material );
 				scene.add( line );
@@ -133,27 +149,34 @@
 				// var object_geometry = new THREE.IcosahedronGeometry( 30,1 );
 				var object_geometry = new THREE.CubeGeometry(30, 30, 30, 10, 10, 10);
 	
-				// var object_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
-				var object_material = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
-				temp_object = new THREE.Mesh( object_geometry, object_material );
+				// var current_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
+				var current_material = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
+				current_object = new THREE.Mesh( object_geometry, current_material ); //Base class for Mesh objects
 
-				temp_object.scale.x = temp_object.scale.y = temp_object.scale.z = 1;
-				temp_object.position.x = temp_object.position.y = temp_object.position.z = 0;
+				current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
+				current_object.position.x = current_object.position.y = current_object.position.z = 0;
 
-				scene.add( temp_object );
+				scene.add( current_object );
 				
 				// add keyboard events to mode
 				document.addEventListener( 'keydown', onDocumentKeyDown, false );
 				document.addEventListener( 'keyup', onDocumentKeyUp, false );
 				window.addEventListener( 'resize', onWindowResize, false );
+				// add mouse events to mode
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				
 				// initialize mouse 
-				mouse_position = new THREE.Vector3( 0, 50000, 0 );
+				//mouse = new THREE.Vector3( 0, 50000, 0 );
+				//mouse = new THREE.Vector2();
 				projector = new THREE.Projector();
 				
 				// display the scene
-				renderer = new THREE.CanvasRenderer();
+				if (window.WebGLRenderingContext)
+					renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
+				else
+					renderer = new THREE.CanvasRenderer(); //using the (slower) Canvas 2D Context API
+				//renderer = new THREE.CanvasRenderer();
 				renderer.setClearColor( 0xffffff );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
@@ -165,37 +188,92 @@
 			{
 				event.preventDefault();
 				
-				mouse_position.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse_position.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 				
-				
-				var vector = new THREE.Vector3( mouse_position.x, mouse_position.y, 1 );
+				var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 				//projector.unprojectVector( vector, camera );
 				vector.unproject( camera );
 				
-				var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+				raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+				//raycaster.setFromCamera( mouse, vector.sub( camera.position ).normalize() );
 
 
 				// create an array containing all objects in the scene with which the ray intersects
 				//var intersects = ray.intersectObjects( scene.children );//bugs
 				// use object array instead include all the children of the scene
-				var intersects = ray.intersectObjects( objects );	
+				var intersects = raycaster.intersectObjects( objects );	
 				if ( intersects.length > 0 )
 				{
+					
 					//console.log(intersects[0].point);
-					temp_object.position.x = intersects[0].point.x;
-					temp_object.position.y = intersects[0].point.y;
-					temp_object.position.z = intersects[0].point.z;
+					current_object.position.x = intersects[0].point.x;
+					current_object.position.y = intersects[0].point.y;
+					current_object.position.z = intersects[0].point.z;
+
+					//need to consider how to put the buttom of the object on the floor.
+					//var intersect = intersects[ 0 ];
+					//current_object.position.copy( intersect.point ).add( intersect.face.normal );
+					//current_object.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );//only place in the square
 				}
 				
 				
-				console.log(temp_object.position.x, temp_object.position.y, temp_object.position.z);
+				//console.log(current_object.position.x, current_object.position.y, current_object.position.z);
+			}
+			function onDocumentMouseDown( event ) {
+
+				event.preventDefault();
+
+				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+				var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+				vector.unproject( camera );
+
+				//raycaster.setFromCamera( mouse, camera );
+				raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+				var intersects = raycaster.intersectObjects( objects );
+
+				if ( intersects.length > 0 ) {
+
+					var intersect = intersects[ 0 ];
+
+					// delete building
+
+					if ( isShiftDown ) {
+
+						if ( intersect.object != plane ) {
+
+							scene.remove( intersect.object );
+
+							objects.splice( objects.indexOf( intersect.object ), 1 );
+
+						}
+
+					// create building
+
+					} else {
+
+						//var voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+						//voxel.position.copy( intersect.point ).add( intersect.face.normal );
+						//voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+
+						scene.add( current_object.clone() );
+
+						//objects.push( voxel );
+
+					}
+
+					render();
+
+				}
+
 			}
 			
 			function onDocumentKeyDown(event)
 			{
 				switch ( event.keyCode ) {
 
+					case 16: isShiftDown = true; break; //shift, delete mode with click
 					case 38: move_forward = true; break; // up
 					case 40: move_backward = true; break; // down
 					case 37: move_left = true; break; // left
@@ -214,6 +292,7 @@
 			{
 				switch ( event.keyCode ) {
 
+					case 16: isShiftDown = false; break; //shift
 					case 38: move_forward = false; break; // up
 					case 40: move_backward = false; break; // down
 					case 37: move_left = false; break; // left
@@ -227,6 +306,7 @@
 
 				}
 			}
+			
 			
 			// change window size
 			function onWindowResize()
