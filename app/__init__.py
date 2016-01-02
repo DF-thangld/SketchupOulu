@@ -78,8 +78,11 @@ def index():
 
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule
+from app.journal.views import mod as journalModule
+
 app.register_blueprint(adminModule)
 app.register_blueprint(usersModule)
+app.register_blueprint(journalModule)
 
 # Later on you'll import the other blueprints the same way:
 #from app.comments.views import mod as commentsModule

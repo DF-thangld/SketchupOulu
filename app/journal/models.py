@@ -18,6 +18,11 @@ class JournalCategory(db.Model):
         self.name = name
         self.description = description
 
+    def to_dict(self):
+        return {'id': self.id,
+                'name': self.name,
+                'description': self.description}
+
     def get_journals(self, page=1, filter=''):
         if filter != '':
             query = Journal.query.filter(Journal.category==self).filter(Journal.title.like('%'+filter+'%'))
@@ -55,6 +60,28 @@ class Journal(db.Model):
         self.is_activated = is_activated
         self.category = category
         self.post_time = datetime.datetime.now()
+
+    def to_dict(self, include_category=False, include_created_user=False, include_last_edited_user=False):
+        category = None
+        if include_category:
+            category = self.category.to_dict()
+        created_user = None
+        if include_created_user:
+            created_user = self.created_user.to_dict()
+        last_edited_user = None
+        if include_last_edited_user:
+            if self.last_edited_user is not None:
+                last_edited_user = self.last_edited_user.to_dict()
+
+        return {'id': self.id,
+                'title': self.title,
+                'content': self.content,
+                'is_activated': self.is_activated,
+                'category': category,
+                'created_user': created_user,
+                'post_time': self.post_time,
+                'last_edited_user': last_edited_user,
+                'last_edited_time': self.last_edited_time}
 
     def __repr__(self):
         return '<Journal %r>' % (self.title)

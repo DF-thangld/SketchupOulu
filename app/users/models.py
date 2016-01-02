@@ -37,6 +37,20 @@ class User(db.Model):
         self.email = email
         self.password = password
 
+    def to_dict(self, include_group=False):
+        groups = None
+        if include_group:
+            groups = []
+            for group in self.groups:
+                groups.append(group.to_dict())
+        return {'id': self.id,
+                'username': self.username,
+                'email': self.email,
+                'fullname': self.fullname,
+                'phone_number': self.phone_number,
+                'address': self.address,
+                'groups': groups}
+
     def is_admin(self):
         for group in self.groups:
             if group.id == 1:
@@ -57,6 +71,11 @@ class Group(db.Model):
     def __init__(self, name='', description=''):
         self.name = name
         self.description = description
+
+    def to_dict(self):
+        return {'id': self.id,
+                'name': self.name,
+                'description': self.description}
 
     def __repr__(self):
         return '<Group %r>' % (self.name)

@@ -202,8 +202,13 @@
 {% block main_content %}
 <div class="container">
 	<div class="row" style="margin-top: 20px;">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+            <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
+           <li class = "active">Journal Management</li>
+        </ol>
         <div class="col-centered">
-            <h2 style="font-size: 45px;">News Management</h2>
+            <h2 style="font-size: 45px;">Journal Management</h2>
             <a type="button" class="btn btn-primary" href="#" onclick="display_create_news_category_form();">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New category
             </a>
@@ -350,8 +355,8 @@
                                 <tbody id="journals_in_category_{{ category.id }}">
                                     {% for journal in category.journals %}
                                         <tr id="journal_{{ journal.id }}">
-                                            <td>{{ journal.id }}</td>
-                                            <td>{{ journal.title }}</td>
+                                            <td><a href="{{ url_for('journal.view', journal_id=journal.id) }}">{{ journal.id }}</a></td>
+                                            <td><a href="{{ url_for('journal.view', journal_id=journal.id) }}">{{ journal.title }}</a></td>
                                             <td>
                                                 <!-- Journal tools -->
                                                 <div>

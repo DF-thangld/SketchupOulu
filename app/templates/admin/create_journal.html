@@ -9,6 +9,7 @@
 {% block onload_script %}
     $('#content').summernote({
         height: 300
+
     });
 
 {% endblock %}
@@ -19,7 +20,12 @@
 
 {% block main_content %}
 <div class="row" style="margin-top: 20px;">
-	<div class="col-lg-7 col-centered">
+	<div class="col-lg-10 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+            <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
+           <li class = "active">Create Journal</li>
+        </ol>
 		<h2 style="font-size: 45px;">Create Journal</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('admin.create_journal') }}" autocomplete="off"

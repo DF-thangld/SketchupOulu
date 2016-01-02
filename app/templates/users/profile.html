@@ -1,10 +1,17 @@
 {% extends "base.html" %} 
 {% block custom_css %} 
 
-{% endblock %} 
-{% block menu %} 
-	{% include 'user_menu.html' %}
-{% endblock %} 
+{% endblock %}
+
+{% block onload_script %}
+    if (window.location.hash.substr(1) == 'building_models')
+        get_building_models();
+    else if (window.location.hash.substr(1) == 'scenarios')
+        get_building_models();
+    else
+        get_user_profile();
+{% endblock %}
+
 
 {% block js_script %}
 
@@ -16,6 +23,8 @@
 
     function get_user_profile()
     {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_profile').addClass('active');
         $('#user_data_form').fadeOut('fast');
 		$.ajax({
 			type: "GET",
@@ -32,16 +41,22 @@
 
     function get_user_scenarios()
     {
-
+        $("#profile_menu li").removeClass("active");
+        $('#menu_scenarios').addClass('active');
     }
 
     function get_building_models()
     {
-
+        $("#profile_menu li").removeClass("active");
+        $('#menu_building_models').addClass('active');
     }
 
-    get_user_profile();
 
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block main_content %}
@@ -49,13 +64,17 @@
 <div class="container">
 	<div class="row" style="margin-top: 20px;">
 	<div class="col-lg-12 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li class = "active">{{ g.user.username }}'s profile</li>
+        </ol>
 		<h2 style="font-size: 45px;">{{ g.user.username }}'s profile</h2>
 
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
-					<li class="active"><a href="#" onclick="get_user_profile();">Profile</a></li>
-					<li class=""><a href="#" onclick="get_user_scenarios();">Scenarios</a></li>
-					<li class=""><a href="#" onclick="get_building_models();">Building models</a></li>
+					<li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
+					<li id="menu_building_models" class=""><a href="#building_models" onclick="get_user_scenarios();">Scenarios</a></li>
+					<li id="menu_scenarios" class=""><a href="#scenarios" onclick="get_building_models();">Building models</a></li>
 				</ul>
 		</div>
 

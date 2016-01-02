@@ -2,9 +2,6 @@
 {% block custom_css %}
 
 {% endblock %}
-{% block menu %}
-	{% include 'user_menu.html' %}
-{% endblock %}
 
 {% block onload_script %}
     get_users();
@@ -138,6 +135,10 @@
 
 
 
+{% endblock %}
+
+{% block menu %}
+	{% include 'user_menu.html' %}
 {% endblock %}
 
 {% block main_content %}
