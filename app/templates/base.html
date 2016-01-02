@@ -37,11 +37,22 @@
     
     <!-- jQuery -->
     <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.form.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.css') }}">
     <script src="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.min.js') }}"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+    <!-- Autocomplete library Tokeninput -->
+    <script src="{{ url_for('static', filename='js/jquery.tokeninput.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input-facebook.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input-mac.css') }}" />
+
+    <!-- Summernote text editor -->
+    <script src="{{ url_for('static', filename='js/summernote.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/summernote.css') }}" />
 
     <!-- Plugin JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
@@ -64,8 +75,8 @@
         $('#alert_content').html(alert_content);
         $('#alert_panel').fadeIn();
         setTimeout(function(){
-            $('#alert_panel').fadeOut();
-            $('#alert_panel').removeClass(alert_type);
+            $('#alert_panel').fadeOut(function(){$('#alert_panel').removeClass(alert_type);});
+
         }, 3000);
     }
 

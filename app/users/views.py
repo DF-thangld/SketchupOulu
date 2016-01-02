@@ -33,6 +33,10 @@ def login():
     if form.is_submitted():
         if form.validate():
             user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
+
+            if user.banned == 1:
+                errors.append('The account was banned, please contact an admin for more information')
+                return render_template("users/login.html", form=form, errors=errors)
             # we use werzeug to validate user's password
             if user and check_password_hash(user.password, form.password.data):
                 # the session can't be modified as it's signed,
@@ -41,11 +45,9 @@ def login():
                 g.user = user
                 flash('Welcome %s' % user.username)
                 return redirect(url_for('users.profile'))
-
-            #login fail for whatever reason
-
-            errors.append('Login fail, wrong email or password')
-            return render_template("users/login.html", form=form, errors=errors)
+            else:
+                errors.append('Login fail, wrong email or password')
+                return render_template("users/login.html", form=form, errors=errors)
         else:
             for error in form.email.errors:
                 errors.append(error)
@@ -61,9 +63,6 @@ def register():
     Registration Form
     """
     
-    #test_user = User.query.filter_by(id=1)
-
-    
     form = RegisterForm(request.form)
     errors = []
 
@@ -75,9 +74,9 @@ def register():
 
             same_username_user = User.query.filter_by(username=form.name.data).first()
             same_email_user = User.query.filter_by(email=form.email.data).first()
-            if same_email_user is None:
+            if same_email_user is not None:
                 errors.append('Duplicate email address')
-            if same_username_user is None:
+            if same_username_user is not None:
                 errors.append('Duplicate username address')
 
             if len(errors) > 0:
@@ -122,8 +121,6 @@ def logout():
 @mod.route('/user_profile/', methods=['GET', 'POST'])
 def user_profile():
     form = UserProfileForm()
-
-
     if form.is_submitted():
 
         User.query.filter_by(id=session.get('user_id')).update(dict(fullname=form.fullname.data,

@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form, RecaptchaField
-from wtforms import TextField, PasswordField, BooleanField,validators, DateField, HiddenField
+from wtforms import TextField, PasswordField, BooleanField,validators, DateField, HiddenField, TextAreaField
 from wtforms.validators import Required, EqualTo, Email
 
 class LoginForm(Form):
@@ -23,4 +23,4 @@ class UserProfileForm(Form):
     address = TextField()
     postal_code = TextField()
     phone_number = TextField()
-    #birthdate = DateField(format='%d/%m/%Y')
+

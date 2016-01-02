@@ -1,13 +1,212 @@
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
-from werkzeug import check_password_hash, generate_password_hash
+from sqlalchemy import or_
+from werkzeug import check_password_hash, generate_password_hash, secure_filename
 
-from app import db
+import json, os
+
+from app import db, app_dir, send_mail
 from app.users.models import User, Group
 from app.admin.decorators import requires_admin
+from app.admin.forms import UserSearchForm, SendEmailForm
+import config
+import app.utilities as utilities
 
 mod = Blueprint('admin', __name__, url_prefix='/admin')
 
 @mod.route('/user_management/')
 @requires_admin
 def user_management():
-    return render_template("admin/user_management.html", user=g.user)
+    form = UserSearchForm(request.form)
+    groups = Group.query.all()
+    return render_template("admin/user_management.html", form=form, groups=groups)
+
+@mod.route('/user_list/', methods=['GET', 'POST'])
+@requires_admin
+def user_list():
+
+    page = request.args.get('page', 1)
+
+    form = UserSearchForm(request.form)
+    users = []
+    if form.is_submitted():
+        post_data = form.user_info.data
+        if post_data is None:
+            post_data = ''
+        user_query = User.query.filter(or_(User.email.like('%' + post_data + '%'),
+                                      User.username.like('%' + post_data + '%'),
+                                      User.fullname.like('%' + post_data + '%')))
+    else:
+        user_query = User.query
+
+    page = user_query.paginate(page, 20, False)
+
+    for user in page.items:
+        users.append({'user_id': user.id,
+                      'user_username': user.username,
+                      'user_email': user.email,
+                      'user_fullname': user.fullname})
+    total_page = page.pages
+    current_page = page.page
+
+    return json.dumps({'users': users, 'total_page': total_page, 'current_page': current_page})
+
+@mod.route('/get_user_info/', methods=['GET'])
+@requires_admin
+def get_user_info():
+
+    user_id = request.args.get('user_id', 0)
+    if user_id == 0:
+        return json.dump({'error': 'User not found'}), 404
+
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return json.dump({'error': 'User not found'}), 404
+
+    groups = []
+    for group in user.groups:
+        groups.append(group.id)
+
+    serialize_user = {'id': user.id,
+                      'username': user.username,
+                      'email': user.email,
+                      'fullname': user.fullname,
+                      'address': user.address,
+                      'phone_number': user.phone_number,
+                      'banned': user.banned,
+                      'groups': groups}
+
+    return json.dumps(serialize_user), 200
+
+@mod.route('/update_user_info/', methods=['POST'])
+@requires_admin
+def update_user_info():
+
+    user_id = request.form.get('user_id', 0)
+    if user_id == 0:
+        return json.dump({'error': 'User not found'}), 404
+
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return json.dump({'error': 'User not found'}), 404
+
+    fullname = request.form.get('fullname', '')
+    address = request.form.get('address', '')
+    banned = request.form.get('banned', '')
+
+    #update basic information
+    update_data = {}
+    if fullname != '':
+        update_data['fullname'] = fullname
+    if address != '':
+        update_data['address'] = address
+    if banned != '':
+        update_data['banned'] = banned
+    User.query.filter_by(id=session.get('user_id')).update(update_data)
+
+    #update groups
+    groups_string = request.form.get('groups_value', '')
+    if groups_string != '':
+        user.groups.clear()
+        group_ids = groups_string.split('|')
+        for group_id in group_ids:
+            group = Group.query.filter_by(id=group_id).first()
+            if group is not None:
+                user.groups.append(group)
+
+    #commit to db
+    db.session.commit()
+
+    groups = []
+    for group in user.groups:
+        groups.append(group.id)
+
+    serialize_user = {'id': user.id,
+                      'username': user.username,
+                      'email': user.email,
+                      'fullname': user.fullname,
+                      'address': user.address,
+                      'phone_number': user.phone_number,
+                      'banned': user.banned,
+                      'groups': groups}
+
+    return json.dumps(serialize_user), 200
+
+
+
+@mod.route('/search_emails/', methods=['GET'])
+@requires_admin
+def search_emails():
+    search_text = request.args.get('q', '')
+    if search_text == '':
+        return json.dumps([])
+
+    users = []
+    user_query = User.query.filter(or_(User.email.like('%' + search_text + '%'),
+                                      User.username.like('%' + search_text + '%'),
+                                      User.fullname.like('%' + search_text + '%')))
+
+    for user in user_query.all():
+        users.append({'id': user.email, 'name': user.username})
+
+    return json.dumps(users)
+
+@mod.route('/upload_image/', methods=['POST'])
+@requires_admin
+def upload_image():
+
+    file = request.files['file']
+    if file is None:
+        return ''
+
+    #generate filename
+    original_filename_parts = file.filename.split('.')
+    file_extension = original_filename_parts[len(original_filename_parts)-1]
+    filename = utilities.generate_random_string(50) + '.' + file_extension
+    filename = secure_filename(filename)
+
+    #save file
+    full_filename = os.path.join(app_dir, config.EMAIL_PICTURE, filename)
+    file.save(full_filename)
+
+    #return link to file
+    return config.EMAIL_PICTURE_URL + filename
+
+@mod.route('/send_email/', methods=['GET','POST'])
+@requires_admin
+def send_email():
+
+    form = SendEmailForm(request.form)
+    errors = []
+    serialized_users = []
+
+    if form.is_submitted():
+        emails = form.emails.data.split(',')
+        if form.validate():
+            if form.action.data == 'send':
+                send_mail(emails, form.title.data, form.content.data)
+            else:
+                send_mail([g.user.email], form.title.data, form.content.data)
+        else:
+            for error in form.emails.errors:
+                errors.append(error)
+            for error in form.title.errors:
+                errors.append(error)
+            for error in form.content.errors:
+                errors.append(error)
+
+        query_text = ''
+        for index, email in enumerate(emails):
+            if email != '':
+                if index == 0:
+                    query_text += "email='" + email + "'"
+                else:
+                    query_text += "or email='" + email + "'"
+        users = User.query.filter(query_text).all()
+        for user in users:
+            serialized_users.append({'email': user.email, 'name': user.username})
+        return render_template("admin/send_email.html", form=form, errors=errors, users=serialized_users)
+
+    form.title.data = ''
+    form.emails.data = ''
+    form.content.data = ''
+    return render_template("admin/send_email.html", form=form, errors=[])

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+    $("#emails").tokenInput("{{ url_for('admin.search_emails') }}", {
+        theme: "facebook",
+        prePopulate:[
+        {% for user in users %}
+            {'id': '{{ user.email }}', 'name': '{{ user.name }}'},
+        {% endfor %}
+    ]
+    });
+    $('#content').summernote({
+        height: 300,
+        callbacks: {
+            onImageUpload: function(files, editor, welEditable) {
+                upload_image(files[0], editor, welEditable);
+            }
+        }
+
+    });
+
+{% endblock %}
+
+{% block js_script %}
+function upload_image(file, editor, welEditable)
+{
+    data = new FormData();
+    data.append("file", file);
+    $.ajax({
+        data: data,
+        type: "POST",
+        url: "{{ url_for('admin.upload_image') }}",
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(url) {
+            $('#content').summernote('editor.insertImage', url.trim());
+        }
+    });
+
+}
+
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+	<div class="col-lg-7 col-centered">
+		<h2 style="font-size: 45px;">Send email</h2>
+
+		<form accept-charset="UTF-8" action="{{ url_for('admin.send_email') }}" autocomplete="off"
+			class="setup-form js-form-signup-detail"
+			method="post">
+			{{ form.csrf_token }}
+            {{ form.action() }}
+			<div style="margin: 0; padding: 0; display: inline">
+			</div>
+
+           {% if errors|length > 0 %}
+            <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container">
+                  There were problems sending your email:
+                      {% for error in errors %}
+                          <div>- {{ error }}</div>
+                      {% endfor %}
+                  </div>
+            </div>
+            {% endif %}
+            {% if errors|length == 0 and form.action.data != '' %}
+            <div id="js-flash-container" class="col-centered" style="color: #3c763d;;background-color: #5cb85c;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container">
+                      {% if form.action.data == 'send' %}
+                          Email sent successfully!
+                      {% else %}
+                          Email sent to {{ g.user.email }} to test
+                      {% endif %}
+                  </div>
+            </div>
+            {% endif %}
+			<dl class="form">
+				<dt class="input-label">
+					{{ form.emails.label(autocapitalize="off", autofocus="autofocus") }}
+				</dt>
+				<dd>
+                    {{ form.emails(autocapitalize="off", autofocus="autofocus", value=form.emails.data, style="width:100%") }}
+				</dd>
+			</dl>
+			<dl class="form">
+				<dt class="input-label">
+					{{ form.title.label(autocapitalize="off") }}
+				</dt>
+				<dd>
+                    {{ form.title(autocapitalize="off", value=form.title.data, style="width:100%") }}
+				</dd>
+			</dl>
+
+			<dl class="form successed">
+				<dt class="input-label">
+					{{ form.content.label }}
+				</dt>
+				<dd>
+                    {{ form.content(value=form.content.data) }}
+				</dd>
+			</dl>
+
+			<div class="form-actions">
+                <button type="submit" class="btn btn-warning" id="send" onclick="$('#action').val('send');">Send</button>
+				<button type="submit" class="btn btn-primary" id="send_test" onclick="$('#action').val('test');">Test</button>
+			</div>
+
+		</form>
+
+	</div>
+</div>
+
+
+{% endblock %}
