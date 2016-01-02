@@ -3,30 +3,31 @@ from app import db
 import sqlalchemy
 
 user_to_group = db.Table('user_to_group',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('group_id', db.Integer, db.ForeignKey('groups.id'))
 )
 
 class User(db.Model):
 
-    __tablename__ = 'user'
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True) 
-    username = sqlalchemy.Column(sqlalchemy.String(80), unique=True)
-    email = sqlalchemy.Column(sqlalchemy.String(120), unique=True) 
-    password = sqlalchemy.Column(sqlalchemy.String(80))
-    address = sqlalchemy.Column(sqlalchemy.String(80))
-    postal_code = sqlalchemy.Column(sqlalchemy.String(80))
-    phone_number = sqlalchemy.Column(sqlalchemy.String(80))
-    fullname = sqlalchemy.Column(sqlalchemy.String(80))
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(80))
+    address = db.Column(db.String(80), default='')
+    postal_code = db.Column(db.String(80), default='')
+    phone_number = db.Column(db.String(80), default='')
+    fullname = db.Column(db.String(80), default='')
     
-    birthdate = sqlalchemy.Column(sqlalchemy.DateTime)
-    last_login = sqlalchemy.Column(sqlalchemy.DateTime)
-    last_activity = sqlalchemy.Column(sqlalchemy.DateTime)
-    last_login_attempt = sqlalchemy.Column(sqlalchemy.DateTime)
+    birthdate = db.Column(db.DateTime)
+    last_login = db.Column(db.DateTime)
+    last_activity = db.Column(db.DateTime)
+    last_login_attempt = db.Column(db.DateTime)
     
-    verification_code = sqlalchemy.Column(sqlalchemy.String(80))
-    login_attempts = sqlalchemy.Column(sqlalchemy.Integer)
-    banned = sqlalchemy.Column(sqlalchemy.SmallInteger, default=0)
+    verification_code = db.Column(db.String(80))
+    login_attempts = db.Column(db.Integer, default=0)
+    banned = db.Column(db.SmallInteger, default=0)
+    login_token = db.Column(db.String(50), default='')
 
     groups = db.relationship('Group', secondary=user_to_group,
         backref=db.backref('groups', lazy='dynamic'))
@@ -49,9 +50,9 @@ class User(db.Model):
 class Group(db.Model):
 
     __tablename__ = 'groups'
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(80), unique=True)
-    description = sqlalchemy.Column(sqlalchemy.String(200), unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(200), default='')
 
     def __init__(self, name='', description=''):
         self.name = name

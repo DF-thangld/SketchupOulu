@@ -23,4 +23,3 @@ class UserProfileForm(Form):
     address = TextField()
     postal_code = TextField()
     phone_number = TextField()
-

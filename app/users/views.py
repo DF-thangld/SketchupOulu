@@ -68,10 +68,6 @@ def register():
 
     if form.is_submitted():
         if form.validate():
-            # create an user instance not yet stored in the database
-            user = User(username=form.name.data, email=form.email.data,
-              password=generate_password_hash(form.password.data))
-
             same_username_user = User.query.filter_by(username=form.name.data).first()
             same_email_user = User.query.filter_by(email=form.email.data).first()
             if same_email_user is not None:
@@ -83,6 +79,8 @@ def register():
                 return render_template("users/register.html", form=form, errors=errors)
 
             # Insert the record in our database and commit it
+            user = User(username=form.name.data, email=form.email.data,
+                        password=generate_password_hash(form.password.data))
             db.session.add(user)
             db.session.commit()
 

@@ -6,8 +6,9 @@ import json, os
 
 from app import db, app_dir, send_mail
 from app.users.models import User, Group
+from app.journal.models import JournalCategory, Journal
 from app.admin.decorators import requires_admin
-from app.admin.forms import UserSearchForm, SendEmailForm
+from app.admin.forms import UserSearchForm, SendEmailForm, CreateJournalCategoryForm, EditJournalCategoryForm, CreateJournalForm, EditJournalForm
 import config
 import app.utilities as utilities
 
@@ -210,3 +211,134 @@ def send_email():
     form.emails.data = ''
     form.content.data = ''
     return render_template("admin/send_email.html", form=form, errors=[])
+
+@mod.route('/create_journal_category/', methods=['POST'])
+@requires_admin
+def create_journal_category():
+    create_category_form = CreateJournalCategoryForm()
+    errors = []
+    if create_category_form.validate():
+        category = JournalCategory(create_category_form.name.data, create_category_form.description.data)
+        db.session.add(category)
+        db.session.commit()
+        return json.dumps({'success': True}), 201
+    else:
+        for error in create_category_form.name.errors:
+            errors.append(error)
+        return json.dumps(errors), 400
+
+@mod.route('/edit_journal_category/', methods=['POST'])
+@requires_admin
+def edit_journal_category():
+    edit_category_form = EditJournalCategoryForm()
+    errors = []
+    if edit_category_form.validate():
+        category = JournalCategory.query.filter_by(id=edit_category_form.category_id.data).first()
+        if category is None:
+            return json.dumps(['Category not found']), 404
+
+        category.name = edit_category_form.name.data
+        category.description = edit_category_form.description.data
+        db.session.commit()
+        return json.dumps({'id': category.id, 'name': category.name}), 200
+    else:
+        for error in edit_category_form.name.errors:
+            errors.append(error)
+        for error in edit_category_form.category_id.errors:
+            errors.append(error)
+        return json.dumps(errors), 400
+
+@mod.route('/get_category_data/', methods=['GET'])
+@requires_admin
+def get_category_data():
+    category_id = request.args.get('category_id', 0)
+    if category_id == 0:
+        return json.dumps(['Category not found']), 404
+    category = JournalCategory.query.filter_by(id=category_id).first()
+    if category_id is None:
+        return json.dumps(['Category not found']), 404
+
+    return json.dumps({'id': category.id, 'name': category.name, 'description': category.description}), 200
+
+@mod.route('/activate_deactivate_journal_category/', methods=['GET'])
+@requires_admin
+def activate_deactivate_journal_category():
+    category_id = request.args.get('category_id', 0)
+    if category_id == 0:
+        return json.dumps(['Category not found']), 404
+    category = JournalCategory.query.filter_by(id=category_id).first()
+    if category_id is None:
+        return json.dumps(['Category not found']), 404
+    if category.is_activated == 1:
+        category.is_activated = 0
+    else:
+        category.is_activated = 1
+    db.session.commit()
+    return json.dumps({'id': category.id, 'name': category.name, 'description': category.description, 'is_activated': category.is_activated}), 200
+
+@mod.route('/delete_journal_category/', methods=['GET'])
+@requires_admin
+def delete_journal_category():
+    category_id = request.args.get('category_id', 0)
+    if category_id == 0:
+        return json.dumps(['Category not found']), 404
+    category = JournalCategory.query.filter_by(id=category_id).first()
+    if len(category.get_journals()) > 0:
+        return json.dumps(['Delete child journals first']), 400
+    db.session.delete(category)
+    db.session.commit()
+    return json.dumps({'success': True}), 200
+
+@mod.route('/news_management/', methods=['GET','POST'])
+@requires_admin
+def news_management():
+
+    categories = JournalCategory.query.all()
+    serialized_categories = []
+    for category in categories:
+        serialized_category = {}
+        serialized_category['id'] = category.id
+        serialized_category['name'] = category.name
+        serialized_category['description'] = category.description
+        serialized_category['is_activated'] = category.is_activated
+        serialized_category['journals'] = []
+        for journal in category.get_journals():
+            serialized_journal = {}
+            serialized_journal['id'] = journal.id
+            serialized_journal['title'] = journal.id
+            serialized_journal['content'] = journal.content
+            serialized_journal['created_username'] = journal.created_user.username
+            serialized_journal['post_time'] = journal.post_time
+            serialized_journal['last_edited_username'] = journal.last_edited_user.username
+            serialized_journal['last_edited_time'] = journal.last_edited_time
+            serialized_journal['is_activated'] = journal.is_activated
+            serialized_category['journals'].append(serialized_journal)
+        serialized_category['total_page'] = category.total_page
+        serialized_category['current_page'] = category.current_page
+        serialized_categories.append(serialized_category)
+
+    edit_category_form = EditJournalCategoryForm()
+    create_category_form = CreateJournalCategoryForm()
+    #create_journal_form = CreateJournalForm()
+    #edit_journal_form = EditJournalForm()
+    #edit_journal_form.news_category_id.choices = create_journal_form.news_category_id.choices = [(category.id, category.name) for category in JournalCategory.query.order_by('name')]
+
+    return render_template("admin/news_management.html", categories=serialized_categories,
+                           edit_category_form=edit_category_form,
+                           create_category_form=create_category_form)
+
+@mod.route('/create_journal/', methods=['GET','POST'])
+@requires_admin
+def create_journal():
+    create_journal_form = CreateJournalForm()
+    category_id = request.args.get('category_id', 0)
+    errors = []
+    create_journal_form.category_id.choices = [(category.id, category.name) for category in JournalCategory.query.order_by('name')]
+    create_journal_form.category_id.choices.insert(0, (0, '===== Category ====='))
+    if create_journal_form.is_submitted():
+        create_journal_form.category_id.default = create_journal_form.category_id.data
+    else:
+        create_journal_form.category_id.default = category_id
+    create_journal_form.process()
+
+    return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)

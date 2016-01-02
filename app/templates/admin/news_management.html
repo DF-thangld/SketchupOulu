@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+
+
+{% endblock %}
+
+{% block js_script %}
+    function display_create_news_category_form()
+    {
+        $('#create_category').find('#name').val('');
+        $('#create_category').find('#description').val('');
+        $('#create_category').find('#creating_category_error_panel').fadeOut('fast', function(){$('#create_category').modal('show');});
+    }
+
+    function create_category()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('admin.create_journal_category') }}",
+            data: {'csrf_token': $('#create_category').find('#csrf_token').val(),
+                    'name': $('#create_category').find('#name').val(),
+                    'description': $('#create_category').find('#description').val()},
+            dataType: 'json',
+            success: function(data)
+            {
+                //fetch_user_data($('#user_id').val());
+                show_alert('alert-success', 'Create success!');
+
+                $('#create_category').find('#creating_category_error_panel').fadeOut('fast', function(){$('#create_category').modal('hide');});
+                // TODO: generate the new category at the end of the current user interface
+                // just refresh page to save time :))
+                window.location='{{ url_for('admin.news_management') }}';
+            },
+            error: function(errors)
+            {
+                $('#create_category').find('#creating_category_errors').html('');
+                for (i = 0; i < errors.responseJSON.length; i++) {
+                    var error = errors.responseJSON[i];
+                    $('#create_category').find('#creating_category_errors').append('- ' + error);
+                }
+                $('#create_category').find('#creating_category_error_panel').fadeIn();
+            }
+        });
+    }
+
+    function edit_category()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('admin.edit_journal_category') }}",
+            data: {'csrf_token': $('#edit_category').find('#csrf_token').val(),
+                    'category_id': $('#edit_category').find('#category_id').val(),
+                    'name': $('#edit_category').find('#name').val(),
+                    'description': $('#edit_category').find('#description').val()},
+            dataType: 'json',
+            success: function(data)
+            {
+                show_alert('alert-success', 'Update success!');
+
+                $('#edit_category').find('#edit_category_error_panel').fadeOut('fast', function(){$('#edit_category').modal('hide');});
+                // TODO: update category information on user interface
+                // for now, just refresh page to save time :))
+                window.location='{{ url_for('admin.news_management') }}';
+            },
+            error: function(errors)
+            {
+                console.log(errors);
+                $('#edit_category').find('#edit_category_errors').html('');
+                for (i = 0; i < errors.responseJSON.length; i++) {
+                    var error = errors.responseJSON[i];
+                    $('#edit_category').find('#edit_category_errors').append('- ' + error);
+                }
+                $('#edit_category').find('#edit_category_error_panel').fadeIn();
+            }
+        });
+    }
+
+    function display_edit_journal_category_form(category_id)
+    {
+        $.ajax({
+            type: "GET",
+            url: "{{ url_for('admin.get_category_data') }}",
+            data: {'category_id': category_id},
+            dataType: 'json',
+            success: function(category)
+            {
+                $('#edit_category').find('#category_id').val(category.id);
+                $('#edit_category').find('#name').val(category.name);
+                $('#edit_category').find('#description').val(category.description);
+
+                $('#edit_category').find('#edit_category_error_panel').fadeOut('fast', function(){$('#edit_category').modal('show');});
+            },
+            error: function(errors)
+            {
+                show_alert('alert-error', 'Category not found!!!');
+            }
+        });
+    }
+
+    function activate_deactivate_category(category_id)
+    {
+        $.ajax({
+            type: "GET",
+            url: "{{ url_for('admin.activate_deactivate_journal_category') }}",
+            data: {'category_id': category_id},
+            dataType: 'json',
+            success: function(category)
+            {
+                // TODO: change user interface
+                // now just refresh the page to save time :))
+                window.location='{{ url_for('admin.news_management') }}';
+            },
+            error: function(errors)
+            {
+                show_alert('alert-error', 'Category not found!!!');
+            }
+        });
+    }
+
+    function delete_category(category_id)
+    {
+        bootbox.confirm("Are you sure you want to delete the category?", function(result)
+        {
+            if (!result)
+                return;
+
+            $.ajax({
+                type: "GET",
+                url: "{{ url_for('admin.delete_journal_category') }}",
+                data: {'category_id': category_id},
+                dataType: 'json',
+                success: function(category)
+                {
+                    // TODO: change user interface
+                    // now just refresh the page to save time :))
+                    window.location='{{ url_for('admin.news_management') }}';
+                },
+                error: function(errors)
+                {
+                    show_alert('alert-error', errors.responseJSON[0]);
+                }
+            });
+        });
+
+    }
+{% endblock %}
+
+{% block main_content %}
+<div class="container">
+	<div class="row" style="margin-top: 20px;">
+        <div class="col-centered">
+            <h2 style="font-size: 45px;">News Management</h2>
+            <a type="button" class="btn btn-primary" href="#" onclick="display_create_news_category_form();">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New category
+            </a>
+
+            <div id="create_category" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <!-- Edit Machine Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Create category</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form  accept-charset="UTF-8" action="{{ url_for('admin.create_journal_category') }}" autocomplete="off"
+                            class="setup-form js-form-signup-detail"
+                            method="post">
+                                <div id="creating_category_error_panel" class="col-centered" style="display:none;color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                                      <div class="container">
+                                      There were problems creating the category:
+                                          <div id="creating_category_errors"></div>
+                                      </div>
+                                </div>
+                                {{ create_category_form.csrf_token }}
+                                <dl class="form">
+                                    <dt class="input-label">
+                                        {{ create_category_form.name.label(autocapitalize="off", autofocus="autofocus") }}
+                                    </dt>
+                                    <dd>
+                                        {{ create_category_form.name() }}
+                                    </dd>
+                                </dl>
+                                <dl class="form">
+                                    <dt class="input-label">
+                                        {{ create_category_form.description.label(autocapitalize="off") }}
+                                    </dt>
+                                    <dd>
+                                        {{ create_category_form.description(autocapitalize="off") }}
+                                    </dd>
+                                </dl>
+                                <div class="btn-toolbar">
+                                    <button type="submit" class='btn btn-success' onclick="create_category();return false;">Save</button>
+                                    <button type="button" class='btn' data-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="edit_category" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <!-- Edit Machine Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Edit category</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form  accept-charset="UTF-8" action="{{ url_for('admin.edit_journal_category') }}" autocomplete="off"
+                            class="setup-form js-form-signup-detail"
+                            method="post">
+                                <div id="edit_category_error_panel" class="col-centered" style="display:none;color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                                      <div class="container">
+                                      There were problems editing the category:
+                                          <div id="edit_category_errors"></div>
+                                      </div>
+                                </div>
+                                {{ edit_category_form.csrf_token }}
+                                {{ edit_category_form.category_id }}
+                                <dl class="form">
+                                    <dt class="input-label">
+                                        {{ edit_category_form.name.label(autocapitalize="off", autofocus="autofocus") }}
+                                    </dt>
+                                    <dd>
+                                        {{ edit_category_form.name() }}
+                                    </dd>
+                                </dl>
+                                <dl class="form">
+                                    <dt class="input-label">
+                                        {{ edit_category_form.description.label(autocapitalize="off") }}
+                                    </dt>
+                                    <dd>
+                                        {{ edit_category_form.description(autocapitalize="off") }}
+                                    </dd>
+                                </dl>
+                                <div class="btn-toolbar">
+                                    <button type="submit" class='btn btn-success' onclick="edit_category();return false;">Save</button>
+                                    <button type="button" class='btn' data-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <hr style="max-width: 100%;" />
+
+            <div class="panel-group" id="accordion" role="tablist">
+                {% for category in categories %}
+                    <div id="category_{{ category.id }}" class="panel panel-info">
+                        <div class="panel-heading" role="tab" id="heading_c{{ category.id }}">
+                            <h4 class="panel-title pull-left">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ category.id }}">
+                                    {{ category.id }} - {{ category.name }}
+                                </a>
+                            </h4>
+                            <div class="pull-right m_buttons">
+                                <!-- Buttons on category -->
+                                <a type="button" class="noProp btn btn-info" name="{{ category.id }}" href="{{ url_for('admin.create_journal',category_id=category.id) }}" >
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New journal
+                                </a>
+                                <a type="button" class="btn btn-info" href="#" onclick="display_edit_journal_category_form({{ category.id }});">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
+                                <span id="activate_button_{{ category.id }}">
+                                    {% if category.is_activated == 0 %}
+                                    <a type="button" class="btn btn-success" onclick="activate_deactivate_category({{ category.id }}, false);">
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Activate
+                                    </a>
+                                    {% else %}
+                                    <a type="button" class="btn btn-warning" onclick="activate_deactivate_category({{ category.id }}, true);">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deactivate
+                                    </a>
+                                    {% endif %}
+                                </span>
+                                <a type="button" class="btn btn-danger" onclick="delete_category({{ category.id }});">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                </a>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="collapse_{{ category.id }}" class="panel-collapse collapse" role="tabpanel">
+                            <table class="table table-hover machine_table table-striped" id="m_table_{{ category.id }}">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Tools</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="journals_in_category_{{ category.id }}">
+                                    {% for journal in category.journals %}
+                                        <tr id="journal_{{ journal.id }}">
+                                            <td>{{ journal.id }}</td>
+                                            <td>{{ journal.title }}</td>
+                                            <td>
+                                                <!-- Journal tools -->
+                                                <div>
+                                                    <a type="button" class="btn btn-info" href="#edit_journal_{{ journal.id }}">
+                                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                                    </a>
+                                                    <span id="activate_journal_button_{{ journal.id }}">
+                                                        {% if journal.is_activated == 0 %}
+                                                        <?php if ($m->active == 0) {?>
+                                                        <a type="button" class="btn btn-success" onclick="activate_deactivate_machine({{ journal.id }}, false);">
+                                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Activate
+                                                        </a>
+                                                        {% else %}
+                                                        <a type="button" class="btn btn-warning" onclick="activate_deactivate_machine({{ journal.id }}, true);">
+                                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deactivate
+                                                        </a>
+                                                        {% endif %}
+                                                    </span>
+                                                    <a type="button" class="btn btn-danger" onclick="delete_journal({{ journal.id }}, '{{ journal.title }}');">
+                                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
