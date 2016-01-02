@@ -21,14 +21,13 @@ class EditJournalCategoryForm(Form):
     description = TextField('Description')
 
 class CreateJournalForm(Form):
-    title = TextField('Name', [Required(message='Category name is required')])
-    content = TextField('Description')
-    is_activate = BooleanField('Is activated')
-    category_id = SelectField('Category', [Required('Select a category for the news'), NoneOf([0], 'Select a category for the news')], coerce=int)
+    title = TextField('Name', [Required(message='Journal name is required')], default='')
+    content = TextAreaField('Content', [Required(message='Journal content is required')], default='')
+    is_activate = BooleanField('Is activated', default=1)
+    category_id = SelectField('Category', [Required('Category is required'), NoneOf([0], 'Category is required')], coerce=int)
 
 class EditJournalForm(Form):
-    title = TextField('Name', [Required(message='Category name is required')])
-    content = TextField('Description')
-    is_activate = BooleanField('Is activated')
-    news_id = HiddenField('', [Required('Something went wrong...')])
-    category_id = SelectField('Category', [Required('Select a category for the news'), NoneOf([0], 'Select a category for the news')],  coerce=int)
+    title = TextField('Name', [Required(message='Journal name is required')], default='')
+    content = TextAreaField('Content', [Required(message='Journal content is required')], default='')
+    is_activate = BooleanField('Is activated', default=1)
+    category_id = SelectField('Category', [Required('Category is required'), NoneOf([0], 'Category is required')],  coerce=int)

@@ -48,11 +48,12 @@ class Journal(db.Model):
     last_edited_time = db.Column(db.DateTime)
     is_activated = db.Column(db.SmallInteger, default=1)
 
-    def __init__(self, title, content, created_user):
+    def __init__(self, title, content, created_user, category, is_activated=1):
         self.title = title
         self.content = content
         self.created_user = created_user
-        self.is_activated = 1
+        self.is_activated = is_activated
+        self.category = category
         self.post_time = datetime.datetime.now()
 
     def __repr__(self):

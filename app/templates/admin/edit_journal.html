@@ -20,9 +20,9 @@
 {% block main_content %}
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-7 col-centered">
-		<h2 style="font-size: 45px;">Create Journal</h2>
+		<h2 style="font-size: 45px;">Edit Journal</h2>
 
-		<form accept-charset="UTF-8" action="{{ url_for('admin.create_journal') }}" autocomplete="off"
+		<form accept-charset="UTF-8" action="{{ url_for('admin.edit_journal', journal_id=journal_id) }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
 			method="post">
 			{{ form.csrf_token }}
@@ -42,7 +42,7 @@
             {% if errors|length == 0 and form.is_submitted() %}
             <div id="js-flash-container" class="col-centered" style="color: #3c763d;;background-color: #5cb85c;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                      Journal created!
+                      Journal edited!
                   </div>
             </div>
             {% endif %}
@@ -78,8 +78,8 @@
 			</dl>
 
 			<div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="create_button">Create Journal</button>
-				<button type="reset" class="btn btn-warning" id="reset_button">Reset</button>
+                <button type="submit" class="btn btn-primary" id="create_button" >Edit Journal</button>
+				<button type="reset" class="btn btn-warning" id="reset_button" onclick="window.location='{{ url_for('admin.edit_journal', journal_id=journal_id) }}'">Reset</button>
 			</div>
 
 		</form>

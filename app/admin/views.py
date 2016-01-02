@@ -3,6 +3,7 @@ from sqlalchemy import or_
 from werkzeug import check_password_hash, generate_password_hash, secure_filename
 
 import json, os
+import datetime
 
 from app import db, app_dir, send_mail
 from app.users.models import User, Group
@@ -305,12 +306,13 @@ def news_management():
         for journal in category.get_journals():
             serialized_journal = {}
             serialized_journal['id'] = journal.id
-            serialized_journal['title'] = journal.id
+            serialized_journal['title'] = journal.title
             serialized_journal['content'] = journal.content
             serialized_journal['created_username'] = journal.created_user.username
             serialized_journal['post_time'] = journal.post_time
-            serialized_journal['last_edited_username'] = journal.last_edited_user.username
-            serialized_journal['last_edited_time'] = journal.last_edited_time
+            if journal.last_edited_user is not None:
+                serialized_journal['last_edited_username'] = journal.last_edited_user.username
+                serialized_journal['last_edited_time'] = journal.last_edited_time
             serialized_journal['is_activated'] = journal.is_activated
             serialized_category['journals'].append(serialized_journal)
         serialized_category['total_page'] = category.total_page
@@ -339,6 +341,116 @@ def create_journal():
         create_journal_form.category_id.default = create_journal_form.category_id.data
     else:
         create_journal_form.category_id.default = category_id
-    create_journal_form.process()
+    #create_journal_form.is_activate.data = 1
 
-    return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+    if not create_journal_form.is_submitted():
+        create_journal_form.is_activate.checked = True
+        create_journal_form.process()
+        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+    elif not create_journal_form.validate():
+        # validate false,
+        for error in create_journal_form.title.errors:
+            errors.append(error)
+        for error in create_journal_form.content.errors:
+            errors.append(error)
+        for error in create_journal_form.category_id.errors:
+            errors.append(error)
+
+        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+    elif create_journal_form.validate():
+        # create journal
+        journal_activated = 0
+        if create_journal_form.is_activate.data:
+            journal_activated = 1
+        category = JournalCategory.query.filter_by(id=create_journal_form.category_id.data).first()
+        if category is None:
+            errors.append('Category is required')
+            return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+
+        journal = Journal(create_journal_form.title.data, create_journal_form.content.data, g.user, category, journal_activated)
+        db.session.add(journal)
+        db.session.commit()
+        #redirect to journal page
+        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+
+@mod.route('/delete_journal/', methods=['GET'])
+@requires_admin
+def delete_journal():
+    journal_id = request.args.get('journal_id', 0)
+    if journal_id == 0:
+        return json.dumps(['Journal not found']), 404
+    journal = Journal.query.filter_by(id=journal_id).first()
+    if journal is None:
+        return json.dumps(['Journal not found']), 404
+
+    db.session.delete(journal)
+    db.session.commit()
+    return json.dumps({'success': True}), 200
+
+@mod.route('/activate_deactivate_journal/', methods=['GET'])
+@requires_admin
+def activate_deactivate_journal():
+    journal_id = request.args.get('journal_id', 0)
+    if journal_id == 0:
+        return json.dumps(['Journal not found']), 404
+    journal = Journal.query.filter_by(id=journal_id).first()
+    if journal is None:
+        return json.dumps(['Journal not found']), 404
+
+    if journal.is_activated == 1:
+        journal.is_activated = 0
+    else:
+        journal.is_activated = 1
+    db.session.commit()
+    return json.dumps({'id': journal.id, 'title': journal.title, 'is_activated': journal.is_activated}), 200
+
+@mod.route('/edit_journal/', methods=['GET','POST'])
+@requires_admin
+def edit_journal():
+
+    journal_id = request.args.get('journal_id', 0)
+    if journal_id == 0:
+        return render_template('404.html'), 404
+
+    journal = Journal.query.filter_by(id=journal_id).first()
+    if journal is None:
+        return render_template('404.html'), 404
+
+    edit_journal_form = EditJournalForm()
+    errors = []
+    edit_journal_form.category_id.choices = [(category.id, category.name) for category in JournalCategory.query.order_by('name')]
+    edit_journal_form.category_id.choices.insert(0, (0, '===== Category ====='))
+    if not edit_journal_form.is_submitted():
+        edit_journal_form.category_id.default = journal.category.id
+        edit_journal_form.is_activate.checked = (journal.is_activated == 1)
+        edit_journal_form.process()
+        edit_journal_form.title.data = journal.title
+        edit_journal_form.content.data = journal.content
+
+        return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 200
+    else:
+        if edit_journal_form.validate():
+            category = JournalCategory.query.filter_by(id=edit_journal_form.category_id.data).first()
+            if category is None:
+                errors.append('Journal category not found')
+                return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 200
+            journal.category = category
+            journal.title = edit_journal_form.title.data
+            journal.content = edit_journal_form.content.data
+
+            journal_activated = 0
+            if edit_journal_form.is_activate.data:
+                journal_activated = 1
+            journal.is_activated = journal_activated
+            journal.last_edited_user = g.user
+            journal.last_edited_time = datetime.datetime.now()
+            db.session.commit()
+            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 400
+        else:
+            for error in edit_journal_form.title.errors:
+                errors.append(error)
+            for error in edit_journal_form.content.errors:
+                errors.append(error)
+            for error in edit_journal_form.category_id.errors:
+                errors.append(error)
+            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 400

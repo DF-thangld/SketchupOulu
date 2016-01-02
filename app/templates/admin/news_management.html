@@ -99,7 +99,7 @@
             },
             error: function(errors)
             {
-                show_alert('alert-error', 'Category not found!!!');
+                show_alert('alert-danger', 'Category not found!!!');
             }
         });
     }
@@ -119,7 +119,7 @@
             },
             error: function(errors)
             {
-                show_alert('alert-error', 'Category not found!!!');
+                show_alert('alert-danger', 'Category not found!!!');
             }
         });
     }
@@ -144,11 +144,58 @@
                 },
                 error: function(errors)
                 {
-                    show_alert('alert-error', errors.responseJSON[0]);
+                    show_alert('alert-danger', errors.responseJSON[0]);
                 }
             });
         });
 
+    }
+
+    function delete_journal(journal_id)
+    {
+        bootbox.confirm("Are you sure you want to delete the journal?", function(result)
+        {
+            if (!result)
+                return;
+
+            $.ajax({
+                type: "GET",
+                url: "{{ url_for('admin.delete_journal') }}",
+                data: {'journal_id': journal_id},
+                dataType: 'json',
+                success: function(journal)
+                {
+                    // TODO: change user interface
+                    // now just refresh the page to save time :))
+                    window.location='{{ url_for('admin.news_management') }}';
+                },
+                error: function(errors)
+                {
+                    show_alert('alert-danger', errors.responseJSON[0]);
+                }
+            });
+        });
+
+    }
+
+    function activate_deactivate_journal(journal_id)
+    {
+        $.ajax({
+            type: "GET",
+            url: "{{ url_for('admin.activate_deactivate_journal') }}",
+            data: {'journal_id': journal_id},
+            dataType: 'json',
+            success: function(journal)
+            {
+                // TODO: change user interface
+                // now just refresh the page to save time :))
+                window.location='{{ url_for('admin.news_management') }}';
+            },
+            error: function(errors)
+            {
+                show_alert('alert-danger', errors.responseJSON[0]);
+            }
+        });
     }
 {% endblock %}
 
@@ -308,22 +355,21 @@
                                             <td>
                                                 <!-- Journal tools -->
                                                 <div>
-                                                    <a type="button" class="btn btn-info" href="#edit_journal_{{ journal.id }}">
+                                                    <a type="button" class="btn btn-info" href="{{ url_for('admin.edit_journal', journal_id=journal.id) }}">
                                                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
                                                     </a>
                                                     <span id="activate_journal_button_{{ journal.id }}">
                                                         {% if journal.is_activated == 0 %}
-                                                        <?php if ($m->active == 0) {?>
-                                                        <a type="button" class="btn btn-success" onclick="activate_deactivate_machine({{ journal.id }}, false);">
+                                                        <a type="button" class="btn btn-success" onclick="activate_deactivate_journal({{ journal.id }});">
                                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Activate
                                                         </a>
                                                         {% else %}
-                                                        <a type="button" class="btn btn-warning" onclick="activate_deactivate_machine({{ journal.id }}, true);">
+                                                        <a type="button" class="btn btn-warning" onclick="activate_deactivate_journal({{ journal.id }});">
                                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deactivate
                                                         </a>
                                                         {% endif %}
                                                     </span>
-                                                    <a type="button" class="btn btn-danger" onclick="delete_journal({{ journal.id }}, '{{ journal.title }}');">
+                                                    <a type="button" class="btn btn-danger" onclick="delete_journal({{ journal.id }});">
                                                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                                                     </a>
                                                 </div>
