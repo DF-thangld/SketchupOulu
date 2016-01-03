@@ -105,20 +105,22 @@ def register():
 def reset_password():
 
     token = request.args.get('token', '')
-    user = User.query.filter_by(password_token=token).first()
-    if user is not None:
+    if token != '':
+        user = User.query.filter_by(password_token=token).first()
+        if user is not None:
 
-        new_password = utilities.generate_random_string(20)
-        user.password = generate_password_hash(new_password)
-        db.session.commit()
+            new_password = utilities.generate_random_string(20)
+            user.password = generate_password_hash(new_password)
+            user.password_token = ''
+            db.session.commit()
 
-        email_content = 'Finally, support has come to help you :)<br /><br />'
-        email_content += 'Your new password: <b>' + new_password + '</b><br /><br />'
-        email_content += 'Thanks,<br />'
-        email_content += 'Sketchup Oulu team'
+            email_content = 'Finally, support has come to help you :)<br /><br />'
+            email_content += 'Your new password: <b>' + new_password + '</b><br /><br />'
+            email_content += 'Thanks,<br />'
+            email_content += 'Sketchup Oulu team'
 
-        send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
-        return render_template("users/reset_password_confirmed.html"), 200
+            send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
+            return render_template("users/reset_password_confirmed.html"), 200
 
     form = ResetPasswordForm(request.form)
     errors = []
@@ -181,6 +183,7 @@ def change_password():
 
     user = User.query.get(g.user.id)
     user.password = generate_password_hash(new_password)
+    user.password_token = ''
     db.session.commit()
     g.user = user
     return json.dumps({'success': True}), 200

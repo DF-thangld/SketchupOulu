@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1195f50-6f14-44f6-87e3-6e82b423c017" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project_management/todo.xlsx" afterPath="$PROJECT_DIR$/project_management/todo.xlsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/__init__.py" afterPath="$PROJECT_DIR$/app/__init__.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/users/profile.html" afterPath="$PROJECT_DIR$/app/templates/users/profile.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/users/user_profile.html" afterPath="$PROJECT_DIR$/app/templates/users/user_profile.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/users/forms.py" afterPath="$PROJECT_DIR$/app/users/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/users/models.py" afterPath="$PROJECT_DIR$/app/users/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/users/views.py" afterPath="$PROJECT_DIR$/app/users/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run.py" afterPath="$PROJECT_DIR$/run.py" />
     </list>
     <ignored path="sketchup_oulu.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,8 +30,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/users/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.01994302">
-              <caret line="163" column="48" selection-start-line="163" selection-start-column="48" selection-end-line="163" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.41880342">
+              <caret line="113" column="36" selection-start-line="113" selection-start-column="36" selection-end-line="113" selection-end-column="36" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -1066,8 +1059,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/users/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.01994302">
-          <caret line="163" column="48" selection-start-line="163" selection-start-column="48" selection-end-line="163" selection-end-column="48" />
+        <state vertical-scroll-proportion="0.41880342">
+          <caret line="113" column="36" selection-start-line="113" selection-start-column="36" selection-end-line="113" selection-end-column="36" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
