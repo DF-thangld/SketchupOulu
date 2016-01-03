@@ -8,18 +8,19 @@
         get_building_models();
     else if (window.location.hash.substr(1) == 'scenarios')
         get_building_models();
+    else if (window.location.hash.substr(1) == 'change_password')
+        display_change_password();
     else
         get_user_profile();
+
+    $(document).on('click', '#profile_menu li', function() {
+        $("#profile_menu li").removeClass("active");
+        $(this).addClass("active");
+	});
 {% endblock %}
 
 
 {% block js_script %}
-
-    $(document).on('click', '#profile_menu li', function() {
-	   $("#profile_menu li").removeClass("active");
-	   $(this).addClass("active");
-	});
-
 
     function get_user_profile()
     {
@@ -51,7 +52,45 @@
         $('#menu_building_models').addClass('active');
     }
 
+    function display_change_password()
+    {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_change_password').addClass('active');
+        $('#old_password').val('');
+        $('#new_password').val('');
+        $('#confirm_password').val('');
+        $('#user_data_form').html($('#change_password').html());
+    }
 
+    function update_password()
+    {
+        var post_data = {
+            'old_password': $('#old_password').val(),
+            'new_password': $('#new_password').val(),
+            'confirm_password': $('#confirm_password').val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('users.change_password') }}",
+            data: post_data,
+            dataType: 'json',
+            success: function(data) {
+                // return success
+                $('#change_password_errors_panel').fadeOut();
+                $('#change_password_error_content').html('');
+                show_alert('alert-success', 'Password changed!');
+            },
+            error: function(data)
+            {
+                console.log(data);
+                $('#change_password_error_content').html('');
+                for (i = 0; i < data.responseJSON.length; i++)
+                    $('#change_password_error_content').append('<div>- ' + data.responseJSON[i] + '</div>');
+                $('#change_password_errors_panel').fadeIn();
+
+            }
+        });
+    }
 
 {% endblock %}
 
@@ -73,6 +112,7 @@
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
 					<li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
+                    <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
 					<li id="menu_building_models" class=""><a href="#building_models" onclick="get_user_scenarios();">Scenarios</a></li>
 					<li id="menu_scenarios" class=""><a href="#scenarios" onclick="get_building_models();">Building models</a></li>
 				</ul>
@@ -81,6 +121,44 @@
         <div class="col-md-9" id="user_data_form">
 
 		</div>
+
+        <div id="change_password" style="display:none;">
+            <div id="change_password_errors_panel" class="col-centered" style="display:none;color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-bottom:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container" id="change_password_error_content">
+                      <div>- Old password is required</div>
+                  </div>
+            </div>
+            <div id="user_content">
+                <div id="tab-content" class="tab-content">
+                    <div class="tab-pane active" id="basic">
+                        <form class="form-horizontal" id="basic_form" action="{{ url_for('users.change_password') }}">
+                            <div class="form-group">
+                                <label class="control-label col-xs-3" for="old_password" autocapitalize="off" autofocus="autofocus">Old password</label>
+                                <div class="col-xs-9">
+                                    <input class="form-control" type="password" id="old_password" name="old_password" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3" for="new_password" autocapitalize="off" autofocus="autofocus">New password</label>
+                                <div class="col-xs-9">
+                                    <input class="form-control" type="password" id="new_password" name="new_password" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3" for="confirm_password" autocapitalize="off" autofocus="autofocus">Confirm password</label>
+                                <div class="col-xs-9">
+                                    <input class="form-control" type="password" id="confirm_password" name="confirm_password" />
+                                </div>
+                            </div>
+
+                            <a href="#change_password" onclick="update_password();" type="submit" class="btn btn-success"> <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                Update
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>

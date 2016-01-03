@@ -75,7 +75,6 @@ def not_found(error):
 def index():
     return render_template('homepage.html'), 200
 
-
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule
 from app.journal.views import mod as journalModule

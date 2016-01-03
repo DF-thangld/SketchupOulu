@@ -28,6 +28,7 @@ class User(db.Model):
     login_attempts = db.Column(db.Integer, default=0)
     banned = db.Column(db.SmallInteger, default=0)
     login_token = db.Column(db.String(50), default='')
+    password_token = db.Column(db.String(50), default='')
 
     groups = db.relationship('Group', secondary=user_to_group,
         backref=db.backref('groups', lazy='dynamic'))

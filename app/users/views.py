@@ -1,10 +1,13 @@
+import json
+
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
 
-from app import db
-from app.users.forms import RegisterForm, LoginForm, UserProfileForm
+from app import db, send_mail
+from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User
 from app.users.decorators import requires_login
+import app.utilities as utilities
 
 mod = Blueprint('users', __name__, url_prefix='/users')
 
@@ -12,15 +15,6 @@ mod = Blueprint('users', __name__, url_prefix='/users')
 @requires_login
 def profile():
     return render_template("users/profile.html", user=g.user)
-
-@mod.before_request
-def before_request():
-    """
-    pull user's profile from the database before every request are treated
-    """
-    g.user = None
-    if 'user_id' in session:
-        g.user = User.query.get(session['user_id'])  # @UndefinedVariable
 
 @mod.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -109,14 +103,96 @@ def register():
 
 @mod.route('/reset_password/', methods=['GET', 'POST'])
 def reset_password():
-    return "TODO"
+
+    token = request.args.get('token', '')
+    user = User.query.filter_by(password_token=token).first()
+    if user is not None:
+
+        new_password = utilities.generate_random_string(20)
+        user.password = generate_password_hash(new_password)
+        db.session.commit()
+
+        email_content = 'Finally, support has come to help you :)<br /><br />'
+        email_content += 'Your new password: <b>' + new_password + '</b><br /><br />'
+        email_content += 'Thanks,<br />'
+        email_content += 'Sketchup Oulu team'
+
+        send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
+        return render_template("users/reset_password_confirmed.html"), 200
+
+    form = ResetPasswordForm(request.form)
+    errors = []
+    # make sure data are valid, but doesn't validate password is right
+    if form.is_submitted():
+        if form.validate():
+            user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
+
+            if user is None:
+                errors.append('Account not found')
+                return render_template("users/reset_password.html", form=form, errors=errors), 404
+
+            if user.banned == 1:
+                errors.append('The account was banned, please contact an admin for more information')
+                return render_template("users/reset_password.html", form=form, errors=errors), 400
+
+            user.password_token = utilities.generate_random_string(50)
+            db.session.commit()
+
+            # we use werzeug to validate user's password
+            email_content = 'We heard that you lost your password. Sorry about that!<br /><br />'
+            email_content += 'But don’t worry! You can use the following link to reset your password:<br /><br />'
+            email_content += '<a href="' + url_for('users.reset_password', token=user.password_token, _external=True) + '">' + url_for('users.reset_password', token=user.password_token, _external=True) + '</a><br /><br />'
+            #email_content += 'If you don’t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
+            email_content += 'Thanks,<br />'
+            email_content += 'Sketchup Oulu team'
+
+            send_mail([user.email], '[SketchupOulu] Reset your password‏', email_content)
+            return render_template("users/reset_password_submited.html"), 200
+        else:
+            for error in form.email.errors:
+                errors.append(error)
+            return render_template("users/reset_password.html", form=form, errors=errors), 200
+
+    return render_template("users/reset_password.html", form=form, errors=[])
+
+@mod.route('/change_password/', methods=['GET', 'POST'])
+@requires_login
+def change_password():
+    errors = []
+    old_password = request.form.get('old_password', '')
+    new_password = request.form.get('new_password', '')
+    confirm_password = request.form.get('confirm_password', '')
+
+    if old_password == '':
+        errors.append('Old password is required')
+    if new_password == '':
+        errors.append('New password is required')
+    if confirm_password == '':
+        errors.append('You have to confirm your password')
+    if new_password != '' and new_password != confirm_password:
+        errors.append('Password must match')
+    if len(errors) > 0:
+        return json.dumps(errors), 400
+
+    if not check_password_hash(g.user.password, old_password):
+        errors.append('Wrong old password')
+    if len(errors) > 0:
+        return json.dumps(errors), 400
+
+    user = User.query.get(g.user.id)
+    user.password = generate_password_hash(new_password)
+    db.session.commit()
+    g.user = user
+    return json.dumps({'success': True}), 200
 
 @mod.route('/logout/', methods=['GET'])
+@requires_login
 def logout():
     session.clear()
     return redirect(url_for('index'))
 
 @mod.route('/user_profile/', methods=['GET', 'POST'])
+@requires_login
 def user_profile():
     form = UserProfileForm()
     if form.is_submitted():

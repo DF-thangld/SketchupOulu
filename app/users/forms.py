@@ -23,3 +23,6 @@ class UserProfileForm(Form):
     address = TextField()
     postal_code = TextField()
     phone_number = TextField()
+
+class ResetPasswordForm(Form):
+    email = TextField('Enter your email address and we will send you a link to reset your password', [Required(message='Email is required'), Email(message='Invalid email address')])

@@ -42,28 +42,27 @@
             </div>
         </div>
     </div>
+</div>
+
 <script>
-
-
-
-function update_user(user_id) {
-	var post_data = {
-		'fullname': $('#fullname').val(),
-		'address': $('#address').val(),
-		'phone_number': $('#phone_number').val(),
-		'birthdate': $('#birthdate').val()
-	};
-	$.ajax({
-		type: "POST",
-		url: "{{ url_for('users.user_profile') }}",
-		data: post_data,
-		success: function(data) {
-			// return success
-			if (data.length > 0) {
-				$('#user_data_form').html(data);
-                show_alert('alert-success', 'Update success!');
-			}
-		}
-	});
-}
-</script></div>
+    function update_user(user_id) {
+        var post_data = {
+            'fullname': $('#fullname').val(),
+            'address': $('#address').val(),
+            'phone_number': $('#phone_number').val(),
+            'birthdate': $('#birthdate').val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('users.user_profile') }}",
+            data: post_data,
+            success: function(data) {
+                // return success
+                if (data.length > 0) {
+                    $('#user_data_form').html(data);
+                    show_alert('alert-success', 'Update success!');
+                }
+            }
+        });
+    }
+</script>
