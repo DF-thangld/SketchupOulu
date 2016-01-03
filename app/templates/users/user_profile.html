@@ -2,34 +2,45 @@
     <div id="user_content">
         <div id="tab-content" class="tab-content">
             <div class="tab-pane active" id="basic">
+                <div class="form-group">
+                    <label class="control-label col-xs-2" for="profile_picture_upload" style="text-align:right">Profile picture</label>
+                    <div class="col-xs-9">
+                        {% if g.user.profile_picture %}
+                            <img id="profile_picture" class="img-rounded" style="max-width: 200px; max-height: 200px;" src="{{ url_for('static', filename='images/profile_pictures/'+g.user.profile_picture) }}" />
+                        {% endif %}
+                        <div id="profile_picture_upload" style="">Upload</div>
+                    </div>
+                </div>
+
+
                 <form class="form-horizontal" id="basic_form" action="{{ url_for('users.user_profile') }}">
                     {{ form.csrf_token }}
                     <div class="form-group">
-                        {{ form.email.label(class="control-label col-xs-3") }}
+                        {{ form.email.label(class="control-label col-xs-2") }}
                         <div class="col-xs-9">
                             {{ form.email(class="form-control", placeholder="Email", readonly="", value=form.email.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                         {{ form.username.label(class="control-label col-xs-3") }}
+                         {{ form.username.label(class="control-label col-xs-2") }}
                         <div class="col-xs-9">
                             {{ form.username(class="form-control", placeholder="Username", readonly="", value=form.username.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                         {{ form.fullname.label(class="control-label col-xs-3") }}
+                         {{ form.fullname.label(class="control-label col-xs-2") }}
                         <div class="col-xs-9">
                             {{ form.fullname(class="form-control", placeholder="Full name", value=form.fullname.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                         {{ form.address.label(class="control-label col-xs-3") }}
+                         {{ form.address.label(class="control-label col-xs-2") }}
                         <div class="col-xs-9">
                             {{ form.address(class="form-control", placeholder="Address", value=form.address.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                         {{ form.phone_number.label(class="control-label col-xs-3") }}
+                         {{ form.phone_number.label(class="control-label col-xs-2") }}
                         <div class="col-xs-9">
                             {{ form.phone_number(class="form-control", placeholder=form.phone_number.label.text, value=form.phone_number.data) }}
                         </div>
@@ -46,6 +57,14 @@
 
 <script>
     function update_user(user_id) {
+
+        /*var post_data = new FormData();
+        //post_data.append("profile_picture", document.getElementById("profile_picture"));
+        post_data.append("fullname", $('#fullname').val());
+        post_data.append("address", $('#address').val());
+        post_data.append("phone_number", $('#phone_number').val());
+        post_data.append("birthdate", $('#birthdate').val());*/
+
         var post_data = {
             'fullname': $('#fullname').val(),
             'address': $('#address').val(),
@@ -65,4 +84,19 @@
             }
         });
     }
+    var upload_form;
+    $(document).ready(function()
+    {
+        upload_form = $("#profile_picture_upload").uploadFile({
+            url:"{{ url_for('users.upload_profile_picture') }}",
+            fileName:"profile_picture",
+            maxFileCount:1,
+            onSuccess:function(files,data,xhr,pd)
+            {
+                $('#profile_picture').attr('src', data);
+                upload_form.reset();
+                show_alert('alert-success', 'Profile uploaded!');
+            }
+        });
+    });
 </script>

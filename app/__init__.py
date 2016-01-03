@@ -7,8 +7,10 @@ from smtplib import SMTP, SMTP_SSL
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from validate_email import validate_email
+from werkzeug import secure_filename
 
 import config
+import app.utilities as utilities
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -16,6 +18,23 @@ app.config.from_object('config')
 app_dir = os.path.dirname(os.path.realpath(__file__))
 
 db = SQLAlchemy(app)
+
+
+def upload_picture(upload_file, stored_directory, generate_filename=True, file_type="image"):
+    original_filename_parts = upload_file.filename.split('.')
+    file_extension = original_filename_parts[len(original_filename_parts)-1]
+    if generate_filename:
+        filename = utilities.generate_random_string(50) + '.' + file_extension
+    else:
+        filename = upload_file.filename
+    filename = secure_filename(filename)
+
+    #save file
+    full_filename = os.path.join(app_dir, stored_directory, filename)
+    upload_file.save(full_filename)
+
+    return filename
+
 
 def send_mail(emails, title, content):
 

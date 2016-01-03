@@ -10,5 +10,5 @@ def before_request():
         if user is not None:
             g.user = user
 
-app.config['SERVER_NAME'] = 'localhost:5000'
-app.run(debug=True)
+#app.config['SERVER_NAME'] = '127.0.0.1:5000'
+app.run(debug=True, host='0.0.0.0')

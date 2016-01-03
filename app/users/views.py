@@ -2,8 +2,9 @@ import json
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
+from flask.ext.uploads import UploadSet, IMAGES
 
-from app import db, send_mail
+from app import db, send_mail, upload_picture
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User
 from app.users.decorators import requires_login
@@ -199,16 +200,12 @@ def logout():
 def user_profile():
     form = UserProfileForm()
     if form.is_submitted():
-
-        User.query.filter_by(id=session.get('user_id')).update(dict(fullname=form.fullname.data,
-                                                                            address=form.address.data,
-                                                                            phone_number=form.phone_number.data))
-        db.session.commit()
-
         user = User.query.filter_by(id=session.get('user_id')).first()
         user.fullname = form.fullname.data
         user.address = form.address.data
         user.phone_number = form.phone_number.data
+
+        db.session.commit()
 
         g.user = user
 
@@ -220,3 +217,25 @@ def user_profile():
     #form.birthdate.data = g.user.birthdate
 
     return render_template("users/user_profile.html", form=form)
+
+@mod.route('/upload_profile_picture/', methods=['POST'])
+@requires_login
+def upload_profile_picture():
+
+    user = User.query.get(g.user.id)
+    user.profile_picture = upload_picture(request.files['profile_picture'], 'static/images/profile_pictures')
+    g.user = user
+    db.session.commit()
+
+    return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
+
+@mod.route('/building_models/', methods=['GET', 'POST'])
+@requires_login
+def building_models():
+
+    user = User.query.get(g.user.id)
+    user.profile_picture = upload_picture(request.files['profile_picture'], 'static/images/profile_pictures')
+    g.user = user
+    db.session.commit()
+
+    return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)

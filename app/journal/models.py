@@ -25,9 +25,9 @@ class JournalCategory(db.Model):
 
     def get_journals(self, page=1, filter=''):
         if filter != '':
-            query = Journal.query.filter(Journal.category==self).filter(Journal.title.like('%'+filter+'%'))
+            query = Journal.query.filter(Journal.category==self).filter(Journal.title.like('%'+filter+'%')).order_by(Journal.post_time.desc())
         else:
-            query = Journal.query.filter(Journal.category==self)
+            query = Journal.query.filter(Journal.category==self).order_by(Journal.post_time.desc())
 
         page_data = query.paginate(page, 20, False)
         self.total_page = page_data.pages

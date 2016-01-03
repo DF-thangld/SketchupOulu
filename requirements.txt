@@ -4,3 +4,4 @@ Flask-WTF
 mailer
 pymysql
 validate_email
+flask-uploads

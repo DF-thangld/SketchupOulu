@@ -18,8 +18,9 @@ class User(db.Model):
     postal_code = db.Column(db.String(80), default='')
     phone_number = db.Column(db.String(80), default='')
     fullname = db.Column(db.String(80), default='')
-    
     birthdate = db.Column(db.DateTime)
+    profile_picture = db.Column(db.String(80))
+
     last_login = db.Column(db.DateTime)
     last_activity = db.Column(db.DateTime)
     last_login_attempt = db.Column(db.DateTime)

@@ -100,12 +100,12 @@
 
 {% block main_content %}
 
-<div class="container">
 	<div class="row" style="margin-top: 20px;">
-	<div class="col-lg-12 col-centered">
+	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
-           <li class = "active">{{ g.user.username }}'s profile</li>
+           <li class = "active">{{ g.user.username }}</li>
+           <li class = "active">Profile</li>
         </ol>
 		<h2 style="font-size: 45px;">{{ g.user.username }}'s profile</h2>
 
