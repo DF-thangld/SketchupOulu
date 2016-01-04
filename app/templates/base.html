@@ -61,6 +61,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/uploadfile.css') }}" />
     <script src="{{ url_for('static', filename='js/jquery.uploadfile.min.js') }}"></script>
 
+    <!-- Date -->
+    <script src="{{ url_for('static', filename='js/date.js') }}"></script>
+
     <!-- Plugin JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.fittext.js') }}"></script>
@@ -76,16 +79,7 @@
     	
     });
 
-    function show_alert(alert_type, alert_content)
-    {
-        $('#alert_panel').addClass(alert_type);
-        $('#alert_content').html(alert_content);
-        $('#alert_panel').fadeIn();
-        setTimeout(function(){
-            $('#alert_panel').fadeOut(function(){$('#alert_panel').removeClass(alert_type);});
 
-        }, 3000);
-    }
 
     {% block js_script %}
 

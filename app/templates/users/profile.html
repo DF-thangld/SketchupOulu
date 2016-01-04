@@ -100,7 +100,7 @@
 
 {% block main_content %}
 
-	<div class="row" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px;">
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
@@ -113,8 +113,8 @@
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
 					<li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
                     <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
-					<li id="menu_building_models" class=""><a href="#building_models" onclick="get_user_scenarios();">Scenarios</a></li>
-					<li id="menu_scenarios" class=""><a href="#scenarios" onclick="get_building_models();">Building models</a></li>
+					<li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
+					<li id="menu_scenarios" class=""><a href="{{ url_for('users.building_models') }}">Building models</a></li>
 				</ul>
 		</div>
 

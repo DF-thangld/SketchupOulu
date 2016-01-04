@@ -7,6 +7,7 @@ from flask.ext.uploads import UploadSet, IMAGES
 from app import db, send_mail, upload_picture
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User
+from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
 
@@ -150,6 +151,8 @@ def reset_password():
             email_content += 'Sketchup Oulu team'
 
             send_mail([user.email], '[SketchupOulu] Reset your password‏', email_content)
+            user.password_token = ''
+            db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
         else:
             for error in form.email.errors:
@@ -233,9 +236,82 @@ def upload_profile_picture():
 @requires_login
 def building_models():
 
-    user = User.query.get(g.user.id)
-    user.profile_picture = upload_picture(request.files['profile_picture'], 'static/images/profile_pictures')
-    g.user = user
+    return 'building_models'
+
+@mod.route('/scenarios/', methods=['GET', 'POST'])
+@requires_login
+def user_scenarios():
+    return render_template("users/scenarios.html")
+
+@mod.route('/get_user_scenarios/', methods=['POST'])
+@requires_login
+def get_user_scenarios():
+    filter_text = request.form.get('filter_text', '')
+    page = request.form.get('page', '1')
+    if page.isdigit():
+        page = int(page)
+        if page < 1:
+            page = 1
+    else:
+        page = 1
+
+    scenarios = g.user.get_scenarios(filter_text, page, True, g.user)
+    return json.dumps({'scenarios': scenarios,
+                       'total_page': g.user.scenarios_total_page,
+                       'current_page': g.user.scenarios_current_page})
+
+@mod.route('/add_scenario/', methods=['GET','POST'])
+@requires_login
+def add_scenario():
+    errors = []
+    if request.method == 'GET':
+        return render_template("users/add_scenario.html", errors=errors)
+    else:
+        name = request.form.get('name', '')
+        is_public = request.form.get('is_public', 0)
+        addition_information = request.form.get('addition_information', '')
+        if name.strip() == '':
+            errors.append('Scenario name is required')
+            return render_template("users/add_scenario.html", errors=errors), 400
+
+        scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
+        db.session.add(scenario)
+        db.session.commit()
+        return redirect(url_for('sketchup.view_scenario', id=scenario.id))
+
+@mod.route('/add_comment/', methods=['POST'])
+@requires_login
+def add_comment():
+    errors = []
+    comment_type = request.form.get('comment_type', '')
+    object_id = request.form.get('object_id', '')
+    content = request.form.get('content', '')
+    if content == '':
+        errors.append('Comment content is required')
+        return json.dumps(errors), 400
+    if object_id == '':
+        errors.append('Comment object is required')
+        return json.dumps(errors), 400
+
+    comment_topic = None
+    if comment_type == 'scenario':
+        scenario = Scenario.query.get(object_id)
+        if scenario is None:
+            errors.append('Scenario not found')
+            return json.dumps(errors), 404
+
+        comment_topic = scenario.comment_topic
+    elif comment_type == 'building_model':
+        building_model = BuildingModel.query.get(object_id)
+        if building_model is None:
+            errors.append('Building model not found')
+            return json.dumps(errors), 404
+        comment_topic = building_model.comment_topic
+    else:
+        errors.append('Comment type not found')
+
+    new_comment = Comment(g.user, comment_topic, content)
+    db.session.add(new_comment)
     db.session.commit()
 
-    return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
+    return json.dumps(new_comment.to_dict(include_owner=True)), 200

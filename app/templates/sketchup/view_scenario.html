@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+
+
+{% endblock %}
+
+{% block js_script %}
+
+
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+
+	<div class="col-lg-10 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li class = "active">{{ g.user.username }}</li>
+           <li class = "active"><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
+           <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></li>
+        </ol>
+		<h2 style="font-size: 45px;">{{ scenario.name }}</h2>
+
+            <input type="hidden" name="addition_information" value="" id="addition_information"/>
+			<div style="margin: 0; padding: 0; display: inline">
+			</div>
+			<dl class="form">
+				<dt class="input-label">
+					<div style="width:100%;height:500px;border:1px solid black;">
+                        Frame for model
+                    </div>
+				</dt>
+				<dd>
+
+				</dd>
+			</dl>
+
+			<div class="form-actions">
+                <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
+				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>
+			</div>
+
+	</div>
+</div>
+
+
+{% endblock %}

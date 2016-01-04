@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block custom_css %}
+.detailBox {
+    width:100%;
+    border:1px solid #bbb;
+}
+.titleBox {
+    background-color:#fdfdfd;
+    padding:10px;
+}
+.titleBox label{
+  color:#444;
+  margin:0;
+  display:inline-block;
+}
+
+.commentBox {
+    padding:10px;
+    border-top:1px dotted #bbb;
+}
+.commentBox .form-group:first-child, .actionBox .form-group:first-child {
+    width:80%;
+}
+.commentBox .form-group:nth-child(2), .actionBox .form-group:nth-child(2) {
+    width:18%;
+}
+.actionBox .form-group * {
+    width:100%;
+}
+.taskDescription {
+    margin-top:10px 0;
+}
+.commentList {
+    padding:0;
+    list-style:none;
+    overflow:auto;
+}
+.commentList li {
+    margin:0;
+    margin-top:10px;
+}
+.commentList li > div {
+    display:table-cell;
+}
+.commenterImage {
+    width:30px;
+    margin-right:5px;
+    height:100%;
+    float:left;
+}
+.commenterImage img {
+    width:100%;
+    border-radius:50%;
+}
+.commentText p {
+    margin:0;
+}
+.sub-text {
+    color:#aaa;
+    font-family:verdana;
+    font-size:11px;
+}
+.actionBox {
+    border-top:1px dotted #bbb;
+    padding:10px;
+}
+{% endblock %}
+
+{% block onload_script %}
+    get_user_scenarios();
+    $(document).on('click', '.well a', function() {
+	   $(".well a").removeClass("active");
+	   $(this).addClass("active");
+	});
+    $('#new_comment').autoHeight();
+{% endblock %}
+
+{% block js_script %}
+
+    function get_user_scenarios()
+    {
+        $('#search_results').html('');
+
+        var post_data = {
+            'filter_text': $('#filter_text').val(),
+        };
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('users.get_user_scenarios') }}",
+            data: post_data,
+            dataType: 'json',
+            success: function(data) {
+                $('#search_results').html('');
+                for (i = 0; i < data.scenarios.length; i++)
+                {
+                    var scenario = data.scenarios[i];
+                    $('#search_results').append('<a id="scenario_' + scenario.id + '" class="list-group-item" href="javascript:fetch_scenario(\'' + scenario.id + '\');">' + scenario.name + '</a>');
+                }
+
+                if ($('#scenario_id').val() == '')
+                    if (data.scenarios.length > 0)
+                        fetch_scenario(data.scenarios[0].id);
+            }
+        });
+    }
+
+    function fetch_scenario(scenario_id)
+    {
+
+        $(".well a").removeClass("active");
+	    $('#scenario_'+scenario_id).addClass("active");
+
+        $.ajax({
+            type: "GET",
+            url: "{{ url_for('sketchup.get_scenario') }}?id=" + scenario_id,
+            data: {'comment_type': $('#user_id').val(),
+                    'object_id': $('#fullname').val(),
+                    'content': $('#address').val()},
+            dataType: 'json',
+            success: function(data)
+            {
+
+                $('#scenario_name').html('<a href="{{ url_for('sketchup.view_scenario') }}?id=' + data.id + '">' + data.name + '</a>');
+                $('#profile_picture').attr('src', '{{ url_for('static', filename='images/profile_pictures') }}/' + data.owner.profile_picture);
+                $('#created_user').html(data.owner.username);
+                $('#created_time').html(Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss'));
+                $('#object_id').val(data.id);
+                if (data.last_edited_user != null)
+                {
+                    $('#last_edited_panel').show(0);
+                    $('#last_edited_user').html(data.last_edited_user.username);
+                    $('#last_edited_time').html(Date.parse(data.last_edited_time).toString('dd.MM.yyyy hh:mm:ss'));
+                }
+                console.log(data);
+
+                for (i=0; i < data.comments.length; i++)
+                {
+                    comment = data.comments[i];
+                    var new_comment_html = '';
+                    new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
+                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By ' + data.owner.username + ' on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+                    $('#comment_list').append(new_comment_html);
+                }
+            }
+        });
+    }
+
+    function add_comment()
+    {
+        /*if ($('#new_comment').val().trim() == '')
+        {
+            show_alert('alert-danger', 'Comment content is required');
+            return;
+        }*/
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('users.add_comment') }}",
+            data: {'comment_type': $('#comment_type').val(),
+                    'object_id': $('#object_id').val(),
+                    'content': $('#new_comment').val()},
+            dataType: 'json',
+            success: function(data)
+            {
+                var new_comment_html = '';
+                new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + data.owner.profile_picture + '" /></div>';
+                new_comment_html += '<div class="commentText"><p class="">' + data.content + '</p> <span class="date sub-text">By ' + data.owner.username + ' on ' + Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+                $('#comment_list').prepend(new_comment_html);
+                show_alert('alert-success', 'Comment added');
+                $('#new_comment').val('');
+            },
+            error: function(data)
+            {
+                show_alert('alert-danger', data.responseJSON[0]);
+            }
+        });
+    }
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block main_content %}
+<div class="">
+	<div class="row" style="margin-top: 20px;">
+        <div class="col-md-10 col-centered">
+            <ol class = "breadcrumb">
+               <li><a href = "{{ url_for('index') }}">Home</a></li>
+               <li class = "active">{{ g.user.username }}</li>
+               <li class = "active">Scenarios</li>
+            </ol>
+            <h2 style="font-size: 45px;">{{ g.user.username }}'s Scenarios</h2>
+
+            <div class="col-md-4">
+                <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12">
+                        <a type="button" style="width:100%; margin-bottom:10px;" class="btn btn-primary" href="{{ url_for('users.add_scenario') }}">
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add scenario
+                        </a>
+                        <form id="scenario_search_form" method="POST" action="{{ url_for('users.get_user_scenarios') }}">
+                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_scenarios();" placeholder="Search by scenario name" type="text" value="">
+                        </form>
+                    </div>
+                </div>
+                <!-- Search result area -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="well">
+                            <div class="list-group auto_list" id="search_results">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8" id="user_data_form">
+                <h3><span id="scenario_name" style="font-weight: bold"></span></h3>
+                <div style="float:left;">
+                    <img id="profile_picture" src="{{ url_for('static', filename='images/profile_pictures/default_profile.png') }}" style="width:60px;"/>
+                </div>
+                <div style="float:left; margin-left:10px;">
+                    <div>Created by <span id="created_user"></span> at <span id="created_time"></span></div>
+                    <div id="last_edited_panel" style="display:none">Last edited by <span id="last_edited_user"></span> at <span id="last_edited_time"></span></div>
+                </div>
+                <div style="clear:both;margin-bottom:10px;"></div>
+
+                <div id="scenario_content">
+                    <input type="hidden" id="scenario_id" value="" />
+
+                    <div style="width:100%;height:500px;border:1px solid black;">
+                        Frame for model
+                    </div>
+                </div>
+                <div id="scenario_comment_panel" style="margin-top:10px;">
+
+                    <div class="detailBox">
+                        <div class="titleBox">
+                          <label>Comment Box</label>
+                        </div>
+                        <div class="commentBox">
+                            <input type="hidden" id="comment_type" value="scenario" />
+                            <input type="hidden" id="object_id" value="" />
+                            <textarea id="new_comment" style="width:100%" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
+                            <div class="form-group">
+                                <button class="btn btn-default" onclick="add_comment();">Add</button>
+                            </div>
+                        </div>
+                        <div class="actionBox">
+                            <ul class="commentList" id="comment_list">
+
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

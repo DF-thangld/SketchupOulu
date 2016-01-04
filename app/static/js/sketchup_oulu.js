@@ -45,3 +45,37 @@ $( document ).ready(function() {
 
 });
 
+jQuery.fn.extend({
+  autoHeight: function () {
+    function autoHeight_(element) {
+      return jQuery(element)
+        .css({ 'height': 'auto', 'overflow-y': 'hidden' })
+        .height(element.scrollHeight);
+    }
+    return this.each(function() {
+      autoHeight_(this).on('input', function() {
+        autoHeight_(this);
+      });
+    });
+  }
+});
+
+function show_alert(alert_type, alert_content)
+{
+    $('#alert_panel').addClass(alert_type);
+    $('#alert_content').html(alert_content);
+    $('#alert_panel').fadeIn();
+    setTimeout(function(){
+        $('#alert_panel').fadeOut(function(){$('#alert_panel').removeClass(alert_type);});
+
+    }, 3000);
+}
+
+function format_date(date)
+{
+    var result = '';
+    result += date.getDate().toString() + '.' + date.getMonth().toString() + '.' + date.getFullYear().toString() + ' ';
+    result += date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString();
+    return result;
+}
+

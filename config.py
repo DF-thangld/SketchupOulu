@@ -1,5 +1,10 @@
 import os
 _basedir = os.path.abspath(os.path.dirname(__file__))
+app_dir = os.path.join(_basedir, 'app')
+email_picture_dir = os.path.join(app_dir, 'static/images/email_pictures/')
+user_profile_dir = os.path.join(app_dir, 'static/images/profile_pictures/')
+building_model_dir = os.path.join(app_dir, 'static/models/building_models/')
+scenario_dir = os.path.join(app_dir, 'static/models/scenario_models/')
 
 DEBUG = False
 
@@ -7,6 +12,7 @@ ADMINS = frozenset(['youremail@yourdomain.com'])
 SECRET_KEY = 'This string will be replaced with a proper key in production.'
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://sketchup_oulu:abcxyz@vm0106.virtues.fi:7557/sketchup_oulu'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 DATABASE_CONNECT_OPTIONS = {}
 

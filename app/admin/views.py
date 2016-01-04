@@ -167,7 +167,7 @@ def upload_image():
     filename = secure_filename(filename)
 
     #save file
-    full_filename = os.path.join(app_dir, config.EMAIL_PICTURE, filename)
+    full_filename = os.path.join(config.email_picture_dir, filename)
     file.save(full_filename)
 
     #return link to file

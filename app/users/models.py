@@ -1,6 +1,7 @@
-from app.users import constants as USER
-from app import db
+
 import sqlalchemy
+from app import db
+import app.sketchup.models as sketchup
 
 user_to_group = db.Table('user_to_group',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
@@ -19,7 +20,7 @@ class User(db.Model):
     phone_number = db.Column(db.String(80), default='')
     fullname = db.Column(db.String(80), default='')
     birthdate = db.Column(db.DateTime)
-    profile_picture = db.Column(db.String(80))
+    profile_picture = db.Column(db.String(80), default='default_profile.png')
 
     last_login = db.Column(db.DateTime)
     last_activity = db.Column(db.DateTime)
@@ -33,6 +34,11 @@ class User(db.Model):
 
     groups = db.relationship('Group', secondary=user_to_group,
         backref=db.backref('groups', lazy='dynamic'))
+
+    scenarios_total_page = 0
+    scenarios_current_page = 0
+    building_models_total_page = 0
+    building_models_current_page = 0
 
     def __init__(self, username='', email='', password=''):
         self.username = username
@@ -51,7 +57,68 @@ class User(db.Model):
                 'fullname': self.fullname,
                 'phone_number': self.phone_number,
                 'address': self.address,
+                'profile_picture': self.profile_picture,
                 'groups': groups}
+
+    def get_scenarios(self, filter_text='', page=1, return_dict=False, requested_user=None):
+        if requested_user is None:
+            requested_user = self
+        if filter_text != '':
+            query = sketchup.Scenario.query.filter(sketchup.Scenario.owner == self)\
+                    .filter(sketchup.Scenario.name.like('%'+filter_text+'%'))
+        else:
+            query = sketchup.Scenario.query.filter(sketchup.Scenario.owner == self)
+        if requested_user != self and not requested_user.is_admin():
+            query = query.filter(sketchup.Scenario.is_public == 1)
+        query = query.order_by(sketchup.Scenario.last_edited_time.desc())\
+                    .order_by(sketchup.Scenario.created_time.desc())
+
+        page_data = query.paginate(page, 20, False)
+        self.scenarios_total_page = page_data.pages
+        self.scenarios_current_page = page
+
+        if not return_dict:
+            return page_data.items
+        else:
+            scenarios = []
+            for scenario in page_data.items:
+                scenarios.append(scenario.to_dict())
+            return scenarios
+
+    def get_available_building_models(self, return_dict=False):
+        query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                .order_by(sketchup.BuildingModel.created_time.desc())
+        building_models = query.all()
+        #TODO: get pre-defined models
+
+        if not return_dict:
+            return building_models
+        else:
+            building_models_array = []
+            for building_model in building_models:
+                building_models_array.append(building_model.to_dict())
+            return building_models_array
+
+    def get_building_models(self, page=1, filter_text='', return_dict=False):
+        if filter_text != '':
+            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                .filter(sketchup.BuildingModel.name.like('%'+filter_text+'%'))\
+                .order_by(sketchup.BuildingModel.created_time.desc())
+        else:
+            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                .order_by(sketchup.BuildingModel.created_time.desc())
+
+        page_data = query.paginate(page, 20, False)
+        self.building_models_total_page = page_data.pages
+        self.building_models_current_page = page
+
+        if not return_dict:
+            return page_data.items
+        else:
+            building_models = []
+            for building_model in page_data.items:
+                building_models.append(building_model.to_dict())
+            return building_models
 
     def is_admin(self):
         for group in self.groups:

@@ -142,9 +142,14 @@
 {% endblock %}
 
 {% block main_content %}
-<div class="container">
+<div class="">
 	<div class="row" style="margin-top: 20px;">
-        <div class="col-centered">
+        <div class="col-md-10 col-centered">
+            <ol class = "breadcrumb">
+               <li><a href = "{{ url_for('index') }}">Home</a></li>
+               <li class = "active">Admin</li>
+               <li class = "active">User Management</li>
+            </ol>
             <h2 style="font-size: 45px;">User Management</h2>
 
             <div class="col-md-4">
