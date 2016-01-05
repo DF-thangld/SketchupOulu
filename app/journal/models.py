@@ -2,6 +2,7 @@ import datetime
 
 from app import db
 from app.users.models import User
+import app.sketchup.models as sketchup
 import sqlalchemy
 
 class JournalCategory(db.Model):
@@ -52,6 +53,8 @@ class Journal(db.Model):
     post_time = db.Column(db.DateTime)
     last_edited_time = db.Column(db.DateTime)
     is_activated = db.Column(db.SmallInteger, default=1)
+    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
+    comment_topic = db.relationship("CommentTopic")
 
     def __init__(self, title, content, created_user, category, is_activated=1):
         self.title = title
@@ -60,6 +63,7 @@ class Journal(db.Model):
         self.is_activated = is_activated
         self.category = category
         self.post_time = datetime.datetime.now()
+        self.comment_topic = sketchup.CommentTopic('Comments for journal id ' + self.id, self.created_user)
 
     def to_dict(self, include_category=False, include_created_user=False, include_last_edited_user=False):
         category = None

@@ -7279,7 +7279,7 @@ input.blob-filter:focus {
 }
 
 .build-status-details {
-	margin-left: 10px
+	margin-left: 10px;
 }
 
 .merge-pr-more-commits {
@@ -7287,17 +7287,17 @@ input.blob-filter:focus {
 	margin-bottom: 10px;
 	margin-left: 64px;
 	font-size: 12px;
-	color: #767676
+	color: #767676;
 }
 
 .branch-action {
 	padding-left: 64px;
 	margin-top: 15px;
-	margin-bottom: 15px
+	margin-bottom: 15px;
 }
 
 .branch-action .merge-branch-heading {
-	margin-bottom: 2px
+	margin-bottom: 2px;
 }
 
 .branch-action-icon {
@@ -7308,14 +7308,14 @@ input.blob-filter:focus {
 	color: #fff;
 	text-align: center;
 	border-radius: 3px;
-	padding: 8px
+	padding: 8px;
 }
 
 .branch-action-body {
 	position: relative;
 	background-color: #fff;
 	border: 1px solid #ddd;
-	border-radius: 3px
+	border-radius: 3px;
 }
 
 .branch-action-body:after, .branch-action-body:before {
@@ -7329,19 +7329,19 @@ input.blob-filter:focus {
 	content: " ";
 	border-color: transparent;
 	border-style: solid solid outset;
-	pointer-events: none
+	pointer-events: none;
 }
 
 .branch-action-body:after {
 	border-width: 7px;
 	border-right-color: #fff;
 	margin-top: 1px;
-	margin-left: 2px
+	margin-left: 2px;
 }
 
 .branch-action-body:before {
 	border-right-color: #ddd;
-	border-width: 8px
+	border-width: 8px;
 }
 
 .branch-action-body .spinner {
@@ -7350,7 +7350,7 @@ input.blob-filter:focus {
 	width: 32px;
 	height: 32px;
 	margin-right: 15px;
-	background: url("/images/spinners/octocat-spinner-32.gif") no-repeat
+	background: url("/images/spinners/octocat-spinner-32.gif") no-repeat;
 }
 
 .branch-action-body .merge-message, .branch-action-body .merge-branch-form
@@ -13730,4 +13730,69 @@ svg.octicon, svg.mega-octicon {
 .col-centered{
     float: none;
     margin: 0 auto;
+}
+
+.detailBox {
+    width:100%;
+    border:1px solid #bbb;
+}
+.titleBox {
+    background-color:#fdfdfd;
+    padding:10px;
+}
+.titleBox label{
+  color:#444;
+  margin:0;
+  display:inline-block;
+}
+
+.commentBox {
+    padding:10px;
+    border-top:1px dotted #bbb;
+}
+.commentBox .form-group:first-child, .actionBox .form-group:first-child {
+    width:80%;
+}
+.commentBox .form-group:nth-child(2), .actionBox .form-group:nth-child(2) {
+    width:18%;
+}
+.actionBox .form-group * {
+    width:100%;
+}
+.taskDescription {
+    margin-top:10px 0;
+}
+.commentList {
+    padding:0;
+    list-style:none;
+    overflow:auto;
+}
+.commentList li {
+    margin:0;
+    margin-top:10px;
+}
+.commentList li > div {
+    display:table-cell;
+}
+.commenterImage {
+    width:30px;
+    margin-right:5px;
+    height:100%;
+    float:left;
+}
+.commenterImage img {
+    width:100%;
+    border-radius:50%;
+}
+.commentText p {
+    margin:0;
+}
+.sub-text {
+    color:#aaa;
+    font-family:verdana;
+    font-size:11px;
+}
+.actionBox {
+    border-top:1px dotted #bbb;
+    padding:10px;
 }

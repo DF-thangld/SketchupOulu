@@ -79,3 +79,60 @@ function format_date(date)
     return result;
 }
 
+function add_comment()
+{
+    if ($('#new_comment').val().trim() == '')
+    {
+        show_alert('alert-danger', 'Comment content is required');
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url: add_comment_url,
+        data: {'comment_type': $('#comment_type').val(),
+                'object_id': $('#object_id').val(),
+                'content': $('#new_comment').val()},
+        dataType: 'json',
+        success: function(data)
+        {
+            var new_comment_html = '';
+            new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="' + profile_url + '/' + data.owner.profile_picture + '" /></div>';
+            new_comment_html += '<div class="commentText"><p class="">' + data.content + '</p> <span class="date sub-text">By ' + data.owner.username + ' on ' + Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+            $('#comment_list').prepend(new_comment_html);
+            show_alert('alert-success', 'Comment added');
+            $('#new_comment').val('');
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+
+function display_edit_comment_form()
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}
+
+function delete_comment(comment_id)
+{
+    $.ajax({
+        type: "POST",
+        url: delete_comment_url,
+        data: {'comment_id': comment_id},
+        dataType: 'json',
+        success: function(data)
+        {
+            $('#comment_' + data.comment_id).remove();
+            //show_alert('alert-success', 'Comment deleted');
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+function edit_comment(comment_id)
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}

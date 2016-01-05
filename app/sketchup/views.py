@@ -21,8 +21,11 @@ def view_scenario():
     if scenario is None:
         return render_template('404.html'), 404
 
-    if scenario.is_public == 0 and not scenario.owner == g.user and not g.user.is_admin():
-        return render_template('404.html'), 404
+    if scenario.is_public == 0:
+        if g.user is None:
+            return render_template('404.html'), 404
+        elif not g.user.is_admin() and not scenario.owner == g.user:
+            return render_template('404.html'), 404
 
     return render_template("sketchup/view_scenario.html", scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 

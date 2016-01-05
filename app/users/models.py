@@ -39,26 +39,33 @@ class User(db.Model):
     scenarios_current_page = 0
     building_models_total_page = 0
     building_models_current_page = 0
+    comment_topic = None
 
     def __init__(self, username='', email='', password=''):
         self.username = username
         self.email = email
         self.password = password
+        self.comment_topic = sketchup.CommentTopic('Comments for user id ' + self.username, self, 'user')
 
-    def to_dict(self, include_group=False):
+    def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
         if include_group:
             groups = []
             for group in self.groups:
                 groups.append(group.to_dict())
-        return {'id': self.id,
-                'username': self.username,
-                'email': self.email,
-                'fullname': self.fullname,
-                'phone_number': self.phone_number,
-                'address': self.address,
-                'profile_picture': self.profile_picture,
-                'groups': groups}
+        if include_sensitive_information:
+            return {'id': self.id,
+                    'username': self.username,
+                    'email': self.email,
+                    'fullname': self.fullname,
+                    'phone_number': self.phone_number,
+                    'address': self.address,
+                    'profile_picture': self.profile_picture,
+                    'groups': groups}
+        else:
+            return {'id': self.id,
+                    'username': self.username,
+                    'profile_picture': self.profile_picture}
 
     def get_scenarios(self, filter_text='', page=1, return_dict=False, requested_user=None):
         if requested_user is None:

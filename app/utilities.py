@@ -9,4 +9,5 @@ def generate_random_string(length):
 def format_datetime(datetime):
     if datetime is not None:
         return datetime.isoformat()
+        #return datetime.strftime("%d.%m.%Y %h:%M:%S")
     return None

@@ -3,7 +3,7 @@
 
 {% endblock %}
 {% block menu %}
-	{% include 'user_menu.html' %}
+	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block onload_script %}
@@ -22,11 +22,11 @@
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
-           <li class = "active">{{ g.user.username }}</li>
+           <li class = "active">{{ scenario.owner.username }}</li>
            <li class = "active"><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
            <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></li>
         </ol>
-		<h2 style="font-size: 45px;">{{ scenario.name }}</h2>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></h2>
 
             <input type="hidden" name="addition_information" value="" id="addition_information"/>
 			<div style="margin: 0; padding: 0; display: inline">
@@ -38,15 +38,50 @@
                     </div>
 				</dt>
 				<dd>
+                    <div id="scenario_comment_panel" style="margin-top:10px;">
 
+                        <div class="detailBox">
+                            <div class="titleBox">
+                              <label>Comment Box</label>
+                            </div>
+                            <div class="commentBox">
+                                <input type="hidden" id="comment_type" value="scenario" />
+                                <input type="hidden" id="object_id" value="{{ scenario.id }}" />
+                                <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
+                                <div class="form-group">
+                                    <button class="btn btn-default" onclick="add_comment();">Add</button>
+                                </div>
+                            </div>
+                            <div class="actionBox">
+                                <ul class="commentList" id="comment_list">
+                                    {% for comment in scenario.comments %}
+                                    <li id="comment_{{ comment.id }}">
+                                        <div class="commenterImage">
+                                            <img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures/' + comment.owner.profile_picture) }}" />
+                                        </div>
+                                        <div class="commentText">
+                                            <p class="" id="comment_content_{{ comment.id }}">{{ comment.content }}</p>
+                                            <span class="date sub-text">By {{ comment.owner.username }} on {{ comment.created_time }}</span>
+                                            {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == scenario.owner.username) %}
+                                            <span class="date sub-text"> (<a href="#" onclick="display_edit_comment_form({{ comment.id }});">Edit</a> - <a href="#" onclick="delete_comment({{ comment.id }});">Delete</a>)</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == scenario.owner.username) %}
+                                        <div id="edit_comment_panel" style="display:none;">
+                                        <textarea id="edit_panel_content_{{ comment.id }}">{{ comment.content }}</textarea>
+                                        </div>
+                                        {% endif %}
+
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
+                            </div>
+                        </div>
+
+                    </div>
 				</dd>
 			</dl>
-
-			<div class="form-actions">
-                <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
-				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>
-			</div>
-
 	</div>
 </div>
 

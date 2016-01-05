@@ -29,8 +29,15 @@
                 <ul class="dropdown-menu">
                     <li class="dropdown-header">System control</li>
                     <li><a href="http://vm0106.virtues.fi/fablab/reservations/basic_schedule">General settings</a></li>
+
                     <li class="divider"></li>
-                    <li class="dropdown-header">User control</li>
+                    <li class="dropdown-header">Models</li>
+                    <li><a href="{{ url_for('index') }}">Scenarios</a></li>
+                    <li><a href="{{ url_for('index') }}">Suggestions</a></li>
+                    <li><a href="{{ url_for('index') }}">Building models</a></li>
+
+                    <li class="divider"></li>
+                    <li class="dropdown-header">Users control</li>
                     <li><a href="{{ url_for('admin.user_management') }}">User management</a></li>
                     <li><a href="{{ url_for('admin.news_management') }}">Journal management</a></li>
                     <li><a href="{{ url_for('admin.send_email') }}">Send email</a></li>

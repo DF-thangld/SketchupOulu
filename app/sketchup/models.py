@@ -15,9 +15,19 @@ class BuildingModel(db.Model):
     data_file = db.Column(db.String(80))
     addition_information = db.Column(db.String())
     description = db.Column(db.String())
-    description = db.Column(db.String())
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
     comment_topic = db.relationship("CommentTopic")
+
+    def can_access(self, user):
+        if user == self.owner:
+            return True
+        if user.is_admin():
+            return True
+        if self.is_public == 1:
+            return True
+
+        #TODO: colaborators
+        return False
 
     def __init__(self, name='', data_file='', owner=None, addition_information='', description=''):
         self.id = utilities.generate_random_string(50)
@@ -27,7 +37,7 @@ class BuildingModel(db.Model):
         self.addition_information = addition_information
         self.description = description
         self.created_time = datetime.datetime.now()
-        self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner)
+        self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner, 'building_model')
 
     def to_dict(self, include_owner=False):
         owner = None
@@ -70,7 +80,18 @@ class Scenario(db.Model):
         self.description = description
         self.is_public = is_public
         self.created_time = datetime.datetime.now()
-        self.comment_topic = CommentTopic('Comments for scenario id ' + self.id, owner)
+        self.comment_topic = CommentTopic('Comments for scenario id ' + self.id, owner, 'scenario')
+
+    def can_access(self, user):
+        if user == self.owner:
+            return True
+        if user.is_admin():
+            return True
+        if self.is_public == 1:
+            return True
+
+        #TODO: colaborators
+        return False
 
     def to_dict(self, include_owner=False, include_last_edited_user=False, include_comments=False):
         owner = None
@@ -109,13 +130,15 @@ class CommentTopic(db.Model):
     owner = db.relationship("User")
     created_time = db.Column(db.DateTime)
     is_suggestion = db.Column(db.SmallInteger, default=0)
+    comment_type = db.Column(db.String(20))
     total_page = 0
     current_page = 0
 
-    def __init__(self, title, owner, is_suggestion=0):
+    def __init__(self, title, owner, comment_type, is_suggestion=0):
         self.title = title
         self.owner = owner
         self.is_suggestion = is_suggestion
+        self.comment_type = comment_type
         self.created_time = datetime.datetime.now()
 
     def get_latest_comments(self, page=1, page_size=20, return_dict=False):
@@ -152,12 +175,15 @@ class CommentTopic(db.Model):
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    owner = db.relationship("User")
     topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
     topic = db.relationship("CommentTopic")
-    created_time = db.Column(db.DateTime)
     content = db.Column(db.String(1000))
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    owner = db.relationship("User", primaryjoin="Comment.owner_id == User.id")
+    created_time = db.Column(db.DateTime)
+    last_edited_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    last_edited_user = db.relationship("User", primaryjoin="Comment.last_edited_user_id == User.id")
+    last_edited_time = db.Column(db.DateTime)
 
     def __init__(self, owner, topic, content):
         self.owner = owner
@@ -176,7 +202,7 @@ class Comment(db.Model):
         return {'id': self.id,
                 'owner': owner,
                 'topic': topic,
-                'created_time': self.created_time.isoformat(),
+                'created_time': utilities.format_datetime(self.created_time),
                 'content': self.content}
 
     def __repr__(self):

@@ -70,6 +70,9 @@
     <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
     <script>
+    var add_comment_url = '{{ url_for('users.add_comment') }}';
+    var profile_url = '{{ url_for('static', filename='images/profile_pictures') }}';
+    var delete_comment_url = '{{ url_for('users.delete_comment') }}';
     $( document ).ready(function() {
     	
     	{% block onload_script %}

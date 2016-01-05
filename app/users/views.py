@@ -299,13 +299,18 @@ def add_comment():
         if scenario is None:
             errors.append('Scenario not found')
             return json.dumps(errors), 404
-
+        if not scenario.can_access(g.user):
+            errors.append('You don\'t have permission to add comment here')
+            return json.dumps(errors), 401
         comment_topic = scenario.comment_topic
     elif comment_type == 'building_model':
         building_model = BuildingModel.query.get(object_id)
         if building_model is None:
             errors.append('Building model not found')
             return json.dumps(errors), 404
+        if not building_model.can_access(g.user):
+            errors.append('You don\'t have permission to add comment here')
+            return json.dumps(errors), 401
         comment_topic = building_model.comment_topic
     else:
         errors.append('Comment type not found')
@@ -315,3 +320,25 @@ def add_comment():
     db.session.commit()
 
     return json.dumps(new_comment.to_dict(include_owner=True)), 200
+
+@mod.route('/delete_comment/', methods=['POST'])
+@requires_login
+def delete_comment():
+    errors = []
+    comment_id = request.form.get('comment_id', 0)
+    if comment_id == 0:
+        errors.append('Comment not found')
+        return json.dumps(errors), 404
+
+    comment = Comment.query.get(comment_id)
+    if comment is None:
+        errors.append('Comment not found')
+        return json.dumps(errors), 404
+
+    if comment.owner == g.user or g.user.is_admin() or comment.topic.owner == g.user:
+        db.session.delete(comment)
+        db.session.commit()
+        return json.dumps({'success': True, 'comment_id': comment_id}), 200
+    else:
+        errors.append('Unauthorized deletion')
+        return json.dumps(errors), 403
