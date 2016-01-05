@@ -127,7 +127,7 @@ class CommentTopic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    owner = db.relationship("User")
+    owner = db.relationship("User", primaryjoin="CommentTopic.owner_id==User.id")
     created_time = db.Column(db.DateTime)
     is_suggestion = db.Column(db.SmallInteger, default=0)
     comment_type = db.Column(db.String(20))
