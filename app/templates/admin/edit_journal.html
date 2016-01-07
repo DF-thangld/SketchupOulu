@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+    $('#content').summernote({
+        height: 300
+    });
+
+{% endblock %}
+
+{% block js_script %}
+
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+	<div class="col-lg-10 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+            <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
+           <li class = "active">Edit Journal</li>
+        </ol>
+		<h2 style="font-size: 45px;">Edit Journal</h2>
+
+		<form accept-charset="UTF-8" action="{{ url_for('admin.edit_journal', journal_id=journal_id) }}" autocomplete="off"
+			class="setup-form js-form-signup-detail"
+			method="post">
+			{{ form.csrf_token }}
+			<div style="margin: 0; padding: 0; display: inline">
+			</div>
+
+           {% if errors|length > 0 %}
+            <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container">
+                  There were problems creating the journal:
+                      {% for error in errors %}
+                          <div>- {{ error }}</div>
+                      {% endfor %}
+                  </div>
+            </div>
+            {% endif %}
+            {% if errors|length == 0 and form.is_submitted() %}
+            <div id="js-flash-container" class="col-centered" style="color: #3c763d;;background-color: #5cb85c;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+                  <div class="container">
+                      Journal edited!
+                  </div>
+            </div>
+            {% endif %}
+			<dl class="form">
+				<dt class="input-label">
+					{{ form.category_id.label(autocapitalize="off", autofocus="autofocus") }}
+				</dt>
+				<dd>
+                    {{ form.category_id(autocapitalize="off", autofocus="autofocus", value=form.category_id.data, style="width:100%") }}
+				</dd>
+			</dl>
+			<dl class="form">
+				<dt class="input-label">
+					{{ form.title.label(autocapitalize="off") }}
+				</dt>
+				<dd>
+                    {{ form.title(autocapitalize="off", value=form.title.data, style="width:100%") }}
+				</dd>
+			</dl>
+
+			<dl class="form successed">
+				<dt class="input-label">
+					{{ form.content.label }}
+				</dt>
+				<dd>
+                    {{ form.content(value=form.content.data) }}
+				</dd>
+			</dl>
+            <dl class="form successed">
+				<dt class="input-label">
+					{{ form.is_activate.label }} {{ form.is_activate() }}
+				</dt>
+			</dl>
+
+			<div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="create_button" >Edit Journal</button>
+				<button type="reset" class="btn btn-warning" id="reset_button" onclick="window.location='{{ url_for('admin.edit_journal', journal_id=journal_id) }}'">Reset</button>
+			</div>
+
+		</form>
+
+	</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+
+{% block onload_script %}
+    get_users();
+    $(document).on('click', '.well a', function() {
+	   $(".well a").removeClass("active");
+	   $(this).addClass("active");
+	});
+{% endblock %}
+
+{% block js_script %}
+
+    function get_users()
+    {
+        $('#search_results').html('');
+
+        var post_data = {
+            'user_info': $('#user_info').val(),
+            'csrf_token': $('#csrf_token').val(),
+        };
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('admin.user_list') }}",
+            data: post_data,
+            dataType: 'json',
+            success: function(data) {
+                $('#search_results').html('');
+                for (i = 0; i < data.users.length; i++) {
+                    var user = data.users[i];
+                    $('#search_results').append('<a id="user_' + user.user_id + '" class="list-group-item" href="javascript:fetch_user_data(' + user.user_id + ');">' + user.user_username + '</a>');
+                }
+
+                if ($('#user_id').val() == '')
+                    fetch_user_data(data.users[0].user_id);
+            }
+        });
+    }
+
+    function update_info()
+    {
+        if ($('#user_id').val() == '')
+            return;
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('admin.update_user_info') }}",
+            data: {'user_id': $('#user_id').val(),
+                    'fullname': $('#fullname').val(),
+                    'address': $('#address').val(),
+                    'phone_number': $('#phone_number').val(),
+                    'groups_value': $('#groups_value').val()},
+            dataType: 'json',
+            success: function(data) {
+                fetch_user_data($('#user_id').val());
+                show_alert('alert-success', 'Update success!');
+            }
+        });
+
+    }
+
+    function group_change(group_id)
+    {
+        if ($('#group_' + group_id).prop('checked'))
+        {
+            $('#groups_value').val($('#groups_value').val() + group_id + '|');
+        }
+        else
+        {
+            $('#groups_value').val($('#groups_value').val().replace(group_id + '|', ''));
+        }
+    }
+
+    function change_ban_state()
+    {
+        if ($('#user_id').val() == '')
+            return;
+        var banned = 0;
+        if ($('#banned').val() == '1')
+            banned = 0;
+        else
+            banned = 1;
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('admin.update_user_info') }}",
+            data: {'user_id': $('#user_id').val(), 'banned': banned},
+            dataType: 'json',
+            success: function(data) {
+                fetch_user_data($('#user_id').val());
+                show_alert('alert-success', 'Update success!');
+            }
+        });
+    }
+
+    function fetch_user_data(user_id)
+    {
+        $.ajax({
+            type: "GET",
+            data: {'user_id': user_id},
+            url: "{{ url_for('admin.get_user_info') }}",
+            dataType: 'json',
+            success: function(data) {
+                $('#user_id').val(data.id);
+                $('#email').val(data.email);
+                $('#username').val(data.username);
+                $('#fullname').val(data.fullname);
+                $('#address').val(data.address);
+                $('#phone_number').val(data.phone_number);
+                $('#banned').val(data.banned);
+
+                var ban_button_text = '';
+
+                if (data.banned == 0)
+                {
+                    $('#ban_button').html('<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>Ban');
+                }
+                else
+                {
+                    $('#ban_button').html('<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>Unban');
+                }
+
+                $('#groups_value').val('|');
+                for (i = 0; i < data.groups.length; i++)
+                {
+                    $('#group_' + data.groups[i].toString()).prop("checked", true);
+                    $('#groups_value').val($('#groups_value').val() + data.groups[i].toString() + '|');
+                }
+                $(".well a").removeClass("active");
+                $('#user_' + user_id).addClass("active");
+
+            }
+        });
+    }
+
+
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'user_menu.html' %}
+{% endblock %}
+
+{% block main_content %}
+<div class="">
+	<div class="row" style="margin-top: 20px;">
+        <div class="col-md-10 col-centered">
+            <ol class = "breadcrumb">
+               <li><a href = "{{ url_for('index') }}">Home</a></li>
+               <li class = "active">Admin</li>
+               <li class = "active">User Management</li>
+            </ol>
+            <h2 style="font-size: 45px;">User Management</h2>
+
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="user_search_form" method="POST" action="{{ url_for('admin.user_list') }}">
+                            {{ form.csrf_token }}
+                            {{ form.user_info(class="form-control input-lg", placeholder="Search by email or name", onkeyup="get_users();") }}
+                        </form>
+                    </div>
+                </div>
+                <!-- Search result area -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="well">
+                            <div class="list-group auto_list" id="search_results">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8" id="user_data_form">
+
+                <div id="user_content">
+                    <!-- Toolbar -->
+                    <div class="btn-toolbar" id="toolbar">
+                        <a id="save_button" type="button submit" class="btn btn-success" onclick="update_info();">
+                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save
+                        </a>
+                        <div class="btn-group">
+                            <a type="button" id="ban_button" class="btn btn-warning" onclick="change_ban_state();">
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>Ban
+                            </a>
+                        </div>
+                    </div>
+                    <br>
+                    <!-- Tabs -->
+                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a href="#basic" data-toggle="tab" aria-expanded="true">Basic information</a></li>
+                        <li class=""><a href="#groups" data-toggle="tab" aria-expanded="false">Groups</a></li>
+                    </ul>
+                    <!-- Tab content -->
+                    <input type="hidden" id="user_id" value=""/>
+                    <input type="hidden" id="banned" value=""/>
+                    <input type="hidden" id="groups_value" value="">
+                    <div id="tab-content" class="tab-content">
+                        <!-- Basic info tab -->
+                        <div class="tab-pane active" id="basic" style="margin-top:15px;">
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-3" for="email">Email address</label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" id="email" name="email" placeholder="Email" readonly="" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                     <label class="control-label col-xs-3" for="username">Username</label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" id="username" name="username" placeholder="Username" readonly="" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                     <label class="control-label col-xs-3" for="fullname">Fullname</label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" id="fullname" name="fullname" placeholder="Full name" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                     <label class="control-label col-xs-3" for="address">Address</label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" id="address" name="address" placeholder="Address" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom:15px;">
+                                <div class="form-group">
+                                     <label class="control-label col-xs-3" for="phone_number">Phone Number</label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" id="phone_number" name="phone_number" placeholder="Phone Number" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Group tab -->
+                        <div class="tab-pane" id="groups" style="height: 357px;">
+                            {% for group in groups %}
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="{{ group.id }}" id="group_{{ group.id }}" name="{{ group.id }}" onchange="group_change({{ group.id }});">{{ group.name }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

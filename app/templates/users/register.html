@@ -1,14 +1,16 @@
 {% extends "base.html" %} 
 {% block custom_css %} 
 
-{% endblock %} 
-{% block menu %} 
-	{% include 'guest_menu.html' %} 
-{% endblock %} 
+{% endblock %}
 
 {% block onload_script %}
 
-{% endblock %} 
+{% endblock %}
+
+{% block menu %}
+	{% include 'inside_menu.html' %}
+{% endblock %}
+
 {% block main_content %}
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-7 col-centered">

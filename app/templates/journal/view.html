@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block menu %}
+	{% include 'inside_menu.html' %}
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+	<div class="col-lg-10 col-centered">
+		<center><h2 style="font-size: 45px;">{{ journal.title }}</h2></center>
+        <div>Created by {{ journal.created_user.username }} at {{ journal.post_time }}</div>
+        {% if journal.is_activated == 0 %}
+        <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
+              <div class="">
+              This journal is deactivated
+              </div>
+        </div>
+        {% endif %}
+        <hr style="max-width:100%" />
+
+		<div>{{ journal.content|safe }}</div>
+        <hr style="max-width:100%" />
+        {% if journal.last_edited_user %}
+        <div style="float:right">Last edited by {{ journal.last_edited_user.username }} at {{ journal.last_edited_time }}</div>
+        {% endif %}
+        {% if g.user.is_admin() %}
+        <div style="float:left;"><a href="{{ url_for('admin.edit_journal', journal_id=journal.id) }}">Edit journal</a></div>
+        {% endif %}
+        <div style="clear:both;"></div>
+
+	</div>
+</div>
+
+
+{% endblock %}

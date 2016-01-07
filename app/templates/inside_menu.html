@@ -1,0 +1,5 @@
+{% if g.user %}
+    {% include 'user_menu.html' %}
+{% else %}
+    {% include 'guest_menu.html' %}
+{% endif %}

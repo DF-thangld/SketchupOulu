@@ -37,11 +37,32 @@
     
     <!-- jQuery -->
     <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.form.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.css') }}">
     <script src="{{ url_for('static', filename='jquery-ui-1.11.4/jquery-ui.min.js') }}"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+    <!-- Autocomplete library Tokeninput -->
+    <script src="{{ url_for('static', filename='js/jquery.tokeninput.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input-facebook.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/token-input-mac.css') }}" />
+
+    <!-- Summernote text editor -->
+    <script src="{{ url_for('static', filename='js/summernote.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/summernote.css') }}" />
+
+    <!-- Bootbox -->
+    <script src="{{ url_for('static', filename='js/bootbox.min.js') }}"></script>
+
+    <!-- File upload -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/uploadfile.css') }}" />
+    <script src="{{ url_for('static', filename='js/jquery.uploadfile.min.js') }}"></script>
+
+    <!-- Date -->
+    <script src="{{ url_for('static', filename='js/date.js') }}"></script>
 
     <!-- Plugin JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
@@ -49,6 +70,9 @@
     <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
     <script>
+    var add_comment_url = '{{ url_for('users.add_comment') }}';
+    var profile_url = '{{ url_for('static', filename='images/profile_pictures') }}';
+    var delete_comment_url = '{{ url_for('users.delete_comment') }}';
     $( document ).ready(function() {
     	
     	{% block onload_script %}
@@ -57,6 +81,9 @@
     	
     	
     });
+
+
+
     {% block js_script %}
 
     {% endblock %}
@@ -71,9 +98,14 @@
 </head>
 
 <body id="page-top">
-
+<div id="alert_panel" class="alert alert-dismissible" style="display:none;position: fixed;top: 1em;right:1em" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <span id="alert_content"></span>
+</div>
 	{% block menu %}
-	
+
 	{% endblock %}
 
     {% block main_content %}

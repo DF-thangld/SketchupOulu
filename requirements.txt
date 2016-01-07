@@ -1,3 +1,7 @@
 Flask
 flask-sqlalchemy
 Flask-WTF
+mailer
+pymysql
+validate_email
+flask-uploads
