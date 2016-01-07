@@ -15,7 +15,7 @@ need to do:
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - interactive - voxel painter</title>
+		<title>model edit view</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -35,6 +35,12 @@ need to do:
 		<script src="js/renderers/CanvasRenderer.js"></script>
 		<script src="js/renderers/Projector.js"></script>
 		<script src="js/Detector.js"></script>
+		<script src="js/dat.gui.min.js"></script>
+		<script src="js/ColladaLoader.js"></script>
+		<script src="js/loaders/OBJMTLLoader.js"></script>
+		<script src="js/loaders/DDSLoader.js"></script>
+		<script src="js/loaders/MTLLoader.js"></script>
+		<script src="js/Communication.js"></script>
 		<!-- <script src="js/stats.min.js"></script> -->
 
 		<script>
@@ -70,6 +76,8 @@ need to do:
 			// threejs variables
 			var container;
 			var camera, scene, renderer;
+			//var  gui = new dat.GUI();
+			var controlPanel;//a list contains buttons and preview pictures
 			
 			// keyboard control variables
 			var move_forward = false, move_backward = false, move_left = false, move_right = false, move_up = false, move_down = false, is_rotating = false;
@@ -93,17 +101,44 @@ need to do:
 			
 			
 			//current object the user choose
-			var current_object;
+			var current_object = new THREE.Object3D();
 
 			//all the vasiable objects in the scene
 			var objects = [];
+			
+
+				
+			
+
+			
 
 			// threejs functions
 			init();
 			animate();
-			
-			function init() 
+
+			function init()
 			{
+				//load model information
+
+				/*var ModelsArray = Communicator.getModelsFromDB("Project's name");
+
+				for (var i = 0; i < ModelsArray.length; i++) {
+					var loader = new THREE.ColladaLoader();
+					if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
+					loader.options.convertUpAxis = true; // Align the Y-axis
+
+					var model = ModelsArray[i];
+					loader.load( model.modelPath, function (collada) {
+						dae = collada.scene;
+						dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
+						dae.position.x = model.position_x;
+						dae.position.y = model.position_y;
+						dae.rotation.x += rotateManual*3;
+						scene.add(dae);
+					});
+				}*/
+
+				//document
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
@@ -113,6 +148,11 @@ need to do:
 				camera.lookAt( camera.target );
 
 				scene = new THREE.Scene();
+
+				//light
+				var ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+
 				
 				//1. build the grid
 
@@ -152,12 +192,51 @@ need to do:
 	
 				// var current_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
 				var current_material = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
-				current_object = new THREE.Mesh( object_geometry, current_material ); //Base class for Mesh objects
+				
+				//current_object = new THREE.Mesh( object_geometry, current_material ); //Base class for Mesh objects
+				/*var loader = new THREE.ColladaLoader();
+				loader.options.upAxis = 'X'; // Rotation by 90 degrees
+				loader.options.convertUpAxis = true; // Align the Y-axis
+				alert("dd");
+				loader.load( './collada/Building.dae', function ( collada ) {
+					alert("gg");
+					current_object = collada.scene;
+					//dae.scale.x = dae.scale.y = dae.scale.z = 1;
+					//dae.position.x = 0;
+					//dae.position.y = 0;
+					//dae.rotation.x += rotateManual*3;
+					//scene.add(dae);
+					scene.add( current_object );
+				});*/
 
-				current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
-				current_object.position.x = current_object.position.y = current_object.position.z = 0;
+				/*var onProgress = function ( xhr ) {
+					if ( xhr.lengthComputable ) {
+						var percentComplete = xhr.loaded / xhr.total * 100;
+						console.log( Math.round(percentComplete, 2) + '% downloaded' );
+					}
+				};
 
-				scene.add( current_object );
+				var onError = function ( xhr ) {
+				};*/
+				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+				var loader = new THREE.OBJMTLLoader();
+				loader.load( './object/building_2/building_2.obj','./object/building_2/building_2.mtl', function ( object ) {
+				//loader.load( './object/male02/male02.obj', './object/male02/male02_dds.mtl', function ( object ) {
+					//current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
+					//current_object.position.x = current_object.position.y = current_object.position.z = 0;
+					current_object= object;
+
+					scene.add( current_object );
+				
+				});
+				//}, onProgress, onError );
+
+				
+				
+
+
+
+				//scene.add( current_object );
 				
 				// add keyboard events to mode
 				document.addEventListener( 'keydown', onDocumentKeyDown, false );
@@ -171,7 +250,9 @@ need to do:
 				//mouse = new THREE.Vector3( 0, 50000, 0 );
 				//mouse = new THREE.Vector2();
 				projector = new THREE.Projector();
-				
+
+
+
 				// display the scene
 				if (window.WebGLRenderingContext)
 					renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
@@ -180,10 +261,32 @@ need to do:
 				//renderer = new THREE.CanvasRenderer();
 				renderer.setClearColor( 0xffffff );
 				renderer.setSize( window.innerWidth, window.innerHeight );
+				
+				//renderElement.width=container.width*0.8;
+				//renderElement.height=container.height*0.8;
+				//var threedview = document.createElement( 'div' );
+				//threedview.appendChild( renderer.domElement );
+				//threedview.width=container.width*0.8;
 				container.appendChild( renderer.domElement );
 				
+				//GUI  this will create a new div under the root
+				/*var params = {
+					temporaryMode: [],
+					selectMode: false,
+
+				};
+
+				gui.add(params, "temporaryMode", [ 'pizza', 'chrome', 'hooray' ]).name('Temporary Mode');
+				gui.add(params, "selectMode").name('Select Mode');
+				*/
+				//controlPanel = document.createElement( 'div' );
+				//container.appendChild( container );
+
+
+				//render
 				renderer.render( scene, camera);
 			}
+
 			
 			function onDocumentMouseMove(event)
 			{
