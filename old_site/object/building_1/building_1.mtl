@@ -7,15 +7,15 @@ Ka 0.000000 0.000000 0.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.330000 0.330000 0.330000
 
-newmtl Carpet_Pattern_Squares_Multi
+newmtl Roofing_Shingles_Asphalt
 Ka 0.000000 0.000000 0.000000
-Kd 0.541176 0.505882 0.396078
+Kd 0.435294 0.407843 0.380392
 Ks 0.330000 0.330000 0.330000
-map_Kd building_1/Carpet_Pattern_Squares_Multi.jpg
+map_Kd building_1/Roofing_Shingles_Asphalt.jpg
 
-newmtl Fabric_Linen
+newmtl Roofing_Slate_Dark
 Ka 0.000000 0.000000 0.000000
-Kd 0.631373 0.631373 0.533333
+Kd 0.388235 0.411765 0.423529
 Ks 0.330000 0.330000 0.330000
-map_Kd building_1/Fabric_Linen.jpg
+map_Kd building_1/Roofing_Slate_Dark.jpg
 

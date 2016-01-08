@@ -1,4 +1,4 @@
-<!-- 
+s<!-- 
 Pingjiang's Memo
 ----------------------------------------
 1/1/2016
@@ -36,7 +36,7 @@ need to do:
 		<script src="js/renderers/Projector.js"></script>
 		<script src="js/Detector.js"></script>
 		<script src="js/dat.gui.min.js"></script>
-		<script src="js/ColladaLoader.js"></script>
+		<!-- <script src="js/ColladaLoader.js"></script> -->
 		<script src="js/loaders/OBJMTLLoader.js"></script>
 		<script src="js/loaders/DDSLoader.js"></script>
 		<script src="js/loaders/MTLLoader.js"></script>
@@ -101,12 +101,16 @@ need to do:
 			
 			
 			//current object the user choose
-			var current_object = new THREE.Object3D();
+			//var currentchooseModel_object = new THREE.Object3D();
 
 			//all the vasiable objects in the scene
-			var objects = [];
+			var objects = [];//different objects may use same models
 			
-
+			//3D models various
+			var chooseModel=0;
+			var modelsInfo;
+			var models; //models get from databsed, no contain repeated models
+			var currentModelIndex;
 				
 			
 
@@ -119,24 +123,42 @@ need to do:
 			function init()
 			{
 				//load model information
+		
+		//initialize
+		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+		
+		models = [];
+				modelsInfo = Communicator.getModelsFromDB("Project's name");
 
-				/*var ModelsArray = Communicator.getModelsFromDB("Project's name");
+				for (var i = 0; i < modelsInfo.length; i++) {
+					var model = modelsInfo[i];
+					/*var onProgress = function ( xhr ) {
+			if ( xhr.lengthComputable ) {
+			  var percentComplete = xhr.loaded / xhr.total * 100;
+			  console.log( Math.round(percentComplete, 2) + '% downloaded' );
+			}
+		  };
 
-				for (var i = 0; i < ModelsArray.length; i++) {
-					var loader = new THREE.ColladaLoader();
-					if (tilted) loader.options.upAxis = 'X'; // Rotation by 90 degrees
-					loader.options.convertUpAxis = true; // Align the Y-axis
+		  var onError = function ( xhr ) {
+		  };*/
 
-					var model = ModelsArray[i];
-					loader.load( model.modelPath, function (collada) {
-						dae = collada.scene;
-						dae.scale.x = dae.scale.y = dae.scale.z = modelScale;
-						dae.position.x = model.position_x;
-						dae.position.y = model.position_y;
-						dae.rotation.x += rotateManual*3;
-						scene.add(dae);
-					});
-				}*/
+		  var loader = new THREE.OBJMTLLoader();
+		  loader.load( model.objPath, model.mtlPath, function ( object ) {
+			//current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
+			//current_object.position.x = current_object.position.y = current_object.position.z = 0;
+			
+			models[models.length]=object;
+			
+			if(models.length==1){
+			  current_object= object;
+			  currentModelIndex=0;
+			  scene.add( current_object );
+			}
+			
+		  
+		  });
+		  //}, onProgress, onError );
+				}
 
 				//document
 				container = document.createElement( 'div' );
@@ -192,49 +214,7 @@ need to do:
 	
 				// var current_material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5 } );
 				var current_material = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
-				
-				//current_object = new THREE.Mesh( object_geometry, current_material ); //Base class for Mesh objects
-				/*var loader = new THREE.ColladaLoader();
-				loader.options.upAxis = 'X'; // Rotation by 90 degrees
-				loader.options.convertUpAxis = true; // Align the Y-axis
-				alert("dd");
-				loader.load( './collada/Building.dae', function ( collada ) {
-					alert("gg");
-					current_object = collada.scene;
-					//dae.scale.x = dae.scale.y = dae.scale.z = 1;
-					//dae.position.x = 0;
-					//dae.position.y = 0;
-					//dae.rotation.x += rotateManual*3;
-					//scene.add(dae);
-					scene.add( current_object );
-				});*/
-
-				/*var onProgress = function ( xhr ) {
-					if ( xhr.lengthComputable ) {
-						var percentComplete = xhr.loaded / xhr.total * 100;
-						console.log( Math.round(percentComplete, 2) + '% downloaded' );
-					}
-				};
-
-				var onError = function ( xhr ) {
-				};*/
-				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
-				var loader = new THREE.OBJMTLLoader();
-				loader.load( './object/building_2/building_2.obj','./object/building_2/building_2.mtl', function ( object ) {
-				//loader.load( './object/male02/male02.obj', './object/male02/male02_dds.mtl', function ( object ) {
-					//current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
-					//current_object.position.x = current_object.position.y = current_object.position.z = 0;
-					current_object= object;
-
-					scene.add( current_object );
-				
-				});
-				//}, onProgress, onError );
-
-				
-				
-
-
+	
 
 				//scene.add( current_object );
 				
@@ -389,6 +369,9 @@ need to do:
 					
 					case 90: is_rotating = true; break; // z
 
+					case 78: chooseModel=1;//n choose next model
+					case 77: chooseModel=-1;//m choose previous model
+
 				}
 			}
 			
@@ -515,6 +498,36 @@ need to do:
 					
 				}
 				
+				//choose models
+				if(chooseModel != 0){
+
+					//remove the current from the scene
+					var position = current_object.position.clone();
+					scene.remove(current_object);
+					//add the new one
+					if(chooseModel == 1){
+						if(currentModelIndex == (models.length-1)){
+							currentModelIndex=0;
+						}else{
+							currentModelIndex++;
+						}
+					}else if(chooseModel == -1 ){
+						if(currentModelIndex == 0){
+							currentModelIndex = models.length-1;
+						}else{
+							currentModelIndex--;
+						}
+					}
+
+
+					current_object=models[currentModelIndex];
+					current_object.position.x=position.x;
+					current_object.position.y=position.y;
+					current_object.position.z=position.z;
+					scene.add(current_object);
+					chooseModel = 0;
+				}
+
 				//mouse position
 				
 				

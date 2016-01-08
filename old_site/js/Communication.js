@@ -8,22 +8,24 @@ var Communicator = {
 
 	var model_0= {
 		modelName:"Church",
-		modelPath:'./collada/Church.dae',
-		position_x:-200,
+		objPath:'./object/building_1/building_1.obj',
+		mtlPath:'./object/building_1/building_1.mtl',
+		position_x:0,
 		position_y:0,
 	};
 	var model_1= {
-		modelName:"Building",
-		modelPath:'./collada/Building.dae',
-		position_x:200,
+		modelName:"Church",
+		objPath:'./object/building_2/building_2.obj',
+		mtlPath:'./object/building_2/building_2.mtl',
+		position_x:0,
 		position_y:0,
-	}; 
-	var model_2= {
+	};
+	/*var model_2= {
 		modelName:"Church",
 		modelPath:'./collada/Church.dae',
 		position_x:-200,
 		position_y:0,
-	};
+	};*/
 
 	var ModelsArray = [];
 	ModelsArray[0]=model_0;
