@@ -1,4 +1,5 @@
 import json
+import datetime
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
@@ -38,11 +39,24 @@ def login():
                 # the session can't be modified as it's signed,
                 # it's a safe place to store the user id
                 session['user_id'] = user.id
-                g.user = user
+
                 flash('Welcome %s' % user.username)
+
+                user.last_login = datetime.datetime.now()
+                user.last_login_attempt = None
+                user.login_attempts = 0
+                db.session.commit()
+
+                g.user = user
                 return redirect(url_for('users.profile'))
+            elif user and not check_password_hash(user.password, form.password.data):
+                user.last_login_attempt = datetime.datetime.now()
+                user.login_attempts += 1
+                db.session.commit()
+                errors.append('Wrong email or password')
+                return render_template("users/login.html", form=form, errors=errors)
             else:
-                errors.append('Login fail, wrong email or password')
+                errors.append('Wrong email or password')
                 return render_template("users/login.html", form=form, errors=errors)
         else:
             for error in form.email.errors:
