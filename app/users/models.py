@@ -39,9 +39,9 @@ class User(db.Model):
     scenarios_current_page = 0
     building_models_total_page = 0
     building_models_current_page = 0
-    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
+    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id', use_alter=True))
     comment_topic = db.relationship("CommentTopic",
-                                    primaryjoin="User.comment_topic_id==CommentTopic.id")
+                                    primaryjoin="User.comment_topic_id==CommentTopic.id", post_update=True)
 
     def __init__(self, username='', email='', password=''):
         self.username = username
