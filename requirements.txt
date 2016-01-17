@@ -5,3 +5,4 @@ mailer
 pymysql
 validate_email
 flask-uploads
+Flask-Testing

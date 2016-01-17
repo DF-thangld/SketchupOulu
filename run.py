@@ -5,11 +5,10 @@ from app import app
 
 @app.before_request
 def before_request():
+    g.user = None
     if session.get('user_id'):
         user = User.query.filter_by(id=session.get('user_id')).first()
         g.user = user
-    else:
-        g.user = None
 
 #app.config['SERVER_NAME'] = '127.0.0.1:5000'
 if __name__ == '__main__':

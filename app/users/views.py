@@ -52,6 +52,9 @@ def login():
             elif user and not check_password_hash(user.password, form.password.data):
                 user.last_login_attempt = datetime.datetime.now()
                 user.login_attempts += 1
+
+                #TODO: check and maybe banned user
+
                 db.session.commit()
                 errors.append('Wrong email or password')
                 return render_template("users/login.html", form=form, errors=errors)
