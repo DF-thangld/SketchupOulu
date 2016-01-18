@@ -1,7 +1,6 @@
 import json
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
-import jsonpickle
 
 from app import db
 from app.journal.models import JournalCategory, Journal
