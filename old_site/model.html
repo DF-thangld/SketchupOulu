@@ -1,4 +1,4 @@
-s<!-- 
+<!-- 
 Pingjiang's Memo
 ----------------------------------------
 1/1/2016
@@ -42,6 +42,7 @@ need to do:
 		<script src="js/loaders/MTLLoader.js"></script>
 		<script src="js/Communication.js"></script>
 		<!-- <script src="js/stats.min.js"></script> -->
+		<script src="js/controls/OrbitControls.js"></script>
 
 		<script>
 		/* 
@@ -75,9 +76,10 @@ need to do:
 			
 			// threejs variables
 			var container;
-			var camera, scene, renderer;
+			var camera, scene, renderer,controls;
 			//var  gui = new dat.GUI();
-			var controlPanel;//a list contains buttons and preview pictures
+			//var controlPanel;//a list contains buttons and preview pictures
+			var plane;
 			
 			// keyboard control variables
 			var move_forward = false, move_backward = false, move_left = false, move_right = false, move_up = false, move_down = false, is_rotating = false;
@@ -111,7 +113,9 @@ need to do:
 			var modelsInfo;
 			var models; //models get from databsed, no contain repeated models
 			var currentModelIndex;
-				
+			
+			//dropdown list
+			var geometryIndex = 0;
 			
 
 			
@@ -120,49 +124,74 @@ need to do:
 			init();
 			animate();
 
+			
+			
 			function init()
 			{
+			
 				//load model information
-		
-		//initialize
-		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
-		
-		models = [];
+				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+				models = [];
 				modelsInfo = Communicator.getModelsFromDB("Project's name");
 
-				for (var i = 0; i < modelsInfo.length; i++) {
+				for ( var i = 0; i < modelsInfo.length; i++) {
 					var model = modelsInfo[i];
 					/*var onProgress = function ( xhr ) {
-			if ( xhr.lengthComputable ) {
-			  var percentComplete = xhr.loaded / xhr.total * 100;
-			  console.log( Math.round(percentComplete, 2) + '% downloaded' );
-			}
-		  };
+					if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log( Math.round(percentComplete, 2) + '% downloaded' );
+					}
+					};
 
-		  var onError = function ( xhr ) {
-		  };*/
+					var onError = function ( xhr ) {
+					};*/
 
-		  var loader = new THREE.OBJMTLLoader();
-		  loader.load( model.objPath, model.mtlPath, function ( object ) {
-			//current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
-			//current_object.position.x = current_object.position.y = current_object.position.z = 0;
-			
-			models[models.length]=object;
-			
-			if(models.length==1){
-			  current_object= object;
-			  currentModelIndex=0;
-			  scene.add( current_object );
-			}
-			
-		  
-		  });
-		  //}, onProgress, onError );
-				}
+					var loader = new THREE.OBJMTLLoader();
+					loader.load( model.objPath, model.mtlPath, function ( object ) {
+						//current_object.scale.x = current_object.scale.y = current_object.scale.z = 1;
+						//current_object.position.x = current_object.position.y = current_object.position.z = 0;
+
+						models[models.length]=object;
+
+						if(models.length==1){
+						current_object= object;
+						currentModelIndex=0;
+						scene.add( current_object );
+						}
+					});
+					//}, onProgress, onError );
+				}	
 
 				//document
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
+				
+				//dropdown list
+				info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '10px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+				//info.innerHTML = 'Click to place the building. ';
+				container.appendChild( info );
+				
+				var dropdown = '<select id="dropdown" onchange="switchGeometry(this.value)">';
+
+				for ( var i = 0; i < modelsInfo.length; i++) {
+					dropdown += '<option value="' + i + '"';
+
+					dropdown += (geometryIndex == i)  ? ' selected' : '';
+
+					dropdown += '>' + modelsInfo[i].modelName + '</option>';
+				}
+
+				dropdown += '</select>';
+
+				info.innerHTML = '<br>Choose Building: ' + dropdown; 
+				
+				
+				//webgl
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
 				camera.position.set( views[0].x, views[0].y, views[0].z );
@@ -202,7 +231,7 @@ need to do:
 				geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
 				geometry.rotateX( - Math.PI / 2 );
 
-				var plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+				plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
 				scene.add( plane );
 
 				objects.push( plane ); 
@@ -239,7 +268,8 @@ need to do:
 				else
 					renderer = new THREE.CanvasRenderer(); //using the (slower) Canvas 2D Context API
 				//renderer = new THREE.CanvasRenderer();
-				renderer.setClearColor( 0xffffff );
+				renderer.setClearColor( 0xf0f0f0 ); //0xffffff
+				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				
 				//renderElement.width=container.width*0.8;
@@ -249,25 +279,31 @@ need to do:
 				//threedview.width=container.width*0.8;
 				container.appendChild( renderer.domElement );
 				
-				//GUI  this will create a new div under the root
-				/*var params = {
-					temporaryMode: [],
-					selectMode: false,
-
-				};
-
-				gui.add(params, "temporaryMode", [ 'pizza', 'chrome', 'hooray' ]).name('Temporary Mode');
-				gui.add(params, "selectMode").name('Select Mode');
-				*/
-				//controlPanel = document.createElement( 'div' );
-				//container.appendChild( container );
+				//controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 
 				//render
 				renderer.render( scene, camera);
 			}
 
-			
+			function switchGeometry(i) {
+
+				//remove the current from the scene
+				var position = current_object.position.clone();
+				scene.remove(current_object);
+					
+				geometryIndex = i;
+				
+				currentModelIndex= i;
+				
+				current_object=models[currentModelIndex];
+				current_object.position.x=position.x;
+				current_object.position.y=position.y;
+				current_object.position.z=position.z;
+				scene.add(current_object);
+				chooseModel = 0;
+				
+			}
 			function onDocumentMouseMove(event)
 			{
 				event.preventDefault();
@@ -305,7 +341,7 @@ need to do:
 			}
 			function onDocumentMouseDown( event ) {
 
-				event.preventDefault();
+				//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
 
 				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 
@@ -323,15 +359,14 @@ need to do:
 
 					// delete building
 
-					if ( isShiftDown ) {
+					if ( isShiftDown ) {//remove not work
 
-						if ( intersect.object != plane ) {
+						//if ( intersect.object != plane ) {
 
-							scene.remove( intersect.object );
+							//scene.remove( intersect.object );
+							//objects.splice( objects.indexOf( intersect.object ), 1 );
 
-							objects.splice( objects.indexOf( intersect.object ), 1 );
-
-						}
+						//}
 
 					// create building
 
@@ -411,6 +446,8 @@ need to do:
 
 				requestAnimationFrame( animate );
 
+				//controls.update();
+				
 				render();
 
 			}

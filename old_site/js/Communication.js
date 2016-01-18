@@ -7,14 +7,14 @@ var Communicator = {
 	getModelsFromDB: function (parameters) {
 
 	var model_0= {
-		modelName:"Church",
+		modelName:"building_1",
 		objPath:'./object/building_1/building_1.obj',
 		mtlPath:'./object/building_1/building_1.mtl',
 		position_x:0,
 		position_y:0,
 	};
 	var model_1= {
-		modelName:"Church",
+		modelName:"building_2",
 		objPath:'./object/building_2/building_2.obj',
 		mtlPath:'./object/building_2/building_2.mtl',
 		position_x:0,
