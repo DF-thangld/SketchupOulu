@@ -28,7 +28,7 @@ class SketchupOuluUnitTest(TestCase):
 
     def logout(self):
         with app.app_context():
-            resp = self.client.post('users/logout', data=input_data, follow_redirects=True)
+            resp = self.client.post('users/logout', follow_redirects=True)
 		
     def login_as_admin(self):
         self.login('df.thangld@hotmail.com', 'abc')
