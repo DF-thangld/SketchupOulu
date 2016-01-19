@@ -19,7 +19,7 @@ class SketchupOuluUnitTest(TestCase):
 
     def login(self, email, password):
 	
-		input_data = {
+        input_data = {
             "email": email,
             "password": password
         }
@@ -27,14 +27,14 @@ class SketchupOuluUnitTest(TestCase):
             resp = self.client.post('users/login', data=input_data, follow_redirects=True)
 
     def logout(self):
-		with app.app_context():
+        with app.app_context():
             resp = self.client.post('users/logout', data=input_data, follow_redirects=True)
 		
-	def login_as_admin(self):
-		self.login('df.thangld@hotmail.com', 'abc')
+    def login_as_admin(self):
+        self.login('df.thangld@hotmail.com', 'abc')
 		
-	def login_as_user(self):
-		self.login('dreamingfighter@gmail.com', 'abc')
+    def login_as_user(self):
+        self.login('dreamingfighter@gmail.com', 'abc')
 
     def test_login_sucess(self):
         input_data = {
