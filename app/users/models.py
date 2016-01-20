@@ -1,5 +1,4 @@
-
-import sqlalchemy
+import datetime
 from app import db
 import app.sketchup.models as sketchup
 
@@ -20,6 +19,7 @@ class User(db.Model):
     phone_number = db.Column(db.String(80), default='')
     fullname = db.Column(db.String(80), default='')
     birthdate = db.Column(db.DateTime)
+    join_date = db.Column(db.DateTime)
     profile_picture = db.Column(db.String(80), default='default_profile.png')
 
     last_login = db.Column(db.DateTime)
@@ -48,6 +48,7 @@ class User(db.Model):
         self.email = email
         self.password = password
         self.comment_topic = sketchup.CommentTopic('Comments for user id ' + self.username, self, 'user')
+        self.join_date = datetime.datetime.now()
 
     def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
