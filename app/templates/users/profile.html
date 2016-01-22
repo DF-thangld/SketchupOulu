@@ -11,7 +11,8 @@
     else if (window.location.hash.substr(1) == 'change_password')
         display_change_password();
     else
-        get_user_profile();
+        //get_user_profile();
+        console.log('do nothing');
 
     $(document).on('click', '#profile_menu li', function() {
         $("#profile_menu li").removeClass("active");
@@ -111,15 +112,67 @@
 
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
-					<li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
-                    <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
-					<li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
-					<li id="menu_scenarios" class=""><a href="{{ url_for('users.building_models') }}">Building models</a></li>
-				</ul>
+                <li id="menu_homepage"><a href="#homepage" onclick="get_user_homepage();">Homepage</a></li>
+                <li id="menu_comment"><a href="#comments" onclick="get_user_comments();">Comments</a></li>
+                <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
+                <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
+                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
+                <li id="menu_scenarios" class=""><a href="{{ url_for('users.building_models') }}">Building models</a></li>
+            </ul>
 		</div>
 
         <div class="col-md-9" id="user_data_form">
+            <div id="user_profile_panel">
+                <div id="profile_picture" style="float:left;">
+                    <img src="{{ url_for('static', filename='images/profile_pictures/default_profile.png') }}" />
+                </div>
+                <div id="profile_basic_info" style="float:left;margin-left:10px;">
+                    <div id="homepage_fullname" style="display: block;font-size: 26px;line-height: 30px;text-overflow: ellipsis;">Thang Luu</div>
+                    <div id="homepage_username" style="margin-top:5px;display: block;font-size: 20px;font-style: normal;font-weight: 300;line-height: 24px;color: #666;text-overflow: ellipsis;">DreamingFighter</div>
+                    <div id="" style="border-top: 1px solid #eee;margin-top:5px;font-size: 14px;">Joined on 2014/05/23</div>
+                </div>
+                <div style="clear:both"></div>
 
+                <div id="homepage_scenarios_panel" style="margin-top:10px;">
+                    <div class="detailBox">
+                        <div class="titleBox">
+                          <label>Scenarios</label>
+                        </div>
+                        <div class="actionBox">
+                            <ul class="commentList" id="scenario_list">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="homepage_building_models_panel" style="margin-top:10px;">
+                    <div class="detailBox">
+                        <div class="titleBox">
+                          <label>Scenarios</label>
+                        </div>
+                        <div class="actionBox">
+                            <ul class="commentList" id="building_model_list">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="homepage_comments_panel" style="margin-top:10px;">
+                    <div class="detailBox">
+                        <div class="titleBox">
+                          <label>Scenarios</label>
+                        </div>
+                        <div class="actionBox">
+                            <ul class="commentList" id="comment_list">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 		</div>
 
         <div id="change_password" style="display:none;">

@@ -249,11 +249,7 @@ def upload_profile_picture():
 
     return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
 
-@mod.route('/building_models/', methods=['GET', 'POST'])
-@requires_login
-def building_models():
 
-    return 'building_models'
 
 @mod.route('/scenarios/', methods=['GET', 'POST'])
 @requires_login
@@ -359,3 +355,13 @@ def delete_comment():
     else:
         errors.append('Unauthorized deletion')
         return json.dumps(errors), 403
+
+@mod.route('/building_models/', methods=['GET', 'POST'])
+@requires_login
+def building_models():
+    return url_for('users.user_building_models', username='thangld')
+
+@mod.route('/<username>/building_models/', methods=['GET', 'POST'])
+@requires_login
+def user_building_models(username):
+    return 'building_models' + username
