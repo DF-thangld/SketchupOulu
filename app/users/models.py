@@ -49,6 +49,8 @@ class User(db.Model):
         self.password = password
         self.comment_topic = sketchup.CommentTopic('Comments for user id ' + self.username, self, 'user')
         self.join_date = datetime.datetime.now()
+        public_group = Group.query.filter_by(id=2).first()
+        self.groups.append(public_group)
 
     def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
