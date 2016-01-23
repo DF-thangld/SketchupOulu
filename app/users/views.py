@@ -241,7 +241,7 @@ def logout():
         session_info = session_id.split('|')
         user_id = int(session_info[0])
         token = session_info[1]
-        user_session = UserSession.query.filter(user_id==user_id, token==token).first()
+        user_session = UserSession.query.filter(UserSession.user_id==user_id, UserSession.token==token).first()
         if user_session is not None:
             db.session.delete(user_session)
             db.session.commit()
