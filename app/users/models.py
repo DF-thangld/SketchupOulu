@@ -1,6 +1,7 @@
 import datetime
 from app import db
 import app.sketchup.models as sketchup
+import app.utilities as utilities
 
 user_to_group = db.Table('user_to_group',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
@@ -52,6 +53,18 @@ class User(db.Model):
         public_group = Group.query.filter_by(id=2).first()
         self.groups.append(public_group)
 
+    def __eq__(self, other):
+
+        if other is None:
+            return False
+
+        if isinstance(other, User):
+            return self.username == other.username
+        return False
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
         if include_group:
@@ -97,9 +110,14 @@ class User(db.Model):
                 scenarios.append(scenario.to_dict())
             return scenarios
 
-    def get_available_building_models(self, return_dict=False):
-        query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
-                .order_by(sketchup.BuildingModel.created_time.desc())
+    def get_available_building_models(self, filter_text='', page=1, return_dict=False, include_site_model=False):
+        if filter_text!='':
+            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                    .filter(sketchup.BuildingModel.name.like('%'+filter_text+'%'))\
+                    .order_by(sketchup.BuildingModel.created_time.desc())
+        else:
+            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                    .order_by(sketchup.BuildingModel.created_time.desc())
         building_models = query.all()
         #TODO: get pre-defined models
 
@@ -110,7 +128,10 @@ class User(db.Model):
             for building_model in building_models:
                 building_models_array.append(building_model.to_dict())
             return building_models_array
-
+    
+    def get_comments(self):
+        return self.comment_topic.to_dict()['comments']
+        
     def get_building_models(self, page=1, filter_text='', return_dict=False):
         if filter_text != '':
             query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
@@ -160,3 +181,21 @@ class Group(db.Model):
 
     def __repr__(self):
         return '<Group %r>' % (self.name)
+
+class UserSession(db.Model):
+
+    __tablename__ = 'user_sessions'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    token = db.Column(db.String(100), unique=True)
+    generated_time = db.Column(db.DateTime)
+    expired_time = db.Column(db.DateTime)
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.token = utilities.generate_random_string(100)
+        self.generated_time = datetime.datetime.now()
+        self.expired_time = self.generated_time + datetime.timedelta(days=30)
+
+    def __repr__(self):
+        return '<UserSession %r>' % (str(self.user_id))

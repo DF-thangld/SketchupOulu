@@ -1,23 +1,37 @@
 import json
 import datetime
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.uploads import UploadSet, IMAGES
 
 from app import db, send_mail, upload_picture
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
-from app.users.models import User
+from app.users.models import User, UserSession
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
 
 mod = Blueprint('users', __name__, url_prefix='/users')
 
+
+
+@mod.route('/<username>/profile/')
+def profile(username):
+
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return render_template('404.html')
+
+    scenarios = user.get_scenarios(return_dict=True)
+    building_models = user.get_available_building_models(return_dict=True)
+    comments = user.get_comments()
+    return render_template("users/profile.html", user=user, scenarios=scenarios, building_models=building_models, comments=comments)
+
 @mod.route('/profile/')
 @requires_login
-def profile():
-    return render_template("users/profile.html", user=g.user)
+def own_profile():
+    return profile(g.user.username)
 
 @mod.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -40,15 +54,22 @@ def login():
                 # it's a safe place to store the user id
                 session['user_id'] = user.id
 
-                flash('Welcome %s' % user.username)
-
                 user.last_login = datetime.datetime.now()
                 user.last_login_attempt = None
                 user.login_attempts = 0
+
+                #add remember
+                user_session = UserSession(user.id)
+                db.session.add(user_session)
                 db.session.commit()
+                response = make_response(redirect(url_for('users.own_profile')))
+
+                cookie_value = str(user.id) + '|' + user_session.token
+                response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5))
+
 
                 g.user = user
-                return redirect(url_for('users.profile'))
+                return response
             elif user and not check_password_hash(user.password, form.password.data):
                 user.last_login_attempt = datetime.datetime.now()
                 user.login_attempts += 1
@@ -138,7 +159,7 @@ def reset_password():
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
-            send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
+            send_mail([user.email], '[SketchupOulu] Your new password', email_content)
             return render_template("users/reset_password_confirmed.html"), 200
 
     form = ResetPasswordForm(request.form)
@@ -167,7 +188,7 @@ def reset_password():
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
-            send_mail([user.email], '[SketchupOulu] Reset your password‏', email_content)
+            send_mail([user.email], '[SketchupOulu] Reset your password', email_content)
             user.password_token = ''
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
@@ -213,7 +234,23 @@ def change_password():
 @requires_login
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+
+    #remove old token from database
+    session_id = request.cookies.get('session_id')
+    if session_id is not None and session_id != '':
+        session_info = session_id.split('|')
+        user_id = int(session_info[0])
+        token = session_info[1]
+        user_session = UserSession.query.filter(user_id==user_id, token==token).first()
+        if user_session is not None:
+            db.session.delete(user_session)
+            db.session.commit()
+
+    #remove old token from client cookie
+    response = make_response(redirect(url_for('index')))
+    response.set_cookie('session_id', '', expires=0)
+
+    return response
 
 @mod.route('/user_profile/', methods=['GET', 'POST'])
 @requires_login
