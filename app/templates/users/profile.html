@@ -8,11 +8,16 @@
         get_building_models();
     else if (window.location.hash.substr(1) == 'scenarios')
         get_building_models();
+    else if (window.location.hash.substr(1) == 'comments')
+        display_comments();
+    {% if g.user and g.user.username==user.username %}
+    else if (window.location.hash.substr(1) == 'change_password')
+        get_user_profile();
     else if (window.location.hash.substr(1) == 'change_password')
         display_change_password();
+    {% endif %}
     else
-        //get_user_profile();
-        console.log('do nothing');
+        display_homepage();
 
     $(document).on('click', '#profile_menu li', function() {
         $("#profile_menu li").removeClass("active");
@@ -22,6 +27,63 @@
 
 
 {% block js_script %}
+
+
+    function display_comments()
+    {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_comment').addClass('active');
+        $('#user_data_form').fadeOut('fast');
+        $('#user_data_form').html('');
+        $('#comment_list').html('');
+		$.ajax({
+			type: "GET",
+            dataType: 'json',
+            data: {'comment_type': 'user',
+                    'comment_id': {{ user.id }},
+                    'page': $('#comment_current_page').val()},
+			url: "{{ url_for('users.get_comments') }}",
+			success: function(data)
+            {
+				console.log(data);
+
+                for (i=0; i < data.comments.length; i++)
+                {
+                    comment = data.comments[i];
+                    var new_comment_html = '';
+                    new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
+                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By ' + comment.owner.username + ' on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+                    $('#comment_list').append(new_comment_html);
+                }
+                $('#user_data_form').html($('#user_comment_panel').html());
+                $('#user_data_form').fadeIn('fast');
+
+
+			}
+		});
+    }
+
+    function display_homepage()
+    {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_homepage').addClass('active');
+        $('#user_data_form').fadeOut('fast');
+        $('#user_data_form').html($('#homepage_panel').html());
+        $('#user_data_form').fadeIn('fast');
+    }
+    function get_user_scenarios()
+    {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_scenarios').addClass('active');
+    }
+
+    function get_building_models()
+    {
+        $("#profile_menu li").removeClass("active");
+        $('#menu_building_models').addClass('active');
+    }
+
+
     {% if g.user and g.user.username==user.username %}
     function get_user_profile()
     {
@@ -81,17 +143,7 @@
     }
     {% endif %}
 
-    function get_user_scenarios()
-    {
-        $("#profile_menu li").removeClass("active");
-        $('#menu_scenarios').addClass('active');
-    }
 
-    function get_building_models()
-    {
-        $("#profile_menu li").removeClass("active");
-        $('#menu_building_models').addClass('active');
-    }
 
 
 
@@ -114,8 +166,8 @@
 
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
-                <li id="menu_homepage"><a href="#homepage" onclick="get_user_homepage();">Homepage</a></li>
-                <li id="menu_comment"><a href="#comments" onclick="get_user_comments();">Comments</a></li>
+                <li id="menu_homepage"><a href="#homepage" onclick="display_homepage();">Homepage</a></li>
+                <li id="menu_comment"><a href="#comments" onclick="display_comments();">Comments</a></li>
                 {% if g.user and g.user.username==user.username %}
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
                 <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
@@ -169,35 +221,28 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div id="homepage_comments_panel" style="margin-top:10px;">
-                    <div class="detailBox">
-                        <div class="titleBox">
-                          <label>Comments</label>
+            <div id="user_comment_panel" style="display:none;">
+
+                <div class="detailBox">
+                    <div class="titleBox">
+                      <label>Comment Box</label>
+                    </div>
+                    <div class="commentBox">
+                        <input type="hidden" id="comment_type" value="user" />
+                        <input type="hidden" id="object_id" value="{{ user.id }}" />
+                        <input type="hidden" id="comment_current_page" value="1" />
+                        <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
+                        <div class="form-group">
+                            <button class="btn btn-default" onclick="add_comment();">Add</button>
                         </div>
-                        <div class="actionBox">
-                            <ul class="commentList" id="comment_list">
-							{% for comment in comments %}
-                            <li id="comment_{{ comment.id }}">
-                                <div class="commenterImage">
-                                    <img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures/' + comment.owner.profile_picture) }}" />
-                                </div>
-                                <div class="commentText">
-                                    <p class="" id="comment_content_{{ comment.id }}">{{ comment.content }}</p>
-                                    <span class="date sub-text">By {{ comment.owner.username }} on {{ comment.created_time }}</span>
-                                    {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == scenario.owner.username) %}
-                                    <span class="date sub-text"> (<a href="#" onclick="display_edit_comment_form({{ comment.id }});">Edit</a> - <a href="#" onclick="delete_comment({{ comment.id }});">Delete</a>)</span>
-                                    {% endif %}
-                                </div>
-                                {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == scenario.owner.username) %}
-                                <div id="edit_comment_panel" style="display:none;">
-                                <textarea id="edit_panel_content_{{ comment.id }}">{{ comment.content }}</textarea>
-                                </div>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                            </ul>
-                        </div>
+                    </div>
+                    <div class="actionBox">
+                        <ul class="commentList" id="comment_list">
+
+                        </ul>
+
                     </div>
                 </div>
 

@@ -286,6 +286,34 @@ def upload_profile_picture():
 
     return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
 
+@mod.route('/get_comments/')
+def get_comments():
+    comment_type = request.args.get('comment_type', '')
+    comment_id = request.args.get('comment_id', '')
+    page = request.args.get('page', '1')
+
+    if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
+        return json.dumps(['Comment topic not found']), 404
+    if page.isdigit():
+        page = int(page)
+        if page < 1:
+            page = 1
+    else:
+        page = 1
+
+    main_object = None
+    if comment_type == 'user':
+        main_object = User.query.filter_by(id=comment_id).first()
+    elif comment_type == 'scenario':
+        main_object = Scenario.query.filter_by(id=comment_id).first()
+    elif comment_type == 'building_model':
+        main_object = BuildingModel.query.filter_by(id=comment_id).first()
+    if main_object is None:
+        return json.dumps(['Comment topic not found']), 404
+
+    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
+                       'total_page': main_object.comment_topic.total_page,
+                       'current_page': main_object.comment_topic.current_page})
 
 
 @mod.route('/scenarios/', methods=['GET', 'POST'])
@@ -362,8 +390,15 @@ def add_comment():
             errors.append('You don\'t have permission to add comment here')
             return json.dumps(errors), 401
         comment_topic = building_model.comment_topic
+    elif comment_type == 'user':
+        user = User.query.get(object_id)
+        if user is None:
+            errors.append('User not found')
+            return json.dumps(errors), 404
+        comment_topic = user.comment_topic
     else:
         errors.append('Comment type not found')
+        return json.dumps(errors), 401
 
     new_comment = Comment(g.user, comment_topic, content)
     db.session.add(new_comment)

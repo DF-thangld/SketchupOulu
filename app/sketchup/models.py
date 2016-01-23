@@ -151,7 +151,7 @@ class CommentTopic(db.Model):
         else:
             comments = []
             for comment in page_data.items:
-                comments.append(comment.to_dict())
+                comments.append(comment.to_dict(include_owner=True))
             return comments
 
     def to_dict(self, include_owner=False):
