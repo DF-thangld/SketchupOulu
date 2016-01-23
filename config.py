@@ -33,5 +33,5 @@ EMAIL = {'from': 'Sketchup Oulu <sketchup_oulu@hotmail.com>',
          'smtp_port': 465}
 
 EMAIL_PICTURE = os.path.join('static', 'images', 'email_pictures')
-BASE_URL = 'http://localhost:5000/'
-EMAIL_PICTURE_URL = BASE_URL + 'static/images/email_pictures/'
+APPLICATION_ROOT = 'http://localhost/'
+EMAIL_PICTURE_URL = APPLICATION_ROOT + 'static/images/email_pictures/'

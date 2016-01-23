@@ -64,6 +64,10 @@
     <!-- Date -->
     <script src="{{ url_for('static', filename='js/date.js') }}"></script>
 
+    <!-- Facebox -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/facebox.css') }}" />
+    <script src="{{ url_for('static', filename='js/facebox.js') }}"></script>
+
     <!-- Plugin JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.fittext.js') }}"></script>
@@ -73,8 +77,10 @@
     var add_comment_url = '{{ url_for('users.add_comment') }}';
     var profile_url = '{{ url_for('static', filename='images/profile_pictures') }}';
     var delete_comment_url = '{{ url_for('users.delete_comment') }}';
-    $( document ).ready(function() {
-    	
+    $( document ).ready(function()
+    {
+        $.facebox.settings.closeImage = '{{ url_for('static', filename='images/closelabel.png') }}';
+        $.facebox.settings.loadingImage = '{{ url_for('static', filename='images/loading.gif') }}';
     	{% block onload_script %}
 		
 		{% endblock %}

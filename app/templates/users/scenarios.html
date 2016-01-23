@@ -23,7 +23,7 @@
         };
         $.ajax({
             type: "POST",
-            url: "{{ url_for('users.get_user_scenarios') }}",
+            url: "{{ url_for('users.get_user_scenarios', username=user.username) }}",
             data: post_data,
             dataType: 'json',
             success: function(data) {
@@ -68,13 +68,14 @@
                     $('#last_edited_user').html(data.last_edited_user.username);
                     $('#last_edited_time').html(Date.parse(data.last_edited_time).toString('dd.MM.yyyy hh:mm:ss'));
                 }
+                $('#comment_list').html('');
 
                 for (i=0; i < data.comments.length; i++)
                 {
                     comment = data.comments[i];
                     var new_comment_html = '';
                     new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
-                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By ' + comment.owner.username + ' on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
                     $('#comment_list').append(new_comment_html);
                 }
             }
@@ -95,8 +96,8 @@
         <div class="col-md-10 col-centered">
             <ol class = "breadcrumb">
                <li><a href = "{{ url_for('index') }}">Home</a></li>
-               <li class = "active">{{ g.user.username }}</li>
-               <li class = "active">Scenarios</li>
+               <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
+               <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">Scenarios</a></li>
             </ol>
             <h2 style="font-size: 45px;">{{ g.user.username }}'s Scenarios</h2>
 
@@ -106,7 +107,7 @@
                         <a type="button" style="width:100%; margin-bottom:10px;" class="btn btn-primary" href="{{ url_for('users.add_scenario') }}">
                             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add scenario
                         </a>
-                        <form id="scenario_search_form" method="POST" action="{{ url_for('users.get_user_scenarios') }}">
+                        <form id="scenario_search_form" method="POST" action="{{ url_for('users.get_user_scenarios', username=user.username) }}">
                             <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_scenarios();" placeholder="Search by scenario name" type="text" value="">
                         </form>
                     </div>

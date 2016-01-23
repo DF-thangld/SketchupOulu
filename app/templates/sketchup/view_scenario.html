@@ -12,7 +12,33 @@
 {% endblock %}
 
 {% block js_script %}
-
+{% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
+    function update_scenario()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
+            data: {'scenario_name': $('#facebox #scenario_name').val(),
+                    'is_public': $('#facebox #is_public').prop('checked')?'1':'0'},
+            dataType: 'json',
+            success: function(data) {
+                $('#edit_scenario #scenario_name').val($('#facebox #scenario_name').val());
+                $('#edit_scenario #is_public').prop('checked', $('#facebox #is_public').prop('checked'));
+                $('#bread_crum_scenario_name').html($('#facebox #scenario_name').val());
+                $('#title_scenario_name').html($('#facebox #scenario_name').val());
+                $.facebox.close();
+                show_alert('alert-success', 'Scenario saved!');
+            },
+            error: function(data)
+            {
+                $('#facebox #update_scenario_errors').html('');
+                for (i = 0; i < data.responseJSON.length; i++)
+                    $('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+                $('#facebox #update_scenario_errors').fadeIn('fast');
+            }
+        });
+    }
+{% endif %}
 
 {% endblock %}
 
@@ -22,12 +48,54 @@
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
-           <li class = "active">{{ scenario.owner.username }}</li>
-           <li class = "active"><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
-           <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></li>
+           <li class = "active"><a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a></li>
+           <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">Scenarios</a></li>
+           <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="bread_crum_scenario_name">{{ scenario.name }}</a></li>
         </ol>
-		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></h2>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a></h2>
+            <div style="float:left;">
+                <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
+            </div>
+            <div style="float:left; margin-left:10px;">
+                <div>Created by <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> at {{ scenario.created_time }}</div>
+                {% if scenario.last_edited_user %}
+                <div>Last edited by <a href="{{ url_for('users.profile', username=scenario.last_edited_user.username) }}">{{ scenario.last_edited_user.username }}</a> at {{ scenario.last_edited_time }}</div>
+                {% endif %}
+                {% if scenario.is_public==0 %}
+                <div style="color:red">The scenario is deactivated</div>
+                {% endif %}
+                {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
+                <a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());">Edit settings</a>
+                <div id="edit_scenario" style="display:none">
+                    <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit scenario</h1>
+                    <div style="color:red;display:none;" id="update_scenario_errors"></div>
+                    <dl class="form">
+                        <dt class="input-label">
+                            <label autocapitalize="off" autofocus="autofocus" for="name">Scenario name</label>
+                        </dt>
+                        <dd>
+                            <input type="text" id="scenario_name" name="scenario_name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ scenario.name }}">
+                        </dd>
+                    </dl>
+                    <dl class="form">
+                        <dt class="input-label">
+                            <label autocapitalize="off" for="is_public">Public</label> <input type="checkbox" id="is_public" name="is_public" value="1" {% if scenario.is_public==1 %}checked{% endif %}/>
+                        </dt>
+                        <dd>
 
+                        </dd>
+                    </dl>
+                    <div style="float:right;">
+                        <button class="btn btn-primary" onclick="update_scenario();">Update</button>
+                        <button class="btn" onclick="$.facebox.close();">Cancel</button>
+                    </div>
+                    <div style="clear:both"></div>
+
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="clear:both"></div>
             <input type="hidden" name="addition_information" value="" id="addition_information"/>
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
@@ -39,7 +107,6 @@
 				</dt>
 				<dd>
                     <div id="scenario_comment_panel" style="margin-top:10px;">
-
                         <div class="detailBox">
                             <div class="titleBox">
                               <label>Comment Box</label>

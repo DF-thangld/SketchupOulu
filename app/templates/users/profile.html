@@ -11,7 +11,7 @@
     else if (window.location.hash.substr(1) == 'comments')
         display_comments();
     {% if g.user and g.user.username==user.username %}
-    else if (window.location.hash.substr(1) == 'change_password')
+    else if (window.location.hash.substr(1) == 'profile')
         get_user_profile();
     else if (window.location.hash.substr(1) == 'change_password')
         display_change_password();
@@ -52,7 +52,7 @@
                     comment = data.comments[i];
                     var new_comment_html = '';
                     new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
-                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By ' + comment.owner.username + ' on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
+                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
                     $('#comment_list').append(new_comment_html);
                 }
                 $('#user_data_form').html($('#user_comment_panel').html());
@@ -159,7 +159,7 @@
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
-           <li class = "active">{{ user.username }}</li>
+           <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
            <li class = "active">Profile</li>
         </ol>
 		<h2 style="font-size: 45px;">{{ user.username }}'s profile</h2>
@@ -172,7 +172,7 @@
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
                 <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
                 {% endif %}
-                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios') }}">Scenarios</a></li>
+                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">Scenarios</a></li>
                 <li id="menu_scenarios" class=""><a href="{{ url_for('users.building_models') }}">Building models</a></li>
             </ul>
 		</div>

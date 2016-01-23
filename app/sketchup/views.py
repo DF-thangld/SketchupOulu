@@ -8,6 +8,7 @@ from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPassw
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
 import app.utilities as utilities
+from app.users.decorators import requires_login
 
 mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 
@@ -40,7 +41,35 @@ def get_scenario():
     if scenario is None:
         return json.dumps(['Scenario not found']), 404
 
-    if scenario.is_public == 0 and not scenario.owner == g.user and not g.user.is_admin():
+    if not scenario.can_access(g.user):
         return json.dumps(['Scenario not found']), 404
 
     return json.dumps(scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
+
+@mod.route('/update_scenario/<scenario_id>', methods=['POST'])
+def update_scenario(scenario_id):
+    errors = []
+    if scenario_id == '':
+        return json.dumps(['Scenario not found']), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return json.dumps(['Scenario not found']), 404
+
+    if not scenario.can_edit(g.user):
+        return json.dumps(['Scenario not found']), 404
+
+    scenario_name = request.form.get('scenario_name', '')
+    is_public = request.form.get('is_public', 1)
+    if scenario_name == '':
+        errors.append('Scenario name cannot be blank')
+    if len(errors) > 0:
+        return json.dumps(errors), 400
+
+    scenario.name = scenario_name
+    scenario.is_public = is_public
+    db.session.commit()
+
+    return json.dumps({
+        'success': True
+    }), 200

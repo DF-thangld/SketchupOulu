@@ -316,14 +316,31 @@ def get_comments():
                        'current_page': main_object.comment_topic.current_page})
 
 
+@mod.route('/<username>/scenarios/', methods=['GET', 'POST'])
+def user_scenarios_page(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    return render_template("users/scenarios.html", user=user.to_dict())
+
+
 @mod.route('/scenarios/', methods=['GET', 'POST'])
 @requires_login
-def user_scenarios():
-    return render_template("users/scenarios.html")
+def user_own_scenarios_page():
+    return user_scenarios_page(g.user.username)
 
-@mod.route('/get_user_scenarios/', methods=['POST'])
-@requires_login
-def get_user_scenarios():
+
+@mod.route('/<username>/get_user_scenarios/', methods=['POST'])
+def get_user_scenarios(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
     filter_text = request.form.get('filter_text', '')
     page = request.form.get('page', '1')
     if page.isdigit():
@@ -333,10 +350,17 @@ def get_user_scenarios():
     else:
         page = 1
 
-    scenarios = g.user.get_scenarios(filter_text, page, True, g.user)
+    scenarios = user.get_scenarios(filter_text, page, True, g.user)
     return json.dumps({'scenarios': scenarios,
                        'total_page': g.user.scenarios_total_page,
                        'current_page': g.user.scenarios_current_page})
+
+
+@mod.route('/get_user_scenarios/', methods=['POST'])
+@requires_login
+def user_own_scenarios():
+    return get_user_scenarios(g.user.username)
+
 
 @mod.route('/add_scenario/', methods=['GET','POST'])
 @requires_login
