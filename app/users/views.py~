@@ -184,7 +184,7 @@ def reset_password():
             email_content = 'We heard that you lost your password. Sorry about that!<br /><br />'
             email_content += 'But don`t worry! You can use the following link to reset your password:<br /><br />'
             email_content += '<a href="' + url_for('users.reset_password', token=user.password_token, _external=True) + '">' + url_for('users.reset_password', token=user.password_token, _external=True) + '</a><br /><br />'
-            #email_content += 'If you don`t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
+            #email_content += 'If you don’t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
