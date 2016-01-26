@@ -289,7 +289,7 @@ need to do:
 						}
 					// create cube
 					} else {
-						//no collision body
+						//no body
 						var temp_object=current_object.clone();
 						scene.add( temp_object );
 						scene.add( temp_object );
