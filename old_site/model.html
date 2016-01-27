@@ -117,6 +117,8 @@ need to do:
 			function init()
 			{
 			
+				scene = new THREE.Scene();
+
 				//load model information
 				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
@@ -128,12 +130,14 @@ need to do:
 					var loader = new THREE.OBJMTLLoader();
 					loader.load( model.objPath, model.mtlPath, function ( object ) {
 
+						object.name = models.modelName;
+
 						models[models.length]=object;
 
 						if(models.length==1){
-						current_object= object;
-						currentModelIndex=0;
-						scene.add( current_object );
+							current_object= object;
+							currentModelIndex=0;
+							scene.add( current_object );
 						}
 					});
 				}	
@@ -173,7 +177,7 @@ need to do:
 				camera.target = center_position;
 				camera.lookAt( camera.target );
 
-				scene = new THREE.Scene();
+				
 
 				//light
 				var ambient = new THREE.AmbientLight( 0xffffff );
@@ -260,7 +264,10 @@ need to do:
 				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 				
 				raycaster.setFromCamera( mouse, camera );
-				var intersects = raycaster.intersectObjects( objects );	
+
+				//threejs raycast click detection not working on loaded 3dObject
+				//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
+				var intersects = raycaster.intersectObjects( objects, true );	
 				if ( intersects.length > 0 )
 				{
 
@@ -278,20 +285,33 @@ need to do:
 				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 
 				raycaster.setFromCamera( mouse, camera );
-				var intersects = raycaster.intersectObjects( objects );
+				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
 					// delete cube
 					if ( isShiftDown ) {
-						if ( intersect.object != plane ) {
-							scene.remove( intersect.object );
-							objects.splice( objects.indexOf( intersect.object ), 1 );
+						var obj=intersect.object;
+						obj.name;
+						while( obj.parent != scene && obj.parent!=null ){
+							obj = obj.parent;
+							obj.name;
+						}
+						if ( obj != plane ) {
+
+							scene.remove( scene.getObjectByName(obj.name) );
+							objects.splice( objects.indexOf( obj ), 1 );
+							render();
 						}
 					// create cube
 					} else {
 						//no collision body
 						var temp_object=current_object.clone();
-						scene.add( temp_object );
+
+						if (!Date.now) {
+    						Date.now = function() { return new Date().getTime(); }
+						}
+						temp_object.name = Date.now();
+
 						scene.add( temp_object );
 						objects.push( temp_object );
 
