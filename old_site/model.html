@@ -100,13 +100,15 @@ need to do:
 			var objects = [];//different objects may use same models
 			
 			//3D models various
-			var chooseModel=0;
+			//var chooseModel=0;
 			var modelsInfo;
 			var models; //models get from databsed, no contain repeated models
 			var currentModelIndex;
 			
 			//dropdown list
+			var modeInfo = ["Add Model","Delete Model","Enlarge Model","Reduce Model","Rotate Left","Rotate Right"];
 			var geometryIndex = 0;
+			var modeIndex = 0;
 
 			// threejs functions
 			init();
@@ -155,7 +157,8 @@ need to do:
 				//info.innerHTML = 'Click to place the building. ';
 				container.appendChild( info );
 				
-				var dropdown = '<select id="dropdown" onchange="switchGeometry(this.value)">';
+				//create model selection list
+				var dropdown = '<select id="dropdown_model" onchange="switchGeometry(this.value)">';
 
 				for ( var i = 0; i < modelsInfo.length; i++) {
 					dropdown += '<option value="' + i + '"';
@@ -168,6 +171,21 @@ need to do:
 				dropdown += '</select>';
 
 				info.innerHTML = '<br>Choose Building: ' + dropdown; 
+
+				//create mode selection list
+				dropdown = '<select id="dropdown_mode" onchange="switchMode(this.value)">';
+
+				for ( var i = 0; i < modeInfo.length; i++) {
+					dropdown += '<option value="' + i + '"';
+
+					dropdown += (modeIndex == i)  ? ' selected' : '';
+
+					dropdown += '>' + modeInfo[i] + '</option>';
+				}
+
+				dropdown += '</select>';
+
+				info.innerHTML += '<br>Choose Mode: ' + dropdown; 
 				
 				
 				//webgl
@@ -241,41 +259,74 @@ need to do:
 
 			function switchGeometry(i) {
 
-				//remove the current from the scene
-				var position = current_object.position.clone();
-				scene.remove(current_object);
+				//if(modeIndex ==0 )//add model mode
+				{
+					var bool=current_object.visible;
+					//remove the current from the scene
+					var position = current_object.position.clone();
+					scene.remove(current_object);
 
-				geometryIndex = i;
+					geometryIndex = i;
 
-				currentModelIndex= i;
+					currentModelIndex= i;
 
-				current_object=models[currentModelIndex];
-				current_object.position.x=position.x;
-				current_object.position.y=position.y;
-				current_object.position.z=position.z;
-				scene.add(current_object);
-				chooseModel = 0;
+					current_object=models[currentModelIndex];
+					current_object.position.x=position.x;
+					current_object.position.y=position.y;
+					current_object.position.z=position.z;
+					scene.add(current_object);
+					current_object.visible = bool;
+					//chooseModel = 0;
+
+				}
+				
+				
+			}
+			function switchMode(i) {
+
+				var mode = parseInt(i);
+				if(modeIndex ==0 && mode!=0){
+					// scene.remove(scene.getObjectByName("currentObject")); //if change from add to other mode, remove the object from scene 
+					//scene.remove(current_object);
+					current_object.visible=false;
+				}
+				modeIndex= mode ;
+				switch(modeIndex){
+					case 0:{
+						current_object.visible=true;
+						break;
+					}
+					case 1:{
+						
+						break;
+					}
+				}
 				
 			}
 			function onDocumentMouseMove(event)
 			{
 				event.preventDefault();
+
+				if(modeIndex ==0){//add mode
+					mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 				
-				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-				
-				raycaster.setFromCamera( mouse, camera );
+					raycaster.setFromCamera( mouse, camera );
 
-				//threejs raycast click detection not working on loaded 3dObject
-				//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
-				var intersects = raycaster.intersectObjects( objects, true );	
-				if ( intersects.length > 0 )
-				{
+					//threejs raycast click detection not working on loaded 3dObject
+					//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
+					//var intersects = raycaster.intersectObjects( objects, true );	
+					var intersects = raycaster.intersectObjects( [plane], true );
+					if ( intersects.length > 0 )
+					{
 
-					current_object.position.x = intersects[0].point.x;
-					current_object.position.y = intersects[0].point.y;
-					current_object.position.z = intersects[0].point.z;
+						current_object.position.x = intersects[0].point.x;
+						current_object.position.y = intersects[0].point.y;
+						current_object.position.z = intersects[0].point.z;
 
+					}
 				}
+				
+				
 
 			}
 			function onDocumentMouseDown( event ) {
@@ -285,11 +336,55 @@ need to do:
 				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 
 				raycaster.setFromCamera( mouse, camera );
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
+				//var intersects = raycaster.intersectObjects( objects, true );
+				
+
+					switch(modeIndex){
+						case 0:{
+							var intersects = raycaster.intersectObjects( [plane], true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+
+								var temp_object=current_object.clone();
+
+								if (!Date.now) {
+		    						Date.now = function() { return new Date().getTime(); }
+								}
+								temp_object.name = Date.now();
+
+								scene.add( temp_object );
+								objects.push( temp_object );
+							}
+							break;
+						}
+						case 1:{
+							var intersects = raycaster.intersectObjects( objects, true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+								var obj=intersect.object;
+								obj.name;
+								while( obj.parent != scene && obj.parent!=null ){
+									obj = obj.parent;
+									obj.name;
+								}
+								if ( obj != plane ) {
+									scene.remove( scene.getObjectByName(obj.name) );
+									objects.splice( objects.indexOf( obj ), 1 );
+								}
+								
+							}
+							
+							break;
+						}
+						case 2:{
+							break;
+						}
+						case 3:{
+							break;
+						}
+					}
 					// delete cube
-					if ( isShiftDown ) {
+					/*if ( isShiftDown ) {
 						var obj=intersect.object;
 						obj.name;
 						while( obj.parent != scene && obj.parent!=null ){
@@ -315,13 +410,13 @@ need to do:
 						scene.add( temp_object );
 						objects.push( temp_object );
 
-						/*var voxel = new THREE.Mesh( new THREE.BoxGeometry( 50, 50, 50 ), new THREE.MeshLambertMaterial( { color: 0xfeb74c, shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "textures/square-outline-textured.png" ) } ) );
-						voxel.position.copy( intersect.point ).add( intersect.face.normal );
-						scene.add( voxel );
-						objects.push( voxel );*/
-					}
+						//var voxel = new THREE.Mesh( new THREE.BoxGeometry( 50, 50, 50 ), new THREE.MeshLambertMaterial( { color: 0xfeb74c, shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "textures/square-outline-textured.png" ) } ) );
+						//voxel.position.copy( intersect.point ).add( intersect.face.normal );
+						//scene.add( voxel );
+						//objects.push( voxel );
+					}*/
 					render();
-				}
+				
 			}
 			
 			function onDocumentKeyDown(event)
@@ -340,8 +435,8 @@ need to do:
 					
 					case 90: is_rotating = true; break; // z
 
-					case 78: chooseModel=1;//n choose next model
-					case 77: chooseModel=-1;//m choose previous model
+					//case 78: chooseModel=1;//n choose next model
+					//case 77: chooseModel=-1;//m choose previous model
 
 				}
 			}
@@ -472,7 +567,7 @@ need to do:
 				}
 				
 				//choose models
-				if(chooseModel != 0){
+				/*if(chooseModel != 0){
 
 					//remove the current from the scene
 					var position = current_object.position.clone();
@@ -499,7 +594,7 @@ need to do:
 					current_object.position.z=position.z;
 					scene.add(current_object);
 					chooseModel = 0;
-				}
+				}*/
 
 				//mouse position
 				
