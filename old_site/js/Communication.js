@@ -27,6 +27,13 @@ var Communicator = {
 		position_x:0,
 		position_y:0,
 	};
+	var model_3= {
+		modelName:"terrain_1",
+		objPath:'./object/terrain_1/terrain_1.obj',
+		mtlPath:'./object/terrain_1/terrain_1.mtl',
+		position_x:0,
+		position_y:0,
+	};
 	/*var model_2= {
 		modelName:"Church",
 		modelPath:'./collada/Church.dae',
@@ -38,6 +45,7 @@ var Communicator = {
 	ModelsArray[0]=model_0;
 	ModelsArray[1]=model_1;
 	ModelsArray[2]=model_2;
+	ModelsArray[3]=model_3;
 
 	return ModelsArray;
 

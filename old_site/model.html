@@ -230,7 +230,7 @@ need to do:
 
 				plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
 				scene.add( plane );
-				objects.push( plane );
+				//objects.push( plane );
 
 
 				// add keyboard events to mode
@@ -259,41 +259,36 @@ need to do:
 
 			function switchGeometry(i) {
 
-				//if(modeIndex ==0 )//add model mode
-				{
-					var bool=current_object.visible;
-					//remove the current from the scene
-					var position = current_object.position.clone();
-					scene.remove(current_object);
+				var bool=current_object.visible;
+				//remove the current from the scene
+				var position = current_object.position.clone();
+				scene.remove(current_object);
 
-					geometryIndex = i;
+				geometryIndex = i;
 
-					currentModelIndex= i;
+				currentModelIndex= i;
 
-					current_object=models[currentModelIndex];
-					current_object.position.x=position.x;
-					current_object.position.y=position.y;
-					current_object.position.z=position.z;
-					scene.add(current_object);
-					current_object.visible = bool;
-					//chooseModel = 0;
-
-				}
+				current_object=models[currentModelIndex];
+				current_object.position.x=position.x;
+				current_object.position.y=position.y;
+				current_object.position.z=position.z;
+				scene.add(current_object);
+				current_object.visible = bool;
 				
 				
 			}
 			function switchMode(i) {
 
 				var mode = parseInt(i);
-				if(modeIndex ==0 && mode!=0){
-					// scene.remove(scene.getObjectByName("currentObject")); //if change from add to other mode, remove the object from scene 
-					//scene.remove(current_object);
+				if(modeIndex ==0 && mode!=0){// from 0 to other
 					current_object.visible=false;
+				}else if(modeIndex !=0 && mode==0){
+					current_object.visible=true;
 				}
 				modeIndex= mode ;
 				switch(modeIndex){
 					case 0:{
-						current_object.visible=true;
+						
 						break;
 					}
 					case 1:{
@@ -336,8 +331,6 @@ need to do:
 				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 
 				raycaster.setFromCamera( mouse, camera );
-				//var intersects = raycaster.intersectObjects( objects, true );
-				
 
 					switch(modeIndex){
 						case 0:{
@@ -357,7 +350,7 @@ need to do:
 							}
 							break;
 						}
-						case 1:{
+						case 1:{//delete mode
 							var intersects = raycaster.intersectObjects( objects, true );
 							if ( intersects.length > 0 ) {
 								var intersect = intersects[ 0 ];
@@ -367,54 +360,78 @@ need to do:
 									obj = obj.parent;
 									obj.name;
 								}
-								if ( obj != plane ) {
-									scene.remove( scene.getObjectByName(obj.name) );
-									objects.splice( objects.indexOf( obj ), 1 );
-								}
+
+								scene.remove( scene.getObjectByName(obj.name) );
+								objects.splice( objects.indexOf( obj ), 1 );
+								
 								
 							}
 							
 							break;
 						}
-						case 2:{
+						case 2:{//Enlarge mode
+							var intersects = raycaster.intersectObjects( objects, true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+								var obj=intersect.object;
+								obj.name;
+								while( obj.parent != scene && obj.parent!=null ){
+									obj = obj.parent;
+									obj.name;
+								}
+								
+								scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
+							}
 							break;
 						}
-						case 3:{
+						case 3:{//reduce
+							var intersects = raycaster.intersectObjects( objects, true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+								var obj=intersect.object;
+								obj.name;
+								while( obj.parent != scene && obj.parent!=null ){
+									obj = obj.parent;
+									obj.name;
+								}
+								
+								scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
+							}
 							break;
 						}
+						case 4:{//rotate left
+							var intersects = raycaster.intersectObjects( objects, true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+								var obj=intersect.object;
+								obj.name;
+								while( obj.parent != scene && obj.parent!=null ){
+									obj = obj.parent;
+									obj.name;
+								}
+								
+								scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
+							}
+							break;
+						}
+						case 5:{//rotate right
+							var intersects = raycaster.intersectObjects( objects, true );
+							if ( intersects.length > 0 ) {
+								var intersect = intersects[ 0 ];
+								var obj=intersect.object;
+								obj.name;
+								while( obj.parent != scene && obj.parent!=null ){
+									obj = obj.parent;
+									obj.name;
+								}
+								
+								scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
+							}
+							break;
+						}
+
 					}
-					// delete cube
-					/*if ( isShiftDown ) {
-						var obj=intersect.object;
-						obj.name;
-						while( obj.parent != scene && obj.parent!=null ){
-							obj = obj.parent;
-							obj.name;
-						}
-						if ( obj != plane ) {
-
-							scene.remove( scene.getObjectByName(obj.name) );
-							objects.splice( objects.indexOf( obj ), 1 );
-							render();
-						}
-					// create cube
-					} else {
-						//no collision body
-						var temp_object=current_object.clone();
-
-						if (!Date.now) {
-    						Date.now = function() { return new Date().getTime(); }
-						}
-						temp_object.name = Date.now();
-
-						scene.add( temp_object );
-						objects.push( temp_object );
-
-						//var voxel = new THREE.Mesh( new THREE.BoxGeometry( 50, 50, 50 ), new THREE.MeshLambertMaterial( { color: 0xfeb74c, shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "textures/square-outline-textured.png" ) } ) );
-						//voxel.position.copy( intersect.point ).add( intersect.face.normal );
-						//scene.add( voxel );
-						//objects.push( voxel );
-					}*/
+					
 					render();
 				
 			}
@@ -487,8 +504,8 @@ need to do:
 			{
 			
 				// 2.1 move around the scene
-				if (move_forward)
-				{
+				
+				if (move_forward){
 					switch(current_view)
 					{
 						case 0: camera.position.z += MOVING_SPEED; break;
@@ -556,45 +573,10 @@ need to do:
 					camera.target = center_position;
 					camera.lookAt( camera.target );
 					
-					// go back to current position
-					/*camera.position.x = current_x;
-					camera.position.y = current_y;
-					camera.position.z = current_z;*/
-					
 					// only rotate one time per click
 					is_rotating = false;
 					
 				}
-				
-				//choose models
-				/*if(chooseModel != 0){
-
-					//remove the current from the scene
-					var position = current_object.position.clone();
-					scene.remove(current_object);
-					//add the new one
-					if(chooseModel == 1){
-						if(currentModelIndex == (models.length-1)){
-							currentModelIndex=0;
-						}else{
-							currentModelIndex++;
-						}
-					}else if(chooseModel == -1 ){
-						if(currentModelIndex == 0){
-							currentModelIndex = models.length-1;
-						}else{
-							currentModelIndex--;
-						}
-					}
-
-
-					current_object=models[currentModelIndex];
-					current_object.position.x=position.x;
-					current_object.position.y=position.y;
-					current_object.position.z=position.z;
-					scene.add(current_object);
-					chooseModel = 0;
-				}*/
 
 				//mouse position
 				
