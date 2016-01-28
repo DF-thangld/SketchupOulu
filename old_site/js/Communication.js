@@ -37,7 +37,7 @@ var Communicator = {
 	var ModelsArray = [];
 	ModelsArray[0]=model_0;
 	ModelsArray[1]=model_1;
-	//ModelsArray[2]=model_2;
+	ModelsArray[2]=model_2;
 
 	return ModelsArray;
 
