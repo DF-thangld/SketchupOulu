@@ -27,13 +27,13 @@ function before_submit()
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
            <li class = "active"><a href="{{ url_for('users.profile', username=g.user.username) }}">{{ g.user.username }}</a></li>
-           <li class = "active">New Scenario</li>
+           <li class = "active">New building model</li>
         </ol>
-		<h2 style="font-size: 45px;">New Scenario</h2>
+		<h2 style="font-size: 45px;">New Building Model</h2>
 
-		<form accept-charset="UTF-8" action="{{ url_for('users.add_scenario') }}" autocomplete="off"
+		<form accept-charset="UTF-8" action="{{ url_for('users.add_building_model') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail" onsubmit="before_submit();"
-			method="post">
+			method="post" enctype="multipart/form-data">
             <input type="hidden" name="addition_information" value="" id="addition_information"/>
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
@@ -50,29 +50,18 @@ function before_submit()
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="name">Scenario name</label>
+					<label autocapitalize="off" autofocus="autofocus" for="name">Model name</label>
 				</dt>
 				<dd>
                     <input type="text" id="name" name="name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ request.form.get('name', '') }}">
 				</dd>
 			</dl>
-			<dl class="form">
+            <dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" for="is_public">Public</label> <input type="checkbox" id="is_public" name="is_public" value="1" checked/>
+					<label autocapitalize="off" autofocus="autofocus" for="data_file">Data file</label>
 				</dt>
 				<dd>
-
-				</dd>
-			</dl>
-
-			<dl class="form successed">
-				<dt class="input-label">
-                    Model
-				</dt>
-				<dd>
-                    <div style="width:100%;height:500px;border:1px solid black;">
-                        Frame for model
-                    </div>
+                    <input type="file" name="data_file" id="data_file">
 				</dd>
 			</dl>
 

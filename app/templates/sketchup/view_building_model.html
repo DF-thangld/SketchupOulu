@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'inside_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+
+
+{% endblock %}
+
+{% block js_script %}
+
+{% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
+
+    function delete_building_model()
+    {
+        bootbox.confirm("Are you sure you want to delete this building model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.delete_building_model', building_model_id=building_model.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Building model deleted');
+                        window.location = '{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}';
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
+
+    function update_building_model()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+            data: {'building_model_name': $('#facebox #building_model_name').val()},
+            dataType: 'json',
+            success: function(data) {
+                $('#edit_building_model #building_model_name').val($('#facebox #building_model_name').val());
+                $('#bread_crum_building_model_name').html($('#facebox #building_model_name').val());
+                $('#title_building_model_name').html($('#facebox #building_model_name').val());
+                $.facebox.close();
+                show_alert('alert-success', 'Building model updated!');
+            },
+            error: function(data)
+            {
+                $('#facebox #update_building_model_errors').html('');
+                for (i = 0; i < data.responseJSON.length; i++)
+                    $('#facebox #update_building_model_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+                $('#facebox #update_building_model_errors').fadeIn('fast');
+            }
+        });
+    }
+{% endif %}
+
+{% if g.user %}
+    function clone_building_model()
+    {
+        bootbox.confirm("Are you sure you want to clone this building model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.clone_building_model', building_model_id=building_model.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Building model cloned');
+                        window.location = '{{ url_for('sketchup.view_building_model') }}?id=' + data.id;
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+
+    }
+{% endif %}
+
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+
+	<div class="col-lg-10 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li class = "active"><a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a></li>
+           <li class = "active"><a href="{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}">Building models</a></li>
+           <li class = "active"><a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}" id="bread_crum_building_model_name">{{ building_model.name }}</a></li>
+        </ol>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}" id="title_building_model_name">{{ building_model.name }}</a></h2>
+            <div style="float:left;">
+                <img src="{{ url_for('static', filename='images/profile_pictures/'+building_model.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
+            </div>
+            <div style="float:left; margin-left:10px;">
+                <div>Created by <a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a> at {{ building_model.created_time }}</div>
+                {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
+                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_building_model').html());">Edit</a> - <a href="javascript:void(0);" onclick="delete_building_model();">Delete building model</a></div>
+                <div id="edit_building_model" style="display:none">
+                    <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit building model</h1>
+                    <div style="color:red;display:none;" id="update_building_model_errors"></div>
+                    <dl class="form">
+                        <dt class="input-label">
+                            <label autocapitalize="off" autofocus="autofocus" for="name">Building model name</label>
+                        </dt>
+                        <dd>
+                            <input type="text" id="building_model_name" name="building_model_name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ building_model.name }}">
+                        </dd>
+                    </dl>
+                    <div style="float:right;">
+                        <button class="btn btn-primary" onclick="update_building_model();">Update</button>
+                        <button class="btn" onclick="$.facebox.close();">Cancel</button>
+                    </div>
+                    <div style="clear:both"></div>
+
+                </div>
+                {% endif %}
+                <div>
+                {% if g.user %}
+                <button class="btn btn-primary" onclick="clone_building_model();">Clone this building model</button>
+                {% endif %}
+                </div>
+            </div>
+
+            <div style="clear:both"></div>
+            <input type="hidden" name="addition_information" value="" id="addition_information"/>
+			<div style="margin: 0; padding: 0; display: inline">
+			</div>
+			<dl class="form">
+				<dt class="input-label">
+					<div style="width:100%;height:500px;border:1px solid black;">
+                        Frame for model
+                    </div>
+				</dt>
+				<dd>
+                    <div id="building_model_comment_panel" style="margin-top:10px;">
+                        <div class="detailBox">
+                            <div class="titleBox">
+                              <label>Comment Box</label>
+                            </div>
+                            <div class="commentBox">
+                                <input type="hidden" id="comment_type" value="building_model" />
+                                <input type="hidden" id="object_id" value="{{ building_model.id }}" />
+                                <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
+                                <div class="form-group">
+                                    <button class="btn btn-default" onclick="add_comment();">Add</button>
+                                </div>
+                            </div>
+                            <div class="actionBox">
+                                <ul class="commentList" id="comment_list">
+                                    {% for comment in building_model.comments %}
+                                    <li id="comment_{{ comment.id }}">
+                                        <div class="commenterImage">
+                                            <img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures/' + comment.owner.profile_picture) }}" />
+                                        </div>
+                                        <div class="commentText">
+                                            <p class="" id="comment_content_{{ comment.id }}">{{ comment.content }}</p>
+                                            <span class="date sub-text">By {{ comment.owner.username }} on {{ comment.created_time }}</span>
+                                            {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == building_model.owner.username) %}
+                                            <span class="date sub-text"> (<a href="#" onclick="display_edit_comment_form({{ comment.id }});">Edit</a> - <a href="#" onclick="delete_comment({{ comment.id }});">Delete</a>)</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if g.user and (g.user.is_admin() or g.user.username == comment.owner.username or g.user.username == building_model.owner.username) %}
+                                        <div id="edit_comment_panel" style="display:none;">
+                                        <textarea id="edit_panel_content_{{ comment.id }}">{{ comment.content }}</textarea>
+                                        </div>
+                                        {% endif %}
+
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
+                            </div>
+                        </div>
+
+                    </div>
+				</dd>
+			</dl>
+	</div>
+</div>
+
+
+{% endblock %}

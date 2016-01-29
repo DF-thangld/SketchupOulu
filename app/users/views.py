@@ -5,7 +5,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.uploads import UploadSet, IMAGES
 
-from app import db, send_mail, upload_picture
+from app import db, send_mail, upload_file
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
@@ -31,53 +31,6 @@ def profile(username):
 @mod.route('/profile/')
 def own_profile():
     return profile(g.user.username)
-
-
-@mod.route('/<username>/scenarios/', methods=['GET', 'POST'])
-def user_scenarios_page(username):
-    if username == '':
-        return render_template("404.html"), 404
-    user = User.query.filter(User.username==username).first()
-    if user is None:
-        return render_template("404.html"), 404
-
-    return render_template("users/scenarios.html", user=user.to_dict())
-
-
-@mod.route('/scenarios/', methods=['GET', 'POST'])
-@requires_login
-def user_own_scenarios_page():
-    return user_scenarios_page(g.user.username)
-
-
-@mod.route('/get_comments/')
-def get_comments():
-    comment_type = request.args.get('comment_type', '')
-    comment_id = request.args.get('comment_id', '')
-    page = request.args.get('page', '1')
-
-    if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
-        return json.dumps(['Comment topic not found']), 404
-    if page.isdigit():
-        page = int(page)
-        if page < 1:
-            page = 1
-    else:
-        page = 1
-
-    main_object = None
-    if comment_type == 'user':
-        main_object = User.query.filter_by(id=comment_id).first()
-    elif comment_type == 'scenario':
-        main_object = Scenario.query.filter_by(id=comment_id).first()
-    elif comment_type == 'building_model':
-        main_object = BuildingModel.query.filter_by(id=comment_id).first()
-    if main_object is None:
-        return json.dumps(['Comment topic not found']), 404
-
-    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
-                       'total_page': main_object.comment_topic.total_page,
-                       'current_page': main_object.comment_topic.current_page})
 
 
 @mod.route('/login/', methods=['GET', 'POST'])
@@ -301,38 +254,27 @@ def user_profile():
 
     return render_template("users/user_profile.html", form=form)
 
+
 @mod.route('/upload_profile_picture/', methods=['POST'])
 @requires_login
 def upload_profile_picture():
 
     user = User.query.get(g.user.id)
-    user.profile_picture = upload_picture(request.files['profile_picture'], 'static/images/profile_pictures')
+    user.profile_picture = upload_file(request.files['profile_picture'], 'static/images/profile_pictures')
     g.user = user
     db.session.commit()
 
     return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
 
-@mod.route('/building_models/', methods=['GET', 'POST'])
-@requires_login
-def building_models():
 
-    return 'building_models'
+@mod.route('/get_comments/')
+def get_comments():
+    comment_type = request.args.get('comment_type', '')
+    comment_id = request.args.get('comment_id', '')
+    page = request.args.get('page', '1')
 
-@mod.route('/scenarios/', methods=['GET', 'POST'])
-@requires_login
-def user_scenarios():
-    return render_template("users/scenarios.html")
-
-@mod.route('/<username>/get_user_scenarios/', methods=['POST'])
-def get_user_scenarios(username):
-    if username == '':
-        return render_template("404.html"), 404
-    user = User.query.filter(User.username==username).first()
-    if user is None:
-        return render_template("404.html"), 404
-
-    filter_text = request.form.get('filter_text', '')
-    page = request.form.get('page', '1')
+    if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
+        return json.dumps(['Comment topic not found']), 404
     if page.isdigit():
         page = int(page)
         if page < 1:
@@ -340,35 +282,20 @@ def get_user_scenarios(username):
     else:
         page = 1
 
-    scenarios = user.get_scenarios(filter_text, page, True, g.user)
-    return json.dumps({'scenarios': scenarios,
-                       'total_page': user.scenarios_total_page,
-                       'current_page': user.scenarios_current_page})
+    main_object = None
+    if comment_type == 'user':
+        main_object = User.query.filter_by(id=comment_id).first()
+    elif comment_type == 'scenario':
+        main_object = Scenario.query.filter_by(id=comment_id).first()
+    elif comment_type == 'building_model':
+        main_object = BuildingModel.query.filter_by(id=comment_id).first()
+    if main_object is None:
+        return json.dumps(['Comment topic not found']), 404
 
+    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
+                       'total_page': main_object.comment_topic.total_page,
+                       'current_page': main_object.comment_topic.current_page})
 
-@mod.route('/get_user_scenarios/', methods=['POST'])
-@requires_login
-def user_own_scenarios():
-    return get_user_scenarios(g.user.username)
-
-@mod.route('/add_scenario/', methods=['GET','POST'])
-@requires_login
-def add_scenario():
-    errors = []
-    if request.method == 'GET':
-        return render_template("users/add_scenario.html", errors=errors)
-    else:
-        name = request.form.get('name', '')
-        is_public = request.form.get('is_public', 0)
-        addition_information = request.form.get('addition_information', '')
-        if name.strip() == '':
-            errors.append('Scenario name is required')
-            return render_template("users/add_scenario.html", errors=errors), 400
-
-        scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
-        db.session.add(scenario)
-        db.session.commit()
-        return redirect(url_for('sketchup.view_scenario', id=scenario.id))
 
 @mod.route('/add_comment/', methods=['POST'])
 @requires_login
@@ -399,12 +326,16 @@ def add_comment():
         if building_model is None:
             errors.append('Building model not found')
             return json.dumps(errors), 404
-        if not building_model.can_access(g.user):
-            errors.append('You don\'t have permission to add comment here')
-            return json.dumps(errors), 401
         comment_topic = building_model.comment_topic
+    elif comment_type == 'user':
+        user = User.query.get(object_id)
+        if user is None:
+            errors.append('User not found')
+            return json.dumps(errors), 404
+        comment_topic = user.comment_topic
     else:
         errors.append('Comment type not found')
+        return json.dumps(errors), 401
 
     new_comment = Comment(g.user, comment_topic, content)
     db.session.add(new_comment)
@@ -433,3 +364,159 @@ def delete_comment():
     else:
         errors.append('Unauthorized deletion')
         return json.dumps(errors), 403
+
+
+@mod.route('/<username>/scenarios/', methods=['GET', 'POST'])
+def user_scenarios_page(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    return render_template("users/scenarios.html", user=user.to_dict())
+
+
+@mod.route('/scenarios/', methods=['GET', 'POST'])
+@requires_login
+def user_own_scenarios_page():
+    return user_scenarios_page(g.user.username)
+
+
+@mod.route('/<username>/get_user_scenarios/', methods=['POST'])
+def get_user_scenarios(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    filter_text = request.form.get('filter_text', '')
+    page = request.form.get('page', '1')
+    if page.isdigit():
+        page = int(page)
+        if page < 1:
+            page = 1
+    else:
+        page = 1
+
+    scenarios = user.get_scenarios(filter_text, page, True, g.user)
+    return json.dumps({'scenarios': scenarios,
+                       'total_page': user.scenarios_total_page,
+                       'current_page': user.scenarios_current_page})
+
+
+@mod.route('/get_user_scenarios/', methods=['POST'])
+@requires_login
+def user_own_scenarios():
+    return get_user_scenarios(g.user.username)
+
+
+@mod.route('/add_scenario/', methods=['GET','POST'])
+@requires_login
+def add_scenario():
+    errors = []
+    if request.method == 'GET':
+        return render_template("users/add_scenario.html", errors=errors)
+    else:
+        name = request.form.get('name', '')
+        is_public = request.form.get('is_public', 0)
+        addition_information = request.form.get('addition_information', '')
+        if name.strip() == '':
+            errors.append('Scenario name is required')
+            return render_template("users/add_scenario.html", errors=errors), 400
+
+        scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
+        db.session.add(scenario)
+        db.session.commit()
+        return redirect(url_for('sketchup.view_scenario', id=scenario.id))
+
+
+@mod.route('/<username>/building_models/', methods=['GET', 'POST'])
+def user_building_models_page(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    return render_template("users/building_models.html", user=user.to_dict())
+
+
+@mod.route('/building_models/', methods=['GET', 'POST'])
+@requires_login
+def user_own_building_models_page():
+    return user_building_models_page(g.user.username)
+
+
+@mod.route('/<username>/get_user_building_models/', methods=['POST'])
+def get_user_building_models(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    filter_text = request.form.get('filter_text', '')
+    page = request.form.get('page', '1')
+    if page.isdigit():
+        page = int(page)
+        if page < 1:
+            page = 1
+    else:
+        page = 1
+
+    if filter_text != '':
+        query = BuildingModel.query.filter(BuildingModel.owner==user)\
+            .filter(BuildingModel.name.like('%'+filter_text+'%'))
+    else:
+        query = BuildingModel.query.filter(BuildingModel.owner==user)\
+
+    if g.user is None or not (user == g.user or g.user.is_admin()):
+        query = query.filter(BuildingModel.is_public==1)
+    query = query.order_by(BuildingModel.created_time.desc())
+
+    page_data = query.paginate(page, 20, False)
+    building_models_total_page = page_data.pages
+    building_models_current_page = page
+
+    building_models = []
+    for building_model in page_data.items:
+        building_models.append(building_model.to_dict())
+
+    return json.dumps({'building_models': building_models,
+                       'total_page': building_models_total_page,
+                       'current_page': building_models_current_page})
+
+
+@mod.route('/get_user_building_models/', methods=['POST'])
+@requires_login
+def user_own_building_models():
+    return get_user_building_models(g.user.username)
+
+
+@mod.route('/add_building_model/', methods=['GET', 'POST'])
+@requires_login
+def add_building_model():
+    errors = []
+    if request.method == 'GET':
+        return render_template("users/add_building_model.html", errors=errors)
+    else:
+        name = request.form.get('name', '')
+        is_public = request.form.get('is_public', 0)
+        addition_information = request.form.get('addition_information', '')
+        data_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
+
+        if name.strip() == '':
+            errors.append('Scenario name is required')
+        if data_file.strip() == '':
+            errors.append('Model file is required')
+        if len(errors) > 0:
+            return render_template("users/add_building_model.html", errors=errors), 400
+
+        building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
+        db.session.add(building_model)
+        db.session.commit()
+        return redirect(url_for('sketchup.view_building_model', id=building_model.id))
+
+

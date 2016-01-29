@@ -14,7 +14,41 @@
 {% block js_script %}
 
 {% if g.user and g.user.is_admin %}
+    function change_base_scenario_status()
+    {
+        bootbox.confirm("Are you sure you want to change base status of this scenario?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('admin.change_base_scenario_status', scenario_id=scenario.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.new_status == 0)
+                        {
+                            $('#base_scenario_button').removeClass('btn-danger');
+                            $('#base_scenario_button').addClass('btn-warning');
+                            $('#base_scenario_button').html('Promote to base scenario');
+                        }
+                        else
+                        {
+                            $('#base_scenario_button').removeClass('btn-warning');
+                            $('#base_scenario_button').addClass('btn-danger');
+                            $('#base_scenario_button').html('Demote to normal scenario');
+                        }
+                        show_alert('alert-success', 'Scenario status changed');
 
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
 {% endif %}
 
 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
@@ -155,11 +189,10 @@
                 <div>
                 {% if g.user %}
                 <button class="btn btn-primary" onclick="clone_scenario();">Clone this scenario</button>
-
                     {% if g.user.is_admin() and scenario.is_base_scenario==0 %}
-                    <button class="btn btn-warning" onclick="change_base_scenario_status();">Promote to base scenario</button>
+                    <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
                     {% elif g.user.is_admin() and scenario.is_base_scenario==1 %}
-                    <button class="btn btn-danger" onclick="change_base_scenario_status();">Remove from base scenario</button>
+                    <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
                     {% endif %}
                 {% endif %}
                 </div>

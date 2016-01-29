@@ -18,15 +18,12 @@ class BuildingModel(db.Model):
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
     comment_topic = db.relationship("CommentTopic")
 
-    def can_access(self, user):
+    def can_edit(self, user):
         if user == self.owner:
             return True
         if user.is_admin():
             return True
-        if self.is_public == 1:
-            return True
 
-        #TODO: colaborators
         return False
 
     def __init__(self, name='', data_file='', owner=None, addition_information='', description=''):
@@ -39,13 +36,20 @@ class BuildingModel(db.Model):
         self.created_time = datetime.datetime.now()
         self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner, 'building_model')
 
-    def to_dict(self, include_owner=False):
+    def to_dict(self, include_owner=False, include_comments=False):
         owner = None
         if include_owner:
             owner = self.owner.to_dict()
+
+        comments = None
+        if include_comments:
+            comments = self.comment_topic.to_dict()['comments']
+
         return {'id': self.id,
                 'name': self.name,
                 'owner': owner,
+                'comments': comments,
+                'created_time': self.created_time.isoformat(),
                 'addition_information': self.addition_information,
                 'description': self.description}
 
@@ -117,6 +121,7 @@ class Scenario(db.Model):
                 'addition_information': self.addition_information,
                 'description': self.description,
                 'is_public': self.is_public,
+                'is_base_scenario': self.is_base_scenario,
                 'comments': comments}
 
     def __repr__(self):

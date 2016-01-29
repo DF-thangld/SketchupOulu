@@ -50,6 +50,17 @@ class User(db.Model):
         self.password = password
         self.comment_topic = sketchup.CommentTopic('Comments for user id ' + self.username, self, 'user')
 
+    def __eq__(self, other):
+        if other is None:
+            return False
+
+        if isinstance(other, User):
+            return self.username == other.username
+        return False
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
         if include_group:

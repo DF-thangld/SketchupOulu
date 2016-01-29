@@ -20,7 +20,7 @@ app_dir = os.path.dirname(os.path.realpath(__file__))
 db = SQLAlchemy(app)
 
 
-def upload_picture(upload_file, stored_directory, generate_filename=True, file_type="image"):
+def upload_file(upload_file, stored_directory, generate_filename=True, file_type="image"):
     original_filename_parts = upload_file.filename.split('.')
     file_extension = original_filename_parts[len(original_filename_parts)-1]
     if generate_filename:

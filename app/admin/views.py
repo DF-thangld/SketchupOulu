@@ -7,6 +7,7 @@ import datetime
 
 from app import db, app_dir, send_mail
 from app.users.models import User, Group
+from app.sketchup.models import Scenario, BuildingModel
 from app.journal.models import JournalCategory, Journal
 from app.admin.decorators import requires_admin
 from app.admin.forms import UserSearchForm, SendEmailForm, CreateJournalCategoryForm, EditJournalCategoryForm, CreateJournalForm, EditJournalForm
@@ -454,3 +455,23 @@ def edit_journal():
             for error in edit_journal_form.category_id.errors:
                 errors.append(error)
             return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 400
+
+
+@mod.route('/change_base_scenario_status/<scenario_id>', methods=['GET'])
+@requires_admin
+def change_base_scenario_status(scenario_id):
+    errors = []
+    if scenario_id == '':
+        return json.dumps(['Scenario not found']), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return json.dumps(['Scenario not found']), 404
+    if scenario.is_base_scenario == 1:
+        scenario.is_base_scenario = 0
+    else:
+        scenario.is_base_scenario = 1
+
+    db.session.commit()
+
+    return json.dumps({'new_status': scenario.is_base_scenario}), 200
