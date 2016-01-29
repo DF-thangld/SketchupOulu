@@ -62,8 +62,8 @@
 			<ul class="nav navbar-nav navbar-right">
 				<li><a class="page-scroll" href="#about">About</a></li>
 				<li><a class="page-scroll" href="#services">Services</a></li>
-				<li><a class="page-scroll" href="#portfolio">Scenario</a></li>
 				<li><a class="page-scroll" href="#contact">Contact</a></li>
+                <li><a class="page-scroll" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a></li>
                 {% if session['user_id'] %}
                 <li><a href="{{  url_for('users.own_profile')}}">Profile</a></li>
                 {% else %}

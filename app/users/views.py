@@ -427,6 +427,7 @@ def add_scenario():
             return render_template("users/add_scenario.html", errors=errors), 400
 
         scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
+        scenario.description = request.form.get('description', '')
         db.session.add(scenario)
         db.session.commit()
         return redirect(url_for('sketchup.view_scenario', id=scenario.id))

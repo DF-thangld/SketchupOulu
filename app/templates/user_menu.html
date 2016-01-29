@@ -19,15 +19,12 @@
 		<ul class="header-nav left" role="navigation">
 			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">Home</a>
 			</li>
-			<li class="header-nav-item"><a class="header-nav-link" href="#">Base scenarios</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a>
 			</li>
             {% if g.user.is_admin() %}
             <li class="header-nav-item dropdown">
                 <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">Admin</a>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-header">System control</li>
-                    <li><a href="http://vm0106.virtues.fi/fablab/reservations/basic_schedule">General settings</a></li>
-
                     <li class="divider"></li>
                     <li class="dropdown-header">Models</li>
                     <li><a href="{{ url_for('index') }}">Scenarios</a></li>

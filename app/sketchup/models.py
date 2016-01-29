@@ -50,6 +50,7 @@ class BuildingModel(db.Model):
                 'owner': owner,
                 'comments': comments,
                 'created_time': self.created_time.isoformat(),
+                'data_file': self.data_file,
                 'addition_information': self.addition_information,
                 'description': self.description}
 
@@ -92,6 +93,15 @@ class Scenario(db.Model):
         if user.is_admin():
             return True
         if self.is_public == 1:
+            return True
+
+        #TODO: colaborators
+        return False
+
+    def can_edit(self, user):
+        if user == self.owner:
+            return True
+        if user.is_admin():
             return True
 
         #TODO: colaborators

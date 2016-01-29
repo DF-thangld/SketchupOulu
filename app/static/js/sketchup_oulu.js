@@ -4,6 +4,22 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+ jQuery.fn.extend({
+  autoHeight: function () {
+    function autoHeight_(element) {
+      return jQuery(element)
+        .css({ 'height': 'auto', 'overflow-y': 'hidden' })
+        .height(element.scrollHeight);
+    }
+    return this.each(function() {
+      autoHeight_(this).on('input', function() {
+        autoHeight_(this);
+      });
+    });
+  }
+});
+ 
+ 
 $( document ).ready(function() {
 	// jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event) {
@@ -13,6 +29,8 @@ $( document ).ready(function() {
         }, 1250, 'easeInOutExpo');
         event.preventDefault();
     });
+	
+	$('textarea').autoHeight();
 
     // Highlight the top nav as scrolling occurs
     $('body').scrollspy({
@@ -45,20 +63,7 @@ $( document ).ready(function() {
 
 });
 
-jQuery.fn.extend({
-  autoHeight: function () {
-    function autoHeight_(element) {
-      return jQuery(element)
-        .css({ 'height': 'auto', 'overflow-y': 'hidden' })
-        .height(element.scrollHeight);
-    }
-    return this.each(function() {
-      autoHeight_(this).on('input', function() {
-        autoHeight_(this);
-      });
-    });
-  }
-});
+
 
 function show_alert(alert_type, alert_content)
 {

@@ -7,8 +7,6 @@
 {% endblock %}
 
 {% block onload_script %}
-
-
 {% endblock %}
 
 {% block js_script %}
@@ -56,6 +54,14 @@ function before_submit()
                     <input type="text" id="name" name="name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ request.form.get('name', '') }}">
 				</dd>
 			</dl>
+            <dl class="form">
+				<dt class="input-label">
+					<label autocapitalize="off" autofocus="autofocus" for="description">Description</label>
+				</dt>
+				<dd>
+                    <textarea id="description" name="description" style="width:100%;min-height:30px;height:100px;">{{ request.form.get('description', '') }}</textarea>
+				</dd>
+			</dl>
 			<dl class="form">
 				<dt class="input-label">
 					<label autocapitalize="off" for="is_public">Public</label> <input type="checkbox" id="is_public" name="is_public" value="1" checked/>
@@ -76,6 +82,8 @@ function before_submit()
 				</dd>
 			</dl>
 
+
+
 			<div class="form-actions">
                 <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
 				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>
@@ -85,6 +93,4 @@ function before_submit()
 
 	</div>
 </div>
-
-
 {% endblock %}

@@ -133,6 +133,7 @@
                 </div>
                 {% endif %}
                 <div>
+                <a class="btn btn-info" href="{{ url_for('static', filename='models/building_models/' + building_model.data_file) }}" download>Download model file</a>
                 {% if g.user %}
                 <button class="btn btn-primary" onclick="clone_building_model();">Clone this building model</button>
                 {% endif %}

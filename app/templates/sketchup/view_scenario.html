@@ -84,11 +84,14 @@
             type: "POST",
             url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
             data: {'scenario_name': $('#facebox #scenario_name').val(),
+                    'scenario_description': $('#facebox #scenario_description').val(),
                     'is_public': $('#facebox #is_public').prop('checked')?'1':'0'},
             dataType: 'json',
             success: function(data) {
                 $('#edit_scenario #scenario_name').val($('#facebox #scenario_name').val());
+                $('#edit_scenario #scenario_description').val($('#facebox #scenario_description').val());
                 $('#edit_scenario #is_public').prop('checked', $('#facebox #is_public').prop('checked'));
+                $('#scenario_description_panel').html($('#facebox #scenario_description').val());
                 $('#bread_crum_scenario_name').html($('#facebox #scenario_name').val());
                 $('#title_scenario_name').html($('#facebox #scenario_name').val());
                 $.facebox.close();
@@ -158,7 +161,7 @@
                 <div style="color:red">The scenario is deactivated</div>
                 {% endif %}
                 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
-                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());">Edit settings</a> - <a href="javascript:void(0);" onclick="delete_scenario();">Delete scenario</a></div>
+                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());$('#facebox #scenario_description').autoHeight();">Edit settings</a> - <a href="javascript:void(0);" onclick="delete_scenario();">Delete scenario</a></div>
                 <div id="edit_scenario" style="display:none">
                     <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit scenario</h1>
                     <div style="color:red;display:none;" id="update_scenario_errors"></div>
@@ -176,6 +179,14 @@
                         </dt>
                         <dd>
 
+                        </dd>
+                    </dl>
+                    <dl class="form">
+                        <dt class="input-label">
+                            <label autocapitalize="off" autofocus="autofocus" for="name">Description</label>
+                        </dt>
+                        <dd>
+                            <textarea id="scenario_description" name="scenario_description" autocapitalize="off" autofocus="autofocus" style="width:100%;min-height:30px;height:100px;">{{ scenario.description }}</textarea>
                         </dd>
                     </dl>
                     <div style="float:right;">
@@ -197,11 +208,11 @@
                 {% endif %}
                 </div>
             </div>
-
             <div style="clear:both"></div>
             <input type="hidden" name="addition_information" value="" id="addition_information"/>
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
+            <div id="scenario_description_panel" style="margin-top:10px;">{{ scenario.description }}</div>
 			<dl class="form">
 				<dt class="input-label">
 					<div style="width:100%;height:500px;border:1px solid black;">

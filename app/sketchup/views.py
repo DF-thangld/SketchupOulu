@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from flask.ext.uploads import UploadSet, IMAGES
+from sqlalchemy.dialects import mysql
 
 from app import db, send_mail, upload_file
 from app.users.decorators import requires_login
@@ -69,6 +70,7 @@ def update_scenario(scenario_id):
 
     scenario.name = scenario_name
     scenario.is_public = is_public
+    scenario.description = request.form.get('scenario_description', scenario.description)
     db.session.commit()
 
     return json.dumps({
@@ -219,3 +221,27 @@ def clone_building_model(building_model_id):
     db.session.commit()
 
     return json.dumps(new_building_model.to_dict(include_owner=True)), 200
+
+
+@mod.route('/base_scenarios', methods=['GET'])
+def base_scenarios_page():
+    return render_template("sketchup/base_scenarios.html")
+
+
+@mod.route('/get_base_scenarios', methods=['POST'])
+def get_base_scenarios():
+    query = Scenario.query.filter(Scenario.is_base_scenario==1)
+    filter_text = request.form.get('filter_text', '')
+    if filter_text != '':
+        query = query.filter(Scenario.name.like('%'+filter_text+'%'))
+    if g.user is None or not g.user.is_admin():
+        query = query.filter(Scenario.is_public==1)
+
+    query = query.order_by(Scenario.created_time.desc())
+    result = query.all()
+
+    scenarios = []
+    for scenario in result:
+        scenarios.append(scenario.to_dict())
+
+    return json.dumps({'scenarios': scenarios})
