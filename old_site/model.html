@@ -98,6 +98,7 @@ need to do:
 
 			//all the vasiable objects in the scene
 			var objects = [];//different objects may use same models
+			var objectsInfo = [];//store information of objects including Model name and position
 			
 			//3D models various
 			//var chooseModel=0;
@@ -185,7 +186,9 @@ need to do:
 
 				dropdown += '</select>';
 
-				info.innerHTML += '<br>Choose Mode: ' + dropdown; 
+				info.innerHTML += ', Choose Mode: ' + dropdown; 
+				
+				info.innerHTML += ',  <button onclick="saveProject()">Save Project</button> ';
 				
 				
 				//webgl
@@ -255,6 +258,19 @@ need to do:
 
 				//render
 				renderer.render( scene, camera);
+			}
+			
+			function saveProject(){
+				
+				
+				var objs=[{"name":"binchen"},{"name":"liping"}];
+				
+				for( var i = 0; i < objects.length; i++){
+					
+				}
+				
+				var js=JSON.stringify(objs);
+				alert("Saved!"+js);
 			}
 
 			function switchGeometry(i) {
@@ -344,9 +360,18 @@ need to do:
 		    						Date.now = function() { return new Date().getTime(); }
 								}
 								temp_object.name = Date.now();
+								//temp_object.name = modelsInfo[currentModelIndex].modelName;
+
 
 								scene.add( temp_object );
 								objects.push( temp_object );
+								
+								objectsInfo[temp_object.name]={	"modelName":modelsInfo[currentModelIndex].modelName,
+															"name":temp_object.name,
+															"x":temp_object.position.x,
+															"y":temp_object.position.y,
+															"z":temp_object.position.z
+															}
 							}
 							break;
 						}
@@ -361,6 +386,7 @@ need to do:
 									obj.name;
 								}
 
+								delete objectsInfo[ obj.name ];
 								scene.remove( scene.getObjectByName(obj.name) );
 								objects.splice( objects.indexOf( obj ), 1 );
 								
