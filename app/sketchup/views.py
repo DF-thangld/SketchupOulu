@@ -8,7 +8,6 @@ from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPassw
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
 import app.utilities as utilities
-from app.users.decorators import requires_login
 
 mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 
@@ -41,7 +40,7 @@ def get_scenario():
     if scenario is None:
         return json.dumps(['Scenario not found']), 404
 
-    if not scenario.can_access(g.user):
+    if scenario.is_public == 0 and not scenario.owner == g.user and not g.user.is_admin():
         return json.dumps(['Scenario not found']), 404
 
     return json.dumps(scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
@@ -73,3 +72,43 @@ def update_scenario(scenario_id):
     return json.dumps({
         'success': True
     }), 200
+
+@mod.route('/delete_scenario/<scenario_id>', methods=['GET'])
+def delete_scenario(scenario_id):
+    errors = []
+    if scenario_id == '':
+        return json.dumps(['Scenario not found']), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return json.dumps(['Scenario not found']), 404
+
+    if g.user is None or (not g.user.is_admin() and scenario.owner != g.user):
+        return json.dumps(['Scenario not found']), 404
+
+    db.session.delete(scenario)
+    db.session.commit()
+
+    return json.dumps({
+        'success': True
+    }), 200
+
+@mod.route('/clone_scenario/<scenario_id>', methods=['GET'])
+def clone_scenario(scenario_id):
+    errors = []
+    if scenario_id == '':
+        return json.dumps(['Scenario not found']), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return json.dumps(['Scenario not found']), 404
+
+    if not scenario.can_access(g.user):
+        return json.dumps(['Scenario not found']), 404
+
+    new_scenario = Scenario('Cloned of ' + scenario.name, g.user, addition_information=scenario.addition_information, is_public=1)
+
+    db.session.add(new_scenario)
+    db.session.commit()
+
+    return json.dumps(new_scenario.to_dict(include_owner=True)), 200

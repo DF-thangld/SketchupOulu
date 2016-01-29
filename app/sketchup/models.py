@@ -83,23 +83,11 @@ class Scenario(db.Model):
         self.comment_topic = CommentTopic('Comments for scenario id ' + self.id, owner, 'scenario')
 
     def can_access(self, user):
-
-        if self.owner == user:
+        if user == self.owner:
             return True
         if user.is_admin():
             return True
         if self.is_public == 1:
-            return True
-
-        #TODO: colaborators
-        return False
-
-    def can_edit(self, user):
-        if user is None:
-            return False
-        if self.owner == user:
-            return True
-        if user.is_admin():
             return True
 
         #TODO: colaborators

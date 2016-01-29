@@ -7,7 +7,6 @@ from app.journal.models import JournalCategory, Journal
 
 mod = Blueprint('journal', __name__, url_prefix='/journal')
 
-
 @mod.route('/view/')
 def view():
     journal_id = request.args.get('journal_id', 0)

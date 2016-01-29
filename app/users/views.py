@@ -1,19 +1,18 @@
 import json
 import datetime
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.uploads import UploadSet, IMAGES
 
 from app import db, send_mail, upload_picture
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
-from app.users.models import User, UserSession
+from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
 
 mod = Blueprint('users', __name__, url_prefix='/users')
-
 
 
 @mod.route('/<username>/profile/')
@@ -28,10 +27,58 @@ def profile(username):
     comments = user.get_comments()
     return render_template("users/profile.html", user=user, scenarios=scenarios, building_models=building_models, comments=comments)
 
+
 @mod.route('/profile/')
-@requires_login
 def own_profile():
     return profile(g.user.username)
+
+
+@mod.route('/<username>/scenarios/', methods=['GET', 'POST'])
+def user_scenarios_page(username):
+    if username == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        return render_template("404.html"), 404
+
+    return render_template("users/scenarios.html", user=user.to_dict())
+
+
+@mod.route('/scenarios/', methods=['GET', 'POST'])
+@requires_login
+def user_own_scenarios_page():
+    return user_scenarios_page(g.user.username)
+
+
+@mod.route('/get_comments/')
+def get_comments():
+    comment_type = request.args.get('comment_type', '')
+    comment_id = request.args.get('comment_id', '')
+    page = request.args.get('page', '1')
+
+    if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
+        return json.dumps(['Comment topic not found']), 404
+    if page.isdigit():
+        page = int(page)
+        if page < 1:
+            page = 1
+    else:
+        page = 1
+
+    main_object = None
+    if comment_type == 'user':
+        main_object = User.query.filter_by(id=comment_id).first()
+    elif comment_type == 'scenario':
+        main_object = Scenario.query.filter_by(id=comment_id).first()
+    elif comment_type == 'building_model':
+        main_object = BuildingModel.query.filter_by(id=comment_id).first()
+    if main_object is None:
+        return json.dumps(['Comment topic not found']), 404
+
+    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
+                       'total_page': main_object.comment_topic.total_page,
+                       'current_page': main_object.comment_topic.current_page})
+
 
 @mod.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -54,22 +101,15 @@ def login():
                 # it's a safe place to store the user id
                 session['user_id'] = user.id
 
+                flash('Welcome %s' % user.username)
+
                 user.last_login = datetime.datetime.now()
                 user.last_login_attempt = None
                 user.login_attempts = 0
-
-                #add remember
-                user_session = UserSession(user.id)
-                db.session.add(user_session)
                 db.session.commit()
-                response = make_response(redirect(url_for('users.own_profile')))
-
-                cookie_value = str(user.id) + '|' + user_session.token
-                response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5))
-
 
                 g.user = user
-                return response
+                return redirect(url_for('users.own_profile'))
             elif user and not check_password_hash(user.password, form.password.data):
                 user.last_login_attempt = datetime.datetime.now()
                 user.login_attempts += 1
@@ -159,7 +199,7 @@ def reset_password():
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
-            send_mail([user.email], '[SketchupOulu] Your new password', email_content)
+            send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
             return render_template("users/reset_password_confirmed.html"), 200
 
     form = ResetPasswordForm(request.form)
@@ -182,13 +222,13 @@ def reset_password():
 
             # we use werzeug to validate user's password
             email_content = 'We heard that you lost your password. Sorry about that!<br /><br />'
-            email_content += 'But don`t worry! You can use the following link to reset your password:<br /><br />'
+            email_content += 'But don\'t worry! You can use the following link to reset your password:<br /><br />'
             email_content += '<a href="' + url_for('users.reset_password', token=user.password_token, _external=True) + '">' + url_for('users.reset_password', token=user.password_token, _external=True) + '</a><br /><br />'
-            #email_content += 'If you don`t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
+            #email_content += 'If you don\'t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
-            send_mail([user.email], '[SketchupOulu] Reset your password', email_content)
+            send_mail([user.email], '[SketchupOulu] Reset your password‏', email_content)
             user.password_token = ''
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
@@ -234,23 +274,9 @@ def change_password():
 @requires_login
 def logout():
     session.clear()
-
-    #remove old token from database
-    session_id = request.cookies.get('session_id')
-    if session_id is not None and session_id != '':
-        session_info = session_id.split('|')
-        user_id = int(session_info[0])
-        token = session_info[1]
-        user_session = UserSession.query.filter(UserSession.user_id==user_id, UserSession.token==token).first()
-        if user_session is not None:
-            db.session.delete(user_session)
-            db.session.commit()
-
-    #remove old token from client cookie
-    response = make_response(redirect(url_for('index')))
-    response.set_cookie('session_id', '', expires=0)
-
-    return response
+    session['user_id'] = None
+    g.user = None
+    return redirect(url_for('index'))
 
 @mod.route('/user_profile/', methods=['GET', 'POST'])
 @requires_login
@@ -286,52 +312,16 @@ def upload_profile_picture():
 
     return url_for('static', filename='images/profile_pictures/' + user.profile_picture, _external=True)
 
-@mod.route('/get_comments/')
-def get_comments():
-    comment_type = request.args.get('comment_type', '')
-    comment_id = request.args.get('comment_id', '')
-    page = request.args.get('page', '1')
+@mod.route('/building_models/', methods=['GET', 'POST'])
+@requires_login
+def building_models():
 
-    if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
-        return json.dumps(['Comment topic not found']), 404
-    if page.isdigit():
-        page = int(page)
-        if page < 1:
-            page = 1
-    else:
-        page = 1
-
-    main_object = None
-    if comment_type == 'user':
-        main_object = User.query.filter_by(id=comment_id).first()
-    elif comment_type == 'scenario':
-        main_object = Scenario.query.filter_by(id=comment_id).first()
-    elif comment_type == 'building_model':
-        main_object = BuildingModel.query.filter_by(id=comment_id).first()
-    if main_object is None:
-        return json.dumps(['Comment topic not found']), 404
-
-    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
-                       'total_page': main_object.comment_topic.total_page,
-                       'current_page': main_object.comment_topic.current_page})
-
-
-@mod.route('/<username>/scenarios/', methods=['GET', 'POST'])
-def user_scenarios_page(username):
-    if username == '':
-        return render_template("404.html"), 404
-    user = User.query.filter(User.username==username).first()
-    if user is None:
-        return render_template("404.html"), 404
-
-    return render_template("users/scenarios.html", user=user.to_dict())
-
+    return 'building_models'
 
 @mod.route('/scenarios/', methods=['GET', 'POST'])
 @requires_login
-def user_own_scenarios_page():
-    return user_scenarios_page(g.user.username)
-
+def user_scenarios():
+    return render_template("users/scenarios.html")
 
 @mod.route('/<username>/get_user_scenarios/', methods=['POST'])
 def get_user_scenarios(username):
@@ -352,15 +342,14 @@ def get_user_scenarios(username):
 
     scenarios = user.get_scenarios(filter_text, page, True, g.user)
     return json.dumps({'scenarios': scenarios,
-                       'total_page': g.user.scenarios_total_page,
-                       'current_page': g.user.scenarios_current_page})
+                       'total_page': user.scenarios_total_page,
+                       'current_page': user.scenarios_current_page})
 
 
 @mod.route('/get_user_scenarios/', methods=['POST'])
 @requires_login
 def user_own_scenarios():
     return get_user_scenarios(g.user.username)
-
 
 @mod.route('/add_scenario/', methods=['GET','POST'])
 @requires_login
@@ -414,15 +403,8 @@ def add_comment():
             errors.append('You don\'t have permission to add comment here')
             return json.dumps(errors), 401
         comment_topic = building_model.comment_topic
-    elif comment_type == 'user':
-        user = User.query.get(object_id)
-        if user is None:
-            errors.append('User not found')
-            return json.dumps(errors), 404
-        comment_topic = user.comment_topic
     else:
         errors.append('Comment type not found')
-        return json.dumps(errors), 401
 
     new_comment = Comment(g.user, comment_topic, content)
     db.session.add(new_comment)
@@ -451,13 +433,3 @@ def delete_comment():
     else:
         errors.append('Unauthorized deletion')
         return json.dumps(errors), 403
-
-@mod.route('/building_models/', methods=['GET', 'POST'])
-@requires_login
-def building_models():
-    return url_for('users.user_building_models', username='thangld')
-
-@mod.route('/<username>/building_models/', methods=['GET', 'POST'])
-@requires_login
-def user_building_models(username):
-    return 'building_models' + username

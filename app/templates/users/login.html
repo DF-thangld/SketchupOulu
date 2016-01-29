@@ -52,7 +52,7 @@
 	</div>
 	
 	<div class="col-lg-3 col-centered" style="margin-top:20px;border-radius: 5px;border: 1px solid #d8dee2;padding: 15px 20px;text-align: center;">
-        New to System?
+        New to System?{{ session.get('user_id') }},{{ session['user_id'] }}
         <a href="{{ url_for('users.register') }}" data-ga-click="Sign in, switch to sign up">Create an account</a>.
       </div>
 	

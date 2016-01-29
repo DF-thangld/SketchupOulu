@@ -103,9 +103,7 @@ def update_user_info():
         update_data['address'] = address
     if banned != '':
         update_data['banned'] = banned
-    user.fullname = fullname
-    user.address = address
-    user.banned = banned
+    User.query.filter_by(id=session.get('user_id')).update(update_data)
 
     #update groups
     groups_string = request.form.get('groups_value', '')

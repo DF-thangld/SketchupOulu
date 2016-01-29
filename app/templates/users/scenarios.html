@@ -35,8 +35,16 @@
                 }
 
                 if ($('#scenario_id').val() == '')
+                {
                     if (data.scenarios.length > 0)
                         fetch_scenario(data.scenarios[0].id);
+                    else
+                    {
+
+                        $('#no_scenario_label').html('User has no scenario');
+                        $('#no_scenario_block').fadeIn('fast');
+                    }
+                }
             }
         });
     }
@@ -56,7 +64,7 @@
             dataType: 'json',
             success: function(data)
             {
-
+                $('#scenario_id').val(data.id);
                 $('#scenario_name').html('<a href="{{ url_for('sketchup.view_scenario') }}?id=' + data.id + '">' + data.name + '</a>');
                 $('#profile_picture').attr('src', '{{ url_for('static', filename='images/profile_pictures') }}/' + data.owner.profile_picture);
                 $('#created_user').html(data.owner.username);
@@ -78,6 +86,9 @@
                     new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
                     $('#comment_list').append(new_comment_html);
                 }
+                $('#no_scenario_block').fadeOut('fast');
+                $('#user_data_form').fadeIn('fast');
+
             }
         });
     }
@@ -87,7 +98,7 @@
 {% endblock %}
 
 {% block menu %}
-	{% include 'user_menu.html' %}
+	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block main_content %}
@@ -99,7 +110,7 @@
                <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
                <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">Scenarios</a></li>
             </ol>
-            <h2 style="font-size: 45px;">{{ g.user.username }}'s Scenarios</h2>
+            <h2 style="font-size: 45px;">{{ user.username }}'s Scenarios</h2>
 
             <div class="col-md-4">
                 <div class="row" style="margin-bottom:10px;">
@@ -122,8 +133,10 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-8" id="user_data_form">
+            <div class="col-md-8" id="no_scenario_block">
+                <h3 id="no_scenario_label"></h3>
+            </div>
+            <div class="col-md-8" id="user_data_form" style="display:none">
                 <h3><span id="scenario_name" style="font-weight: bold"></span></h3>
                 <div style="float:left;">
                     <img id="profile_picture" src="{{ url_for('static', filename='images/profile_pictures/default_profile.png') }}" style="width:60px;"/>

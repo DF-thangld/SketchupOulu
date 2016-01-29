@@ -1,7 +1,8 @@
-import datetime
+
+import sqlalchemy
 from app import db
-import app.sketchup.models as sketchup
 import app.utilities as utilities
+import app.sketchup.models as sketchup
 
 user_to_group = db.Table('user_to_group',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
@@ -20,7 +21,6 @@ class User(db.Model):
     phone_number = db.Column(db.String(80), default='')
     fullname = db.Column(db.String(80), default='')
     birthdate = db.Column(db.DateTime)
-    join_date = db.Column(db.DateTime)
     profile_picture = db.Column(db.String(80), default='default_profile.png')
 
     last_login = db.Column(db.DateTime)
@@ -49,21 +49,6 @@ class User(db.Model):
         self.email = email
         self.password = password
         self.comment_topic = sketchup.CommentTopic('Comments for user id ' + self.username, self, 'user')
-        self.join_date = datetime.datetime.now()
-        public_group = Group.query.filter_by(id=2).first()
-        self.groups.append(public_group)
-
-    def __eq__(self, other):
-
-        if other is None:
-            return False
-
-        if isinstance(other, User):
-            return self.username == other.username
-        return False
-
-    def __ne__(self, other):
-        return not (self == other)
 
     def to_dict(self, include_group=False, include_sensitive_information=False):
         groups = None
@@ -93,7 +78,8 @@ class User(db.Model):
                     .filter(sketchup.Scenario.name.like('%'+filter_text+'%'))
         else:
             query = sketchup.Scenario.query.filter(sketchup.Scenario.owner == self)
-        if requested_user != self and not requested_user.is_admin():
+
+        if requested_user is None or (requested_user != self and not requested_user.is_admin()):
             query = query.filter(sketchup.Scenario.is_public == 1)
         query = query.order_by(sketchup.Scenario.last_edited_time.desc())\
                     .order_by(sketchup.Scenario.created_time.desc())
@@ -110,14 +96,9 @@ class User(db.Model):
                 scenarios.append(scenario.to_dict())
             return scenarios
 
-    def get_available_building_models(self, filter_text='', page=1, return_dict=False, include_site_model=False):
-        if filter_text!='':
-            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
-                    .filter(sketchup.BuildingModel.name.like('%'+filter_text+'%'))\
-                    .order_by(sketchup.BuildingModel.created_time.desc())
-        else:
-            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
-                    .order_by(sketchup.BuildingModel.created_time.desc())
+    def get_available_building_models(self, return_dict=False):
+        query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
+                .order_by(sketchup.BuildingModel.created_time.desc())
         building_models = query.all()
         #TODO: get pre-defined models
 
@@ -128,10 +109,10 @@ class User(db.Model):
             for building_model in building_models:
                 building_models_array.append(building_model.to_dict())
             return building_models_array
-    
+
     def get_comments(self):
-        return self.comment_topic.to_dict()['comments']
-        
+        return self.comment_topic.to_dict(include_owner=True)['comments']
+
     def get_building_models(self, page=1, filter_text='', return_dict=False):
         if filter_text != '':
             query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\

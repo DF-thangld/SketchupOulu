@@ -12,7 +12,38 @@
 {% endblock %}
 
 {% block js_script %}
+
+{% if g.user and g.user.is_admin %}
+
+{% endif %}
+
 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
+
+    function delete_scenario()
+    {
+        bootbox.confirm("Are you sure you want to delete this scenario?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.delete_scenario', scenario_id=scenario.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Scenario deleted');
+                        window.location = '{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}';
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
+
     function update_scenario()
     {
         $.ajax({
@@ -37,6 +68,34 @@
                 $('#facebox #update_scenario_errors').fadeIn('fast');
             }
         });
+    }
+{% endif %}
+
+{% if g.user %}
+    function clone_scenario()
+    {
+        bootbox.confirm("Are you sure you want to clone this scenario?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.clone_scenario', scenario_id=scenario.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Scenario cloned');
+                        window.location = '{{ url_for('sketchup.view_scenario') }}?id=' + data.id;
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+
     }
 {% endif %}
 
@@ -65,7 +124,7 @@
                 <div style="color:red">The scenario is deactivated</div>
                 {% endif %}
                 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
-                <a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());">Edit settings</a>
+                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());">Edit settings</a> - <a href="javascript:void(0);" onclick="delete_scenario();">Delete scenario</a></div>
                 <div id="edit_scenario" style="display:none">
                     <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit scenario</h1>
                     <div style="color:red;display:none;" id="update_scenario_errors"></div>
@@ -93,6 +152,17 @@
 
                 </div>
                 {% endif %}
+                <div>
+                {% if g.user %}
+                <button class="btn btn-primary" onclick="clone_scenario();">Clone this scenario</button>
+
+                    {% if g.user.is_admin() and scenario.is_base_scenario==0 %}
+                    <button class="btn btn-warning" onclick="change_base_scenario_status();">Promote to base scenario</button>
+                    {% elif g.user.is_admin() and scenario.is_base_scenario==1 %}
+                    <button class="btn btn-danger" onclick="change_base_scenario_status();">Remove from base scenario</button>
+                    {% endif %}
+                {% endif %}
+                </div>
             </div>
 
             <div style="clear:both"></div>
