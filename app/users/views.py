@@ -144,11 +144,10 @@ def reset_password():
             user.password_token = ''
             db.session.commit()
 
-            email_content = 'Finally, support has come to help you :)<br /><br />'
-            email_content += 'Your new password: <b>%(new_password)s</b><br /><br />'
-            email_content += 'Thanks,<br />'
-            email_content += 'Sketchup Oulu team'
-            email_content = gettext(email_content, new_password=new_password)
+            email_content = gettext('Finally, support has come to help you :)<br /><br />')
+            email_content += gettext('Your new password: <b>%(new_password)s</b><br /><br />', new_password=new_password)
+            email_content += gettext('Thanks,<br />')
+            email_content += gettext('Sketchup Oulu team')
 
             send_mail([user.email], gettext('[SketchupOulu] Your new password‏'), email_content)
             return render_template("users/reset_password_confirmed.html"), 200
