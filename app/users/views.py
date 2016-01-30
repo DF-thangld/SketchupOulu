@@ -504,10 +504,10 @@ def add_building_model():
     else:
         addition_information = ''
         name = request.form.get('name', '')
-        is_public = request.form.get('is_public', 0)
         uploaded_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
         data_file = uploaded_file['filename']
         file_type = uploaded_file['extension']
+
         #check if file type is zip => unzip it
         if file_type == 'zip':
             file_type = 'object'
