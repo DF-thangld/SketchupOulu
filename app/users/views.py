@@ -148,8 +148,8 @@ def reset_password():
             email_content += gettext('Your new password: <b>%(new_password)s</b><br /><br />', new_password=new_password)
             email_content += gettext('Thanks,<br />')
             email_content += gettext('Sketchup Oulu team')
-			
-            send_mail([user.email], gettext('[SketchupOulu] Your new password', email_content))
+	
+            send_mail([user.email], gettext('[SketchupOulu] Your new password'), email_content)
             return render_template("users/reset_password_confirmed.html"), 200
 
 
