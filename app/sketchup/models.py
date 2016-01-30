@@ -12,6 +12,7 @@ class BuildingModel(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     owner = db.relationship("User")
     created_time = db.Column(db.DateTime)
+    file_type = db.Column(db.String(50))
     data_file = db.Column(db.String(80))
     addition_information = db.Column(db.String())
     description = db.Column(db.String())
@@ -51,6 +52,7 @@ class BuildingModel(db.Model):
                 'comments': comments,
                 'created_time': self.created_time.isoformat(),
                 'data_file': self.data_file,
+                'file_type': self.file_type,
                 'addition_information': self.addition_information,
                 'description': self.description}
 

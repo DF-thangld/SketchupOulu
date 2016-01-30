@@ -1,11 +1,13 @@
 import json
 import datetime
+import zipfile
+import os
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.babel import gettext
 
-from app import db, send_mail, upload_file
+from app import db, send_mail, upload_file, app_dir
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
@@ -258,7 +260,7 @@ def user_profile():
 def upload_profile_picture():
 
     user = User.query.get(g.user.id)
-    user.profile_picture = upload_file(request.files['profile_picture'], 'static/images/profile_pictures')
+    user.profile_picture = upload_file(request.files['profile_picture'], 'static/images/profile_pictures')['filename']
     g.user = user
     db.session.commit()
 
@@ -501,10 +503,21 @@ def add_building_model():
     if request.method == 'GET':
         return render_template("users/add_building_model.html", errors=errors)
     else:
+        addition_information = ''
         name = request.form.get('name', '')
-        is_public = request.form.get('is_public', 0)
-        addition_information = request.form.get('addition_information', '')
-        data_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
+        uploaded_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
+        data_file = uploaded_file['filename']
+        file_type = uploaded_file['extension']
+
+        #check if file type is zip => unzip it
+        if file_type == 'zip':
+            file_type = 'object'
+            zip_ref = zipfile.ZipFile(os.path.join(app_dir, 'static/models/building_models', data_file), 'r')
+            zip_ref.extractall(os.path.join(app_dir, 'static/models/building_models'))
+            zip_ref.close()
+            os.rename(os.path.join(app_dir, 'static/models/building_models', uploaded_file['original_filename']), os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
+            addition_information = {'original_filename': uploaded_file['original_filename'],
+                                    'directory': uploaded_file['filename_without_extension']}
 
         if name.strip() == '':
             errors.append('Scenario name is required')
@@ -514,6 +527,8 @@ def add_building_model():
             return render_template("users/add_building_model.html", errors=errors), 400
 
         building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
+        building_model.file_type = file_type
+        building_model.addition_information = json.dumps(addition_information)
         db.session.add(building_model)
         db.session.commit()
         return redirect(url_for('sketchup.view_building_model', id=building_model.id))
