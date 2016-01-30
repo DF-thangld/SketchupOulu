@@ -109,9 +109,6 @@
             <div class="col-md-4">
                 <div class="row" style="margin-bottom:10px;">
                     <div class="col-md-12">
-                        <a type="button" style="width:100%; margin-bottom:10px;" class="btn btn-primary" href="{{ url_for('users.add_scenario') }}">
-                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add scenario
-                        </a>
                         <form id="scenario_search_form" method="POST" action="{{ url_for('sketchup.get_base_scenarios') }}">
                             <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_base_scenarios();" placeholder="Search by scenario name" type="text" value="">
                         </form>

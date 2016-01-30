@@ -16,7 +16,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 DATABASE_CONNECT_OPTIONS = {}
 
-THREADS_PER_PAGE = 8
+THREADS_PER_PAGE = 20
 
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = "somethingimpossibletoguess"
@@ -35,3 +35,10 @@ EMAIL = {'from': 'Sketchup Oulu <sketchup_oulu@hotmail.com>',
 EMAIL_PICTURE = os.path.join('static', 'images', 'email_pictures')
 BASE_URL = 'http://localhost:5000/'
 EMAIL_PICTURE_URL = BASE_URL + 'static/images/email_pictures/'
+
+LANGUAGES = {
+    'en': 'English',
+    'fi': 'Suomea'
+}
+
+BABEL_DEFAULT_LOCALE = 'fi'

@@ -3,6 +3,7 @@ import sys
 
 from flask import Flask, render_template, g, session
 from flask_sqlalchemy import SQLAlchemy
+from flask.ext.babel import Babel
 from smtplib import SMTP, SMTP_SSL
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -14,10 +15,16 @@ import app.utilities as utilities
 
 app = Flask(__name__)
 app.config.from_object('config')
+babel = Babel(app)
 
 app_dir = os.path.dirname(os.path.realpath(__file__))
 
 db = SQLAlchemy(app)
+
+
+@babel.localeselector
+def get_locale():
+    return 'fi'
 
 
 def upload_file(upload_file, stored_directory, generate_filename=True, file_type="image"):

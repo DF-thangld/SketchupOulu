@@ -3,7 +3,7 @@ import datetime
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
-from flask.ext.uploads import UploadSet, IMAGES
+from flask.ext.babel import gettext
 
 from app import db, send_mail, upload_file
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
@@ -46,15 +46,13 @@ def login():
             user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
 
             if user.banned == 1:
-                errors.append('The account was banned, please contact an admin for more information')
+                errors.append(gettext('The account was banned, please contact an admin for more information'))
                 return render_template("users/login.html", form=form, errors=errors)
             # we use werzeug to validate user's password
             if user and check_password_hash(user.password, form.password.data):
                 # the session can't be modified as it's signed,
                 # it's a safe place to store the user id
                 session['user_id'] = user.id
-
-                flash('Welcome %s' % user.username)
 
                 user.last_login = datetime.datetime.now()
                 user.last_login_attempt = None
@@ -70,10 +68,10 @@ def login():
                 #TODO: check and maybe banned user
 
                 db.session.commit()
-                errors.append('Wrong email or password')
+                errors.append(gettext('Wrong email or password'))
                 return render_template("users/login.html", form=form, errors=errors)
             else:
-                errors.append('Wrong email or password')
+                errors.append(gettext('Wrong email or password'))
                 return render_template("users/login.html", form=form, errors=errors)
         else:
             for error in form.email.errors:
@@ -98,9 +96,9 @@ def register():
             same_username_user = User.query.filter_by(username=form.name.data).first()
             same_email_user = User.query.filter_by(email=form.email.data).first()
             if same_email_user is not None:
-                errors.append('Duplicate email address')
+                errors.append(gettext('Duplicate email address'))
             if same_username_user is not None:
-                errors.append('Duplicate username address')
+                errors.append(gettext('Duplicate username'))
 
             if len(errors) > 0:
                 return render_template("users/register.html", form=form, errors=errors)
@@ -116,7 +114,6 @@ def register():
             g.user = user
 
             # flash will display a message to the user
-            flash('Thanks for registering')
             # redirect user to the 'home' method of the user module.
             # TODO: send confirm email and redirect to confirm page
             return redirect(url_for('index'))
@@ -148,11 +145,12 @@ def reset_password():
             db.session.commit()
 
             email_content = 'Finally, support has come to help you :)<br /><br />'
-            email_content += 'Your new password: <b>' + new_password + '</b><br /><br />'
+            email_content += 'Your new password: <b>%(new_password)s</b><br /><br />'
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
+            email_content = gettext(email_content, new_password=new_password)
 
-            send_mail([user.email], '[SketchupOulu] Your new password‏', email_content)
+            send_mail([user.email], gettext('[SketchupOulu] Your new password‏'), email_content)
             return render_template("users/reset_password_confirmed.html"), 200
 
     form = ResetPasswordForm(request.form)
@@ -163,11 +161,11 @@ def reset_password():
             user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
 
             if user is None:
-                errors.append('Account not found')
+                errors.append(gettext('Account not found'))
                 return render_template("users/reset_password.html", form=form, errors=errors), 404
 
             if user.banned == 1:
-                errors.append('The account was banned, please contact an admin for more information')
+                errors.append(gettext('The account was banned, please contact an admin for more information'))
                 return render_template("users/reset_password.html", form=form, errors=errors), 400
 
             user.password_token = utilities.generate_random_string(50)
