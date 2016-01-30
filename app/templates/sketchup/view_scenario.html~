@@ -67,8 +67,15 @@ var currentModelIndex;
 var modeInfo = ["Add Model","Delete Model","Enlarge Model","Reduce Model","Rotate Left","Rotate Right"];
 var geometryIndex = 0;
 var modeIndex = 0;
+
+var windowRatio = 2;
+var windowWidth = 972;
+var windowHeight = 500;
 function init()
 {
+	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
+	windowWidth = document.getElementById("ModelWindow").offsetWidth;
+	windowHeight = document.getElementById("ModelWindow").offsetHeight;
 
 	scene = new THREE.Scene();
 
@@ -145,7 +152,8 @@ function init()
 	
 	//webgl
 
-	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+	//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+	camera = new THREE.PerspectiveCamera( 45, windowRatio, 1, 10000 );
 	camera.position.set( views[0].x, views[0].y, views[0].z );
 	camera.target = center_position;
 	camera.lookAt( camera.target );
@@ -204,7 +212,11 @@ function init()
 
 	renderer.setClearColor( 0xf0f0f0 ); //0xffffff
 	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	//renderer.setPixelRatio( document.getElementById("ModelWindow").offsetWidth/
+	//						document.getElementById("ModelWindow").offsetHeight );
+	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
+		 				document.getElementById("ModelWindow").offsetHeight
+	);
 	
 	container.appendChild( renderer.domElement );
 
@@ -272,8 +284,11 @@ function onDocumentMouseMove(event)
 	event.preventDefault();
 
 	if(modeIndex ==0){//add mode
-		mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-	
+		 	mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+		//mouse.set( ( event.clientX / document.getElementById("ModelWindow").clientWidth ) * 2 - 1, - ( event.clientY / document.getElementById("ModelWindow").clientHeight ) * 2 + 1 );
+		//console.log("event.clientX: "+event.clientX+" ,event.clientY: "+event.clientY);
+		//console.log("windowWidth: "+windowWidth+" ,windowHeight: "+windowHeight);
+		//console.log("window.innerWidth: "+window.innerWidth+" ,window.innerWidth: "+window.innerWidth);
 		raycaster.setFromCamera( mouse, camera );
 
 		//threejs raycast click detection not working on loaded 3dObject
@@ -297,7 +312,10 @@ function onDocumentMouseDown( event ) {
 
 	//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
 
-	mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+		 				
+	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+	mouse.set( ( event.clientX / windowWidth ) * 2 - 1, - ( event.clientY / WindowHeight ) * 2 + 1 );
+
 
 	raycaster.setFromCamera( mouse, camera );
 
@@ -459,13 +477,16 @@ function onDocumentKeyUp(event)
 // change window size
 function onWindowResize()
 {
-	windowHalfX = window.innerWidth / 2;
-	windowHalfY = window.innerHeight / 2;
 
-	camera.aspect = window.innerWidth / window.innerHeight;
+	//camera.aspect = window.innerWidth / window.innerHeight;
+	camera.aspect = windowRatio;
 	camera.updateProjectionMatrix();
 
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	//renderer.setSize( window.innerWidth, window.innerHeight );
+	
+	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
+		 				document.getElementById("ModelWindow").offsetHeight
+	);
 }
 
 function animate() {
@@ -720,7 +741,7 @@ function render()
                     <div style="color:red;display:none;" id="update_scenario_errors"></div>
                     <dl class="form">
                         <dt class="input-label">
-                            <label autocapitalize="off" autofocus="autofocus" for="name">Scenario name</label>
+                            <label autocapitalize="off" autofocus="autofocus" for="scenario_name">Scenario name</label>
                         </dt>
                         <dd>
                             <input type="text" id="scenario_name" name="scenario_name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ scenario.name }}">
@@ -736,7 +757,7 @@ function render()
                     </dl>
                     <dl class="form">
                         <dt class="input-label">
-                            <label autocapitalize="off" autofocus="autofocus" for="name">Description</label>
+                            <label autocapitalize="off" autofocus="autofocus" for="scenario_description">Description</label>
                         </dt>
                         <dd>
                             <textarea id="scenario_description" name="scenario_description" autocapitalize="off" autofocus="autofocus" style="width:100%;min-height:30px;height:100px;">{{ scenario.description }}</textarea>
