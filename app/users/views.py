@@ -149,8 +149,9 @@ def reset_password():
             email_content += gettext('Thanks,<br />')
             email_content += gettext('Sketchup Oulu team')
 			
-			send_mail([user.email], gettext('[SketchupOulu] Your new password‏'), email_content)
-			return render_template("users/reset_password_confirmed.html"), 200
+            send_mail([user.email], gettext('[SketchupOulu] Your new password', email_content))
+            return render_template("users/reset_password_confirmed.html"), 200
+
 
     form = ResetPasswordForm(request.form)
     errors = []
@@ -178,7 +179,7 @@ def reset_password():
             email_content += 'Thanks,<br />'
             email_content += 'Sketchup Oulu team'
 
-            send_mail([user.email], '[SketchupOulu] Reset your password‏', email_content)
+            send_mail([user.email], '[SketchupOulu] Reset your password', email_content)
             user.password_token = ''
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
