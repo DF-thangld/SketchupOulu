@@ -104,6 +104,7 @@ need to do:
 			//var chooseModel=0;
 			var modelsInfo;
 			var models; //models get from databsed, no contain repeated models
+			var loaded_objects_number;
 			var currentModelIndex;
 			
 			//dropdown list
@@ -127,7 +128,8 @@ need to do:
 
 				models = [];
 				modelsInfo = Communicator.getModelsFromDB("Project's name");
-
+				sceneInfo = Communicator.getSceneFromDB("Project's name");
+				loaded_objects_number=0;
 				for ( var i = 0; i < modelsInfo.length; i++) {
 					var model = modelsInfo[i];
 					var loader = new THREE.OBJMTLLoader();
@@ -142,8 +144,25 @@ need to do:
 							currentModelIndex=0;
 							scene.add( current_object );
 						}
+						loaded_objects_number=loaded_objects_number+1;
+						if( loaded_objects_number == modelsInfo.length){
+							//make loading scene objects at last to make sure the 3D Object has been loaded
+							//add predefined scene objects
+						
+							for ( var i = 0; i < sceneInfo.length; i++) {
+								var model = sceneInfo[i];
+								var object = models[parseInt(model.index)].clone();
+								object.position.x = model.x;
+								object.position.y = model.y;
+								object.position.z = model.z;
+								scene.add( object );
+
+							}
+						}
 					});
-				}	
+				}
+
+				
 
 				//document
 				container = document.createElement( 'div' );
@@ -244,6 +263,9 @@ need to do:
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
+
+				
+
 				// display the scene
 				if (window.WebGLRenderingContext)
 					renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
@@ -256,6 +278,7 @@ need to do:
 				
 				container.appendChild( renderer.domElement );
 
+
 				//render
 				renderer.render( scene, camera);
 			}
@@ -263,14 +286,14 @@ need to do:
 			function saveProject(){
 				
 				
-				var objs=[{"name":"binchen"},{"name":"liping"}];
+				//var objs=[{"name":"binchen"},{"name":"liping"}];
 				
-				for( var i = 0; i < objects.length; i++){
+				//for( var i = 0; i < objects.length; i++){
 					
-				}
+				//}
 				
-				var js=JSON.stringify(objs);
-				alert("Saved!"+js);
+				//ar js=JSON.stringify(objs);
+				//alert("Saved!"+js);
 			}
 
 			function switchGeometry(i) {
@@ -359,7 +382,7 @@ need to do:
 								if (!Date.now) {
 		    						Date.now = function() { return new Date().getTime(); }
 								}
-								temp_object.name = Date.now();
+								temp_object.name = Date.now()%100;
 								//temp_object.name = modelsInfo[currentModelIndex].modelName;
 
 
