@@ -71,11 +71,14 @@ function find_by_id(array, id)
 
 function generate_random_string(length)
 {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    for( var i=0; i < length; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    var ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+    var ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var digits = "0123456789";
+
+    var text = (ascii_lowercase + ascii_uppercase).charAt(Math.floor(Math.random() * (ascii_lowercase + ascii_uppercase).length));
+    for( var i=1; i < length; i++ )
+        text += (ascii_lowercase + ascii_uppercase + digits).charAt(Math.floor(Math.random() * (ascii_lowercase + ascii_uppercase + digits).length));
 
     return text;
 }

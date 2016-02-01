@@ -89,6 +89,12 @@
     var profile_url = '{{ url_for('static', filename='images/profile_pictures') }}';
     var delete_comment_url = '{{ url_for('users.delete_comment') }}';
     var model_path = '{{ url_for('static', filename='models/') }}';
+
+    {% block js_script %}
+
+
+
+    {% endblock %}
     
     $( document ).ready(function()
     {
@@ -101,13 +107,7 @@
     	
     });
 
-
-
-    {% block js_script %}
     
-    
-
-    {% endblock %}
     </script>
     
     <style>
