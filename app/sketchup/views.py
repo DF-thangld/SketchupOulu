@@ -217,6 +217,7 @@ def clone_building_model(building_model_id):
         return json.dumps(['Building model not found']), 404
 
     new_building_model = BuildingModel('Clone of ' + building_model.name, building_model.data_file, g.user, addition_information=building_model.addition_information)
+    new_building_model.file_type = building_model.file_type
     db.session.add(new_building_model)
     db.session.commit()
 

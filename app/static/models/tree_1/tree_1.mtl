@@ -1,0 +1,27 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl Vegetation_Bark_Ponderosa
+Ka 0.000000 0.000000 0.000000
+Kd 0.619608 0.454902 0.392157
+Ks 0.330000 0.330000 0.330000
+map_Kd tree_1/Vegetation_Bark_Ponderosa.jpg
+
+newmtl Vegetation_Grass1
+Ka 0.000000 0.000000 0.000000
+Kd 0.564706 0.627451 0.356863
+Ks 0.330000 0.330000 0.330000
+map_Kd tree_1/Vegetation_Grass1.jpg
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl Vegetation_Blur_02
+Ka 0.000000 0.000000 0.000000
+Kd 0.537255 0.627451 0.243137
+Ks 0.330000 0.330000 0.330000
+map_Kd tree_1/Vegetation_Blur_02.jpg
+

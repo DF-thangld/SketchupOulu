@@ -1,10 +1,4 @@
-/*!
- * Start Bootstrap - Creative Bootstrap Theme (http://startbootstrap.com)
- * Code licensed under the Apache License v2.0.
- * For details, see http://www.apache.org/licenses/LICENSE-2.0.
- */
-
- jQuery.fn.extend({
+jQuery.fn.extend({
   autoHeight: function () {
     function autoHeight_(element) {
       return jQuery(element)
@@ -64,6 +58,27 @@ $( document ).ready(function() {
 });
 
 
+function find_by_id(array, id)
+{
+    var length = array.length;
+    for (i=0; i<length; i++)
+    {
+        if (array[i].id == id)
+            return array[i];
+    }
+    return null;
+}
+
+function generate_random_string(length)
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    for( var i=0; i < length; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
 
 function show_alert(alert_type, alert_content)
 {

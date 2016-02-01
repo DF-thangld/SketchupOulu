@@ -1,6 +1,5 @@
 {% extends "base.html" %} 
-{% block custom_css %} 
-
+{% block custom_css %}
 {% endblock %}
 
 {% block onload_script %}
@@ -24,11 +23,7 @@
         $(this).addClass("active");
 	});
 {% endblock %}
-
-
 {% block js_script %}
-
-
     function display_comments()
     {
         $("#profile_menu li").removeClass("active");
@@ -142,11 +137,6 @@
         });
     }
     {% endif %}
-
-
-
-
-
 {% endblock %}
 
 {% block menu %}
@@ -290,6 +280,4 @@
 
     </div>
 </div>
-
-
 {% endblock %}

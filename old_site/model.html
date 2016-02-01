@@ -291,9 +291,11 @@ need to do:
 				//for( var i = 0; i < objects.length; i++){
 					
 				//}
+
 				
 				//ar js=JSON.stringify(objs);
 				//alert("Saved!"+js);
+
 			}
 
 			function switchGeometry(i) {
@@ -379,12 +381,14 @@ need to do:
 
 								var temp_object=current_object.clone();
 
+
 								if (!Date.now) {
 		    						Date.now = function() { return new Date().getTime(); }
 								}
-								temp_object.name = Date.now()%100;
-								//temp_object.name = modelsInfo[currentModelIndex].modelName;
+								temp_object.name = Date.now()%1000;// need to change to increasing number 1,2,3...
 
+								//temp_object.name = modelsInfo[currentModelIndex].modelName;
+								temp_object.name = temp_object.length;
 
 								scene.add( temp_object );
 								objects.push( temp_object );

@@ -1,0 +1,21 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl Roofing_Shingles_Asphalt
+Ka 0.000000 0.000000 0.000000
+Kd 0.435294 0.407843 0.380392
+Ks 0.330000 0.330000 0.330000
+map_Kd building_1/Roofing_Shingles_Asphalt.jpg
+
+newmtl Roofing_Slate_Dark
+Ka 0.000000 0.000000 0.000000
+Kd 0.388235 0.411765 0.423529
+Ks 0.330000 0.330000 0.330000
+map_Kd building_1/Roofing_Slate_Dark.jpg
+

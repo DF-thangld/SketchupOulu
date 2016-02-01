@@ -12,12 +12,6 @@
 {% endblock %}
 
 {% block js_script %}
-function before_submit()
-{
-    // TODO: take information from model to "addition_information" field
-    window.alert('TODO: take information from model to "addition_information" field');
-}
-
 {% endblock %}
 
 {% block main_content %}
@@ -32,9 +26,8 @@ function before_submit()
 		<h2 style="font-size: 45px;">New Building Model</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('users.add_building_model') }}" autocomplete="off"
-			class="setup-form js-form-signup-detail" onsubmit="before_submit();"
+			class="setup-form js-form-signup-detail"
 			method="post" enctype="multipart/form-data">
-            <input type="hidden" name="addition_information" value="" id="addition_information"/>
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
 

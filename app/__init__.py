@@ -29,10 +29,16 @@ def get_locale():
 
 def upload_file(upload_file, stored_directory, generate_filename=True, file_type="image"):
     original_filename_parts = upload_file.filename.split('.')
+    original_filename = original_filename_parts[0]
+    for i in range(1, len(original_filename_parts)-1):
+        original_filename += '.' + original_filename_parts[i]
     file_extension = original_filename_parts[len(original_filename_parts)-1]
     if generate_filename:
-        filename = utilities.generate_random_string(50) + '.' + file_extension
+        filename_without_extension = utilities.generate_random_string(50)
+        filename = filename_without_extension + '.' + file_extension
+
     else:
+        filename_without_extension = original_filename
         filename = upload_file.filename
     filename = secure_filename(filename)
 
@@ -40,7 +46,11 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
     full_filename = os.path.join(app_dir, stored_directory, filename)
     upload_file.save(full_filename)
 
-    return filename
+    return {'filename': filename,
+            'extension': file_extension,
+            'original_filename': original_filename,
+            'full_filename': full_filename,
+            'filename_without_extension': filename_without_extension}
 
 
 def send_mail(emails, title, content):

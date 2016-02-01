@@ -265,11 +265,12 @@ need to do:
 				
 				var objs=[{"name":"binchen"},{"name":"liping"}];
 				
-				for( var i = 0; i < objects.length; i++){
+				//for( var i = 0; i < objects.length; i++){
 					
-				}
-				
-				var js=JSON.stringify(objs);
+				//}
+				objs;
+				objectsInfo.length;
+				var js=JSON.stringify( objectsInfo );
 				alert("Saved!"+js);
 			}
 
@@ -356,12 +357,12 @@ need to do:
 
 								var temp_object=current_object.clone();
 
-								if (!Date.now) {
-		    						Date.now = function() { return new Date().getTime(); }
-								}
-								temp_object.name = Date.now();
+								//if (!Date.now) {
+		    					//	Date.now = function() { return new Date().getTime(); }
+								//}
+								//temp_object.name = Date.now()%1000;
 								//temp_object.name = modelsInfo[currentModelIndex].modelName;
-
+								temp_object.name = temp_object.length;
 
 								scene.add( temp_object );
 								objects.push( temp_object );
