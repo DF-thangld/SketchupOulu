@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from app import db
 from app import utilities
@@ -53,7 +54,7 @@ class BuildingModel(db.Model):
                 'created_time': self.created_time.isoformat(),
                 'data_file': self.data_file,
                 'file_type': self.file_type,
-                'addition_information': self.addition_information,
+                'addition_information': json.loads(self.addition_information),
                 'description': self.description}
 
     def __repr__(self):
@@ -130,7 +131,7 @@ class Scenario(db.Model):
                 'last_edited_user': last_edited_user,
                 'last_edited_time': utilities.format_datetime(self.last_edited_time),
                 'data_file': self.data_file,
-                'addition_information': self.addition_information,
+                'addition_information': json.loads(self.addition_information),
                 'description': self.description,
                 'is_public': self.is_public,
                 'is_base_scenario': self.is_base_scenario,

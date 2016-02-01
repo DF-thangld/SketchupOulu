@@ -72,17 +72,24 @@
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.fittext.js') }}"></script>
     <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
+
     
     <script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/loaders/OBJMTLLoader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/OrbitControls.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/renderers/CanvasRenderer.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/Detector.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/dat.gui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/loaders/OBJMTLLoader.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/loaders/DDSLoader.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/loaders/MTLLoader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/loaders/ColladaLoader.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/Communication.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/THREEx.KeyboardState.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/THREEx.FullScreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/THREEx.WindowResize.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dat.gui.min.js') }}"></script>
 
+    <!-- custom javascript file -->
+    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
 
     <script>
     var add_comment_url = '{{ url_for('users.add_comment') }}';
@@ -91,9 +98,6 @@
     var model_path = '{{ url_for('static', filename='models/') }}';
 
     {% block js_script %}
-
-
-
     {% endblock %}
     
     $( document ).ready(function()
@@ -101,13 +105,8 @@
         $.facebox.settings.closeImage = '{{ url_for('static', filename='images/closelabel.png') }}';
         $.facebox.settings.loadingImage = '{{ url_for('static', filename='images/loading.gif') }}';
     	{% block onload_script %}
-		
 		{% endblock %}
-    	
-    	
     });
-
-    
     </script>
     
     <style>
@@ -132,10 +131,6 @@
     {% block main_content %}
     
     {% endblock %}
-
-    
-    
-
 </body>
 
 </html>

@@ -47,7 +47,7 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
     upload_file.save(full_filename)
 
     return {'filename': filename,
-            'extension': file_extension,
+            'extension': file_extension.lower(),
             'original_filename': original_filename,
             'full_filename': full_filename,
             'filename_without_extension': filename_without_extension}

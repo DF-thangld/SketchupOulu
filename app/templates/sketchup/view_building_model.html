@@ -7,11 +7,121 @@
 {% endblock %}
 
 {% block onload_script %}
-
+init();
+animate();
 
 {% endblock %}
 
 {% block js_script %}
+var container, scene, camera, renderer, controls, stats;
+var keyboard = new THREEx.KeyboardState();
+var clock = new THREE.Clock();
+
+var android;
+
+function init()
+{
+	// SCENE
+	scene = new THREE.Scene();
+	// CAMERA
+	var SCREEN_WIDTH = $('#building_model_{{ building_model.id }}').innerWidth(), SCREEN_HEIGHT = $('#building_model_{{ building_model.id }}').innerHeight();
+	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(camera);
+	camera.position.set(0,150,400);
+	camera.lookAt(scene.position);
+	// RENDERER
+	if ( Detector.webgl )
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	else
+		renderer = new THREE.CanvasRenderer();
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	container = document.getElementById( 'building_model_{{ building_model.id }}' );
+	container.appendChild( renderer.domElement );
+	// EVENTS
+	THREEx.WindowResize(renderer, camera);
+	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	// CONTROLS
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	// LIGHT
+	var light = new THREE.PointLight(0xffffff);
+	light.position.set(-100,200,100);
+	scene.add(light);
+	// FLOOR
+	var floorTexture = new THREE.ImageUtils.loadTexture( '{{ url_for('static', filename='images/checkerboard.jpg') }}' );
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+	floorTexture.repeat.set( 10, 10 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	floor.position.y = -0.5;
+	floor.rotation.x = Math.PI / 2;
+	scene.add(floor);
+	// SKYBOX/FOG
+	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+	// scene.add(skyBox);
+	scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+
+	////////////
+	// CUSTOM //
+	////////////
+
+	// Note: if imported model appears too dark,
+	//   add an ambient light in this file
+	//   and increase values in model's exported .js file
+	//    to e.g. "colorAmbient" : [0.75, 0.75, 0.75]
+
+    {% if building_model.file_type == 'dae' %}
+    var loader = new THREE.ColladaLoader();
+	loader.options.upAxis = 'X'; // Rotation by 90 degrees
+	loader.options.convertUpAxis = true; // Align the Y-axis
+	loader.load('{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".dae") }}', function (collada) {
+		dae = collada.scene;
+		dae.scale.x = dae.scale.y = dae.scale.z = 1;
+		dae.position.x = 0;
+		scene.add(dae);
+	});
+    {% elif building_model.file_type == 'obj' %}
+    var loader = new THREE.OBJMTLLoader();
+    loader.load('{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".obj") }}',
+        '{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".mtl") }}',
+        function ( object )
+    {
+        scene.add( object );
+    });
+    {% endif %}
+
+	// addModelToScene function is called back after model has loaded
+
+	var ambientLight = new THREE.AmbientLight(0x111111);
+	scene.add(ambientLight);
+
+}
+
+function animate()
+{
+    requestAnimationFrame( animate );
+	render();
+	update();
+}
+
+function update()
+{
+	if ( keyboard.pressed("z") )
+	{
+		// do something
+	}
+
+	controls.update();
+}
+
+function render()
+{
+	renderer.render( scene, camera );
+}
+
 
 {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
 
@@ -96,6 +206,9 @@
 {% endblock %}
 
 {% block main_content %}
+    {{ building_model }}
+    <br/>
+    {{ building_model.addition_information.directory }}
 <div class="row" style="margin-top: 20px;">
 
 	<div class="col-lg-10 col-centered">
@@ -146,9 +259,7 @@
 			</div>
 			<dl class="form">
 				<dt class="input-label">
-					<div style="width:100%;height:500px;border:1px solid black;">
-                        Frame for model
-                    </div>
+					<div style="width:100%;height:500px;border:1px solid black;" id="building_model_{{ building_model.id }}"></div>
 				</dt>
 				<dd>
                     <div id="building_model_comment_panel" style="margin-top:10px;">

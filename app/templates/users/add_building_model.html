@@ -51,6 +51,17 @@
 			</dl>
             <dl class="form">
 				<dt class="input-label">
+					<label autocapitalize="off" autofocus="autofocus" for="name">File type</label>
+				</dt>
+				<dd>
+                    <select class="form-control" name="file_type" id="file_type">
+                        <option value="obj" {% if request.form.get('file_type')=='obj' %}selected{% endif %}>OBJ</option>
+                        <option value="dae" {% if request.form.get('file_type')=='dae' %}selected{% endif %}>DAE</option>
+                    </select>
+				</dd>
+			</dl>
+            <dl class="form">
+				<dt class="input-label">
 					<label autocapitalize="off" autofocus="autofocus" for="data_file">Data file</label>
 				</dt>
 				<dd>

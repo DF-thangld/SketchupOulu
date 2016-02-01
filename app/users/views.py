@@ -505,26 +505,28 @@ def add_building_model():
     else:
         addition_information = ''
         name = request.form.get('name', '')
+        file_type = request.form.get('file_type', '')
+
+        if name.strip() == '':
+            errors.append('Scenario name is required')
+        if file_type.strip() == '':
+            errors.append('File type is required')
+        if request.files['data_file'].filename == '':
+            errors.append('Model file is required')
+        if len(errors) > 0:
+            return render_template("users/add_building_model.html", errors=errors), 400
+
         uploaded_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
         data_file = uploaded_file['filename']
-        file_type = uploaded_file['extension']
-
         #check if file type is zip => unzip it
-        if file_type == 'zip':
-            file_type = 'object'
+        if uploaded_file['extension'] == 'zip':
             zip_ref = zipfile.ZipFile(os.path.join(app_dir, 'static/models/building_models', data_file), 'r')
             zip_ref.extractall(os.path.join(app_dir, 'static/models/building_models'))
             zip_ref.close()
             os.rename(os.path.join(app_dir, 'static/models/building_models', uploaded_file['original_filename']), os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
             addition_information = {'original_filename': uploaded_file['original_filename'],
                                     'directory': uploaded_file['filename_without_extension']}
-
-        if name.strip() == '':
-            errors.append('Scenario name is required')
-        if data_file.strip() == '':
-            errors.append('Model file is required')
-        if len(errors) > 0:
-            return render_template("users/add_building_model.html", errors=errors), 400
+            #TODO: searching the unzipped files for fail-safe human errors with file type
 
         building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
         building_model.file_type = file_type
