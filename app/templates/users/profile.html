@@ -3,7 +3,7 @@
 {% endblock %}
 
 {% block onload_script %}
-    if (window.location.hash.substr(1) == 'building_models')
+    /*if (window.location.hash.substr(1) == 'building_models')
         get_building_models();
     else if (window.location.hash.substr(1) == 'scenarios')
         get_building_models();
@@ -15,15 +15,133 @@
     else if (window.location.hash.substr(1) == 'change_password')
         display_change_password();
     {% endif %}
-    else
-        display_homepage();
-
+*/
     $(document).on('click', '#profile_menu li', function() {
         $("#profile_menu li").removeClass("active");
         $(this).addClass("active");
 	});
+    {% for building_model in building_models %}
+    init_building_models('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}');
+    {% endfor %}
+
+    animate();
+    for (i=0; i < building_models.length; i++)
+    {
+        var building_model = building_models[i];
+        $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
+        var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
+
+        building_model['camera.aspect'] = SCREEN_WIDTH / SCREEN_HEIGHT;
+        building_model['camera'].updateProjectionMatrix();
+        building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+    }
+
+
+
 {% endblock %}
 {% block js_script %}
+
+    var building_models = [];
+
+    window.addEventListener('resize', function()
+    {
+
+        for (i=0; i < building_models.length; i++)
+        {
+            var building_model = building_models[i];
+            $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
+            var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
+
+            building_model['camera.aspect'] = SCREEN_WIDTH / SCREEN_HEIGHT;
+            building_model['camera'].updateProjectionMatrix();
+            building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+        }
+
+
+    }, false);
+
+    function init_building_models(id, file_type, information)
+    {
+        $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+        information = JSON.parse(information);
+        console.log(information);
+
+        // variables
+        var scene = new THREE.Scene();
+        var SCREEN_WIDTH = $('#building_model').innerWidth()-8, SCREEN_HEIGHT = $('#building_model').innerHeight()-8;
+        var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+        var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+        camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
+        camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
+        scene.add(camera);
+
+        // RENDERER
+        var renderer;
+        if ( Detector.webgl )
+            renderer = new THREE.WebGLRenderer( {antialias:true} );
+        else
+            renderer = new THREE.CanvasRenderer();
+        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        renderer.setClearColor( 0xffffff, 1 );
+        container = document.getElementById( 'building_model_' +id );
+        container.appendChild( renderer.domElement );
+
+        //LIGHT
+        /*var light = new THREE.PointLight(0xffffff);
+        light.position.set(-100,200,100);
+        scene.add(light);*/
+        var ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
+
+        //object
+        if (file_type == 'dae')
+        {
+            var loader = new THREE.ColladaLoader();
+            loader.options.upAxis = 'X'; // Rotation by 90 degrees
+            loader.options.convertUpAxis = true; // Align the Y-axis
+            loader.load('{{ url_for('static', filename='models/building_models/') }}' + information.directory + "/" + information.original_filename + ".dae", function (collada) {
+
+                dae = collada.scene;
+                dae.position.x = 0;
+                dae.scale.x = dae.scale.y = dae.scale.z = 1;
+                scene.add(dae);
+            });
+
+        }
+        else if (file_type == 'obj')
+        {
+            var loader = new THREE.OBJMTLLoader();
+            loader.load('{{ url_for('static', filename='models/building_models/') }}' + information.directory + "/" + information.original_filename + ".obj",
+                '{{ url_for('static', filename='models/building_models/') }}' + information.directory + "/" + information.original_filename + ".mtl",
+                function ( object )
+            {
+                object.scale.x = object.scale.y = object.scale.z = 1;
+                scene.add( object );
+            });
+        }
+        var control = new THREE.OrbitControls( camera, renderer.domElement );
+
+        //move objects to global arrays
+        building_models.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
+        renderer.render( scene, camera );
+    }
+
+    function animate()
+    {
+        requestAnimationFrame( animate );
+        render();
+    }
+    function render()
+    {
+        for (i=0; i < building_models.length; i++)
+        {
+            building_model = building_models[i];
+            building_model['renderer'].render( building_model['scene'], building_model['camera'] );
+
+            building_model['control'].update();
+        }
+    }
+
     function display_comments()
     {
         $("#profile_menu li").removeClass("active");
@@ -52,8 +170,6 @@
                 }
                 $('#user_data_form').html($('#user_comment_panel').html());
                 $('#user_data_form').fadeIn('fast');
-
-
 			}
 		});
     }
@@ -63,8 +179,19 @@
         $("#profile_menu li").removeClass("active");
         $('#menu_homepage').addClass('active');
         $('#user_data_form').fadeOut('fast');
-        $('#user_data_form').html($('#homepage_panel').html());
-        $('#user_data_form').fadeIn('fast');
+        //$('#user_data_form').html($('#homepage_panel').html());
+        $('#homepage_panel').fadeIn('fast', function(){
+            for (i=0; i < building_models.length; i++)
+            {
+                var building_model = building_models[i];
+                var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
+
+                building_model['camera.aspect'] = SCREEN_WIDTH / SCREEN_HEIGHT;
+                building_model['camera'].updateProjectionMatrix();
+                building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+            }
+        });
+
     }
     function get_user_scenarios()
     {
@@ -97,7 +224,7 @@
 			}
 		});
     }
-        function display_change_password()
+    function display_change_password()
     {
         $("#profile_menu li").removeClass("active");
         $('#menu_change_password').addClass('active');
@@ -156,7 +283,7 @@
 
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">
-                <li id="menu_homepage"><a href="#homepage" onclick="display_homepage();">Homepage</a></li>
+                <li id="menu_homepage" class="active"><a href="#homepage" onclick="display_homepage();">Homepage</a></li>
                 <li id="menu_comment"><a href="#comments" onclick="display_comments();">Comments</a></li>
                 {% if g.user and g.user.username==user.username %}
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
@@ -167,76 +294,76 @@
             </ul>
 		</div>
 
-        <div class="col-md-9" id="user_data_form">
+        <div class="col-md-9" id="user_data_form"></div>
 
-		</div>
-
-        <div id="homepage_panel" style="display:none;">
-                <div id="profile_picture" style="float:left;">
-                    <img src="{{ url_for('static', filename='images/profile_pictures/' + user.profile_picture) }}" style="max-width:300px;max-height:300px;" />
-                </div>
-                <div id="profile_basic_info" style="float:left;margin-left:10px;">
-                    <div id="homepage_fullname" style="display: block;font-size: 26px;line-height: 30px;text-overflow: ellipsis;">{{ user.full_name }}</div>
-                    <div id="homepage_username" style="margin-top:5px;display: block;font-size: 20px;font-style: normal;font-weight: 300;line-height: 24px;color: #666;text-overflow: ellipsis;">{{ user.username }}</div>
-                    <div id="" style="border-top: 1px solid #eee;margin-top:5px;font-size: 14px;">Joined on {{ user.join_date }}</div>
-                </div>
-                <div style="clear:both"></div>
-
-                <div id="homepage_scenarios_panel" style="margin-top:10px;">
-                    <div class="detailBox">
-                        <div class="titleBox">
-                          <label>Scenarios</label>
-                        </div>
-                        <div class="actionBox">
-                            <ul class="commentList" id="scenario_list">
-							{% for scenario in scenarios %}
-								<li><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></li>
-							{% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="homepage_building_models_panel" style="margin-top:10px;">
-                    <div class="detailBox">
-                        <div class="titleBox">
-                          <label>Building models</label>
-                        </div>
-                        <div class="actionBox">
-                            <ul class="commentList" id="building_model_list">
-							{% for building_model in building_models %}
-								<li>{{ building_model.name }}</li>
-							{% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        <div id="homepage_panel" class="col-md-9">
+            <div id="profile_picture" style="float:left;">
+                <img src="{{ url_for('static', filename='images/profile_pictures/' + user.profile_picture) }}" style="max-width:300px;max-height:300px;" />
             </div>
+            <div id="profile_basic_info" style="float:left;margin-left:10px;">
+                <div id="homepage_fullname" style="display: block;font-size: 26px;line-height: 30px;text-overflow: ellipsis;">{{ user.full_name }}</div>
+                <div id="homepage_username" style="margin-top:5px;display: block;font-size: 20px;font-style: normal;font-weight: 300;line-height: 24px;color: #666;text-overflow: ellipsis;">{{ user.username }}</div>
+                <div id="" style="border-top: 1px solid #eee;margin-top:5px;font-size: 14px;">Joined on {{ user.join_date }}</div>
+            </div>
+            <div style="clear:both"></div>
 
-            <div id="user_comment_panel" style="display:none;">
-
+            <div id="homepage_scenarios_panel" style="margin-top:10px;">
                 <div class="detailBox">
                     <div class="titleBox">
-                      <label>Comment Box</label>
-                    </div>
-                    <div class="commentBox">
-                        <input type="hidden" id="comment_type" value="user" />
-                        <input type="hidden" id="object_id" value="{{ user.id }}" />
-                        <input type="hidden" id="comment_current_page" value="1" />
-                        <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
-                        <div class="form-group">
-                            <button class="btn btn-default" onclick="add_comment();">Add</button>
-                        </div>
+                      <label>Scenarios</label>
                     </div>
                     <div class="actionBox">
-                        <ul class="commentList" id="comment_list">
-
+                        <ul class="commentList" id="scenario_list">
+                        {% for scenario in scenarios %}
+                            <li><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a></li>
+                        {% endfor %}
                         </ul>
-
                     </div>
                 </div>
-
             </div>
+
+            <div id="homepage_building_models_panel" style="margin-top:10px;">
+                <div class="detailBox">
+                    <div class="titleBox">
+                      <label>Building models</label>
+                    </div>
+                    <div class="actionBox">
+                        {% for building_model in building_models %}
+                            <div class="col-md-4" style="margin-top:5px;float:left;background-color: #fff;">
+                                <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;"></div>
+                                <a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}">{{ building_model.name }}</a>
+                            </div>
+                        {% endfor %}
+                        <div style="clear:both;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="user_comment_panel" style="display:none;">
+
+            <div class="detailBox">
+                <div class="titleBox">
+                  <label>Comment Box</label>
+                </div>
+                <div class="commentBox">
+                    <input type="hidden" id="comment_type" value="user" />
+                    <input type="hidden" id="object_id" value="{{ user.id }}" />
+                    <input type="hidden" id="comment_current_page" value="1" />
+                    <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
+                    <div class="form-group">
+                        <button class="btn btn-default" onclick="add_comment();">Add</button>
+                    </div>
+                </div>
+                <div class="actionBox">
+                    <ul class="commentList" id="comment_list">
+
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
 
         {% if g.user and g.user.username==user.username %}
         <div id="change_password" style="display:none;">

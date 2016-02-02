@@ -39,7 +39,7 @@
         var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
         camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
         camera.position.set(0,150,400);
-        camera.lookAt(scene.position);
+        //camera.lookAt(scene.position);
         scene.add(camera);
 
         // RENDERER
@@ -223,8 +223,12 @@
 
                 if (data.addition_information.camera_x !== 'undefined')
                     camera.position.set(data.addition_information.camera_x, data.addition_information.camera_y, data.addition_information.camera_z*1.5);
+                else
+                    camera.position.set(500,150,400);
                 if (data.addition_information.camera_lookat_x !== 'undefined')
                     camera.lookAt(new THREE.Vector3( data.addition_information.camera_lookat_x, data.addition_information.camera_lookat_y, data.addition_information.camera_lookat_z ));
+                else
+                    camera.lookAt(new THREE.Vector3(0, 0, 0));
                 animate();
 
             }
