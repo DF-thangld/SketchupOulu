@@ -17,7 +17,10 @@ var container, scene, camera, renderer, controls, stats;
 var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 
-var android;
+window.addEventListener('resize', function(){
+    var SCREEN_WIDTH = $('#building_model_{{ building_model.id }}').innerWidth(), SCREEN_HEIGHT = $('#building_model_{{ building_model.id }}').innerHeight();
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+}, false);
 
 function init()
 {
@@ -27,9 +30,9 @@ function init()
 	var SCREEN_WIDTH = $('#building_model_{{ building_model.id }}').innerWidth(), SCREEN_HEIGHT = $('#building_model_{{ building_model.id }}').innerHeight();
 	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-	scene.add(camera);
+
     {% if building_model.addition_information.camera_x %}
-    camera.position.set({{ building_model.addition_information.camera_x }},{{ building_model.addition_information.camera_y }},{{ building_model.addition_information.camera_z }});
+    camera.position.set({{ building_model.addition_information.camera_x }},{{ building_model.addition_information.camera_y }},{{ building_model.addition_information.camera_z }}*1.2);
     {% else %}
 	camera.position.set(0,150,400);
     {% endif %}
@@ -38,6 +41,7 @@ function init()
     {% else %}
 	camera.lookAt(scene.position);
     {% endif %}
+    scene.add(camera);
 
 	// RENDERER
 	if ( Detector.webgl )
@@ -49,7 +53,6 @@ function init()
 	container = document.getElementById( 'building_model_{{ building_model.id }}' );
 	container.appendChild( renderer.domElement );
 	// EVENTS
-	THREEx.WindowResize(renderer, camera);
 	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 	// CONTROLS
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -101,9 +104,11 @@ function init()
 	loader.options.upAxis = 'X'; // Rotation by 90 degrees
 	loader.options.convertUpAxis = true; // Align the Y-axis
 	loader.load('{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".dae") }}', function (collada) {
-		dae = collada.scene;
+
+        dae = collada.scene;
 		dae.scale.x = dae.scale.y = dae.scale.z = 1;
 		dae.position.x = 0;
+        dae.name = '{{ building_model.id }}';
 		scene.add(dae);
 	});
     {% elif building_model.file_type == 'obj' %}
@@ -112,6 +117,8 @@ function init()
         '{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".mtl") }}',
         function ( object )
     {
+        object.name = '{{ building_model.id }}';
+        object.scale.x = object.scale.y = object.scale.z = 1;
         scene.add( object );
     });
     {% endif %}
@@ -132,11 +139,6 @@ function animate()
 
 function update()
 {
-	if ( keyboard.pressed("z") )
-	{
-		// do something
-	}
-
 	controls.update();
 }
 

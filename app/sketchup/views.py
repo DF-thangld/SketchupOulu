@@ -169,6 +169,7 @@ def delete_building_model(building_model_id):
     if g.user is None or (not g.user.is_admin() and building_model.owner != g.user):
         return json.dumps(['Building model not found']), 404
 
+    db.session.delete(building_model.comment_topic)
     db.session.delete(building_model)
     db.session.commit()
 
