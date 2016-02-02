@@ -28,14 +28,24 @@ function init()
 	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(camera);
+    {% if building_model.addition_information.camera_x %}
+    camera.position.set({{ building_model.addition_information.camera_x }},{{ building_model.addition_information.camera_y }},{{ building_model.addition_information.camera_z }});
+    {% else %}
 	camera.position.set(0,150,400);
+    {% endif %}
+    {% if building_model.addition_information.camera_lookat_x %}
+    camera.lookAt(new THREE.Vector3( {{ building_model.addition_information.camera_lookat_x }}, {{ building_model.addition_information.camera_lookat_y }}, {{ building_model.addition_information.camera_lookat_z }} ));
+    {% else %}
 	camera.lookAt(scene.position);
+    {% endif %}
+
 	// RENDERER
 	if ( Detector.webgl )
 		renderer = new THREE.WebGLRenderer( {antialias:true} );
 	else
 		renderer = new THREE.CanvasRenderer();
 	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    renderer.setClearColor( 0xffffff, 1 );
 	container = document.getElementById( 'building_model_{{ building_model.id }}' );
 	container.appendChild( renderer.domElement );
 	// EVENTS
@@ -48,7 +58,7 @@ function init()
 	light.position.set(-100,200,100);
 	scene.add(light);
 	// FLOOR
-	var floorTexture = new THREE.ImageUtils.loadTexture( '{{ url_for('static', filename='images/checkerboard.jpg') }}' );
+	/*var floorTexture = new THREE.ImageUtils.loadTexture( '{{ url_for('static', filename='images/checkerboard.jpg') }}' );
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
 	floorTexture.repeat.set( 10, 10 );
 	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
@@ -56,13 +66,26 @@ function init()
 	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 	floor.position.y = -0.5;
 	floor.rotation.x = Math.PI / 2;
-	scene.add(floor);
-	// SKYBOX/FOG
-	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-	// scene.add(skyBox);
-	scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+	scene.add(floor);*/
+    var size = 500, step = 50;
+
+    var geometry = new THREE.Geometry();
+
+    for ( var i = - size; i <= size; i += step ) {
+
+        geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+        geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+
+        geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+        geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+
+    }
+
+    var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
+
+    var line = new THREE.LineSegments( geometry, material );
+    scene.add( line );
+
 
 	////////////
 	// CUSTOM //
@@ -95,7 +118,7 @@ function init()
 
 	// addModelToScene function is called back after model has loaded
 
-	var ambientLight = new THREE.AmbientLight(0x111111);
+	var ambientLight = new THREE.AmbientLight(0xffffff);
 	scene.add(ambientLight);
 
 }
@@ -124,6 +147,40 @@ function render()
 
 
 {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
+
+    function save_thumbnail_position()
+    {
+        var vector = (new THREE.Vector3( 0, 0, 0 )).applyQuaternion( camera.quaternion ).add( camera.position );
+        var information = { 'camera_x': camera.position.x,
+                            'camera_y': camera.position.y,
+                            'camera_z': camera.position.z,
+                            'camera_lookat_x': vector.x,
+                            'camera_lookat_y': vector.y,
+                            'camera_lookat_z': vector.z};
+
+        bootbox.confirm("Are you sure you want to save this thumbnail?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+                    data: {'addition_information': JSON.stringify(information)},
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Thumbnail saved');
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+
+    }
+
 
     function delete_building_model()
     {
@@ -206,9 +263,6 @@ function render()
 {% endblock %}
 
 {% block main_content %}
-    {{ building_model }}
-    <br/>
-    {{ building_model.addition_information.directory }}
 <div class="row" style="margin-top: 20px;">
 
 	<div class="col-lg-10 col-centered">
@@ -225,7 +279,11 @@ function render()
             <div style="float:left; margin-left:10px;">
                 <div>Created by <a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a> at {{ building_model.created_time }}</div>
                 {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
-                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_building_model').html());">Edit</a> - <a href="javascript:void(0);" onclick="delete_building_model();">Delete building model</a></div>
+                <div>
+                    <a href="javascript:void(0);" onclick="$.facebox($('#edit_building_model').html());">Edit</a> -
+                    <a href="javascript:void(0);" onclick="save_thumbnail_position();">Save thumbnail position</a> -
+                    <a href="javascript:void(0);" onclick="delete_building_model();">Delete building model</a>
+                </div>
                 <div id="edit_building_model" style="display:none">
                     <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit building model</h1>
                     <div style="color:red;display:none;" id="update_building_model_errors"></div>

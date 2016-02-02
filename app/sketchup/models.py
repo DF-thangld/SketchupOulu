@@ -124,6 +124,9 @@ class Scenario(db.Model):
         if include_comments:
             comments = self.comment_topic.to_dict()['comments']
 
+        if self.addition_information == '':
+           self.addition_information = '[]'
+
         return {'id': self.id,
                 'name': self.name,
                 'owner': owner,

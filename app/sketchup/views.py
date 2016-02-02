@@ -191,13 +191,24 @@ def update_building_model(building_model_id):
     if not building_model.can_edit(g.user):
         return json.dumps(['Building model not found']), 404
 
+    #only change name
     building_model_name = request.form.get('building_model_name', '')
-    if building_model_name == '':
-        errors.append('Name is required')
-    if len(errors) > 0:
-        return json.dumps(errors), 400
+    if building_model_name != '':
+        building_model.name = building_model_name
 
-    building_model.name = building_model_name
+    #change addition information
+    addition_information = request.form.get('addition_information', '')
+    if addition_information != '':
+        try:
+            addition_information = json.loads(addition_information)
+            original_addition_information = json.loads(building_model.addition_information)
+            for key in addition_information:
+                original_addition_information[key] = addition_information[key]
+
+            building_model.addition_information = json.dumps(original_addition_information)
+        except:
+            errors.append('Error in saving addition information, please contact an admin for more information')
+
     db.session.commit()
 
     return json.dumps({
