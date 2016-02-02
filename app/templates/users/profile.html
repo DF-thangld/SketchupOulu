@@ -144,6 +144,7 @@
 
     function display_comments()
     {
+        $('#homepage_panel').hide();
         $("#profile_menu li").removeClass("active");
         $('#menu_comment').addClass('active');
         $('#user_data_form').fadeOut('fast');
@@ -176,9 +177,10 @@
 
     function display_homepage()
     {
+        $('#user_data_form').hide();
         $("#profile_menu li").removeClass("active");
         $('#menu_homepage').addClass('active');
-        $('#user_data_form').fadeOut('fast');
+
         //$('#user_data_form').html($('#homepage_panel').html());
         $('#homepage_panel').fadeIn('fast', function(){
             for (i=0; i < building_models.length; i++)
@@ -209,6 +211,8 @@
     {% if g.user and g.user.username==user.username %}
     function get_user_profile()
     {
+
+        $('#homepage_panel').hide();
         $("#profile_menu li").removeClass("active");
         $('#menu_profile').addClass('active');
         $('#user_data_form').fadeOut('fast');
@@ -226,6 +230,7 @@
     }
     function display_change_password()
     {
+        $('#homepage_panel').hide();
         $("#profile_menu li").removeClass("active");
         $('#menu_change_password').addClass('active');
         $('#old_password').val('');
