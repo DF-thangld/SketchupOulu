@@ -109,13 +109,14 @@ function init()
 	container = document.getElementById("ModelWindow");
 
 	//dropdown list
-	info = document.createElement( 'div' );
-	info.style.position = 'absolute';
-	info.style.top = '10px';
-	info.style.width = '100%';
+	//info = document.createElement( 'div' );
+	info = document.getElementById("ControlWindow");
+	//info.style.position = 'absolute';
+	//info.style.top = '10px';
+	//info.style.width = '100%';
 	info.style.textAlign = 'center';
 	//info.innerHTML = 'Click to place the building. ';
-	container.appendChild( info );
+	//container.appendChild( info );
 
 	//create model selection list
 	var dropdown = '<select id="dropdown_model" onchange="switchGeometry(this.value)">';
@@ -145,9 +146,9 @@ function init()
 
 	dropdown += '</select>';
 
-	info.innerHTML += ', Choose Mode: ' + dropdown; 
+	info.innerHTML += '</br>Choose Mode: ' + dropdown; 
 	
-	info.innerHTML += ',  <button onclick="saveProject()">Save Project</button> ';
+	info.innerHTML += '</br><button onclick="saveProject()">Save Project</button> ';
 	
 	
 	//webgl
@@ -789,7 +790,9 @@ function render()
             <div id="scenario_description_panel" style="margin-top:10px;">{{ scenario.description }}</div>
 			<dl class="form">
 				<dt class="input-label">
-					<div style="width:100%;height:500px;border:1px solid black;" id="ModelWindow">
+					<div style="width:20%;height:500px;border:1px solid black; float:left;" id="ControlWindow">
+                    </div>
+					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
                     </div>
 				</dt>
 				<dd>
