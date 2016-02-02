@@ -283,10 +283,27 @@ function switchMode(i) {
 function onDocumentMouseMove(event)
 {
 	event.preventDefault();
+	
+	var x = event.pageX - $('#ModelWindow').offset().left;
+	var y = event.pageY - $('#ModelWindow').offset().top;
+	var div_width =document.getElementById("ModelWindow").clientWidth;
+	var div_height=document.getElementById("ModelWindow").clientHeight;
+	
+	if(modeIndex ==0 
+		//&& x>=0 && x<=div_width
+		//&& y>=0 && y<=div_height 
+		){//add mode
+		//http://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
 
-	if(modeIndex ==0){//add mode
-		mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+		//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 		//mouse.set( ( event.clientX / document.getElementById("ModelWindow").clientWidth ) * 2 - 1, - ( event.clientY / document.getElementById("ModelWindow").clientHeight ) * 2 + 1 );
+		
+		
+		mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
+		//console.log("x: "+div_width+" ,y: "+div_height);
+		
+		
+		
 		//console.log("event.clientX: "+event.clientX+" ,event.clientY: "+event.clientY);
 		//console.log("windowWidth: "+windowWidth+" ,windowHeight: "+windowHeight);
 		//console.log("window.innerWidth: "+window.innerWidth+" ,window.innerWidth: "+window.innerWidth);
@@ -315,7 +332,11 @@ function onDocumentMouseDown( event ) {
 
 		 				
 	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-	mouse.set( ( event.clientX / windowWidth ) * 2 - 1, - ( event.clientY / WindowHeight ) * 2 + 1 );
+	var x = event.pageX - $('#ModelWindow').offset().left;
+	var y = event.pageY - $('#ModelWindow').offset().top;
+	var div_width =document.getElementById("ModelWindow").clientWidth;
+	var div_height=document.getElementById("ModelWindow").clientHeight;
+	mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
 
 
 	raycaster.setFromCamera( mouse, camera );
