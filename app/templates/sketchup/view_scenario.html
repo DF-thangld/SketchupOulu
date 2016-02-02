@@ -55,13 +55,14 @@ var isShiftDown = false;
 
 //all the vasiable objects in the scene
 var objects = [];//different objects may use same models
-var objectsInfo = [];//store information of objects including Model name and position
+var sceneObjects = {};//store information of objects including Model name and position
 
 //3D models various
 //var chooseModel=0;
 var modelsInfo;
 var models; //models get from databsed, no contain repeated models
 var currentModelIndex;
+var loaded_objects_number;
 
 //dropdown list
 var modeInfo = ["Add Model","Delete Model","Enlarge Model","Reduce Model","Rotate Left","Rotate Right"];
@@ -84,7 +85,8 @@ function init()
 
 	models = [];
 	modelsInfo = Communicator.getModelsFromDB("Project's name");
-
+	sceneObjects = Communicator.getSceneFromDB("Project's name");
+	loaded_objects_number=0;
 	for ( var i = 0; i < modelsInfo.length; i++) {
 		var model = modelsInfo[i];
 		var loader = new THREE.OBJMTLLoader();
@@ -99,6 +101,25 @@ function init()
 				currentModelIndex=0;
 				scene.add( current_object );
 			}
+			loaded_objects_number=loaded_objects_number+1;
+					if( loaded_objects_number == modelsInfo.length){
+						//make loading scene objects at last to make sure the 3D Object has been loaded
+						//add predefined scene objects
+					
+						
+						for(var property in sceneObjects){
+						    if( sceneObjects.hasOwnProperty(property) ){
+						        var model = sceneObjects[property];
+							    var obj = models[parseInt(model.index)].clone();
+							    obj.name = model.name;
+							    obj.position.x = model.x;
+							    obj.position.y = model.y;
+							    obj.position.z = model.z;
+							    scene.add( obj );
+                                objects.push( obj );    
+						    }
+						}
+					}
 		});
 	}	
 
@@ -226,17 +247,8 @@ function init()
 }
 
 function saveProject(){
-	
-	
-	var objs=[{"name":"binchen"},{"name":"liping"}];
-	
-	//for( var i = 0; i < objects.length; i++){
-		
-	//}
-	objs;
-	objectsInfo.length;
-	var js=JSON.stringify( objectsInfo );
-	alert("Saved!"+js);
+
+	alert("Saved!");
 }
 
 function switchGeometry(i) {
@@ -359,12 +371,14 @@ function onDocumentMouseDown( event ) {
 					scene.add( temp_object );
 					objects.push( temp_object );
 					
-					objectsInfo[temp_object.name]={	"modelName":modelsInfo[currentModelIndex].modelName,
-												"name":temp_object.name,
-												"x":temp_object.position.x,
-												"y":temp_object.position.y,
-												"z":temp_object.position.z
-												}
+					sceneObjects[temp_object.name]={	
+						                                "modelName":modelsInfo[currentModelIndex].modelName,
+														"name":temp_object.name,
+														"index":currentModelIndex, //index of the model.
+														"x":temp_object.position.x,
+														"y":temp_object.position.y,
+														"z":temp_object.position.z
+														};
 				}
 				break;
 			}
@@ -379,7 +393,7 @@ function onDocumentMouseDown( event ) {
 						obj.name;
 					}
 
-					delete objectsInfo[ obj.name ];
+					delete sceneObjects[obj.name];
 					scene.remove( scene.getObjectByName(obj.name) );
 					objects.splice( objects.indexOf( obj ), 1 );
 					
