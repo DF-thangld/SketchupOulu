@@ -125,7 +125,7 @@ class Scenario(db.Model):
             comments = self.comment_topic.to_dict()['comments']
 
         if self.addition_information == '':
-           self.addition_information = '[]'
+           self.addition_information = '{}'
 
         return {'id': self.id,
                 'name': self.name,
@@ -134,7 +134,7 @@ class Scenario(db.Model):
                 'last_edited_user': last_edited_user,
                 'last_edited_time': utilities.format_datetime(self.last_edited_time),
                 'data_file': self.data_file,
-                'addition_information': json.loads(self.addition_information),
+                'addition_information': self.addition_information,
                 'description': self.description,
                 'is_public': self.is_public,
                 'is_base_scenario': self.is_base_scenario,

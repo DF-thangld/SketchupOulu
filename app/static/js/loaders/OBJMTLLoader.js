@@ -5,9 +5,10 @@
  * @author angelxuanchang
  */
 
-THREE.OBJMTLLoader = function ( manager ) {
+THREE.OBJMTLLoader = function ( manager, callback_id ) {
 
 	this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
+	this.callback_id = ( callback_id !== undefined ) ? callback_id : "";
 
 };
 
@@ -48,6 +49,7 @@ THREE.OBJMTLLoader.prototype = {
 					}
 
 				} );
+				object.callback_id = scope.callback_id;
 
 				onLoad( object );
 

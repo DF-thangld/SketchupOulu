@@ -57,9 +57,10 @@
 
 	};
 
-	THREE.ColladaLoader = function ( manager ) {
+	THREE.ColladaLoader = function ( manager, callback_id ) {
 
 		this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
+		this.callback_id = ( callback_id !== undefined ) ? callback_id : "";
 
 		/*
 
@@ -99,8 +100,10 @@
 					var parts = url.split( '/' );
 					parts.pop();
 					baseUrl = ( parts.length < 1 ? '.' : parts.join( '/' ) ) + '/';
+					var loaded_object = scope.parse( text, url );
+					loaded_object.callback_id = scope.callback_id;
 
-					onLoad( scope.parse( text, url ) );
+					onLoad( loaded_object );
 
 				}, onProgress, onError );
 
