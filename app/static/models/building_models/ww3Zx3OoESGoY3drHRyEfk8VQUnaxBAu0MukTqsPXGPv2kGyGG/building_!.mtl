@@ -1,0 +1,21 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl Formica_Speckled_Grey
+Ka 0.000000 0.000000 0.000000
+Kd 0.368627 0.411765 0.435294
+Ks 0.330000 0.330000 0.330000
+map_Kd building_!/Formica_Speckled_Grey.jpg
+
+newmtl Terrazzo_Light_Blue
+Ka 0.000000 0.000000 0.000000
+Kd 0.768627 0.839216 0.890196
+Ks 0.330000 0.330000 0.330000
+map_Kd building_!/Terrazzo_Light_Blue.jpg
+
