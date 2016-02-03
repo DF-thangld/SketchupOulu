@@ -464,7 +464,7 @@ function render()
             <div class="col-md-8" id="no_scenario_block">
                 <h3 id="no_scenario_label"></h3>
             </div>
-            <div class="col-md-8" id="user_data_form">
+            <div class="col-md-8" id="user_data_form" style="display:none">
                 <h3><span id="scenario_name" style="font-weight: bold"></span></h3>
                 <div style="float:left;">
                     <img id="profile_picture" src="{{ url_for('static', filename='images/profile_pictures/default_profile.png') }}" style="width:60px;"/>
