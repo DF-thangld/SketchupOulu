@@ -125,7 +125,7 @@ class Scenario(db.Model):
             comments = self.comment_topic.to_dict()['comments']
 
         if self.addition_information == '':
-           self.addition_information = '{}'
+            self.addition_information = '{}'
 
         return {'id': self.id,
                 'name': self.name,
