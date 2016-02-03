@@ -172,7 +172,7 @@ def upload_image():
     file.save(full_filename)
 
     #return link to file
-    return config.EMAIL_PICTURE_URL + filename
+    return url_for('static', filename='images/email_pictures/' + filename, _external=True)
 
 @mod.route('/send_email/', methods=['GET','POST'])
 @requires_admin
