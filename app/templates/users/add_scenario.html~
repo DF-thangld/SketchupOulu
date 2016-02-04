@@ -304,6 +304,8 @@ function onDocumentMouseMove(event){
 					selectedModel.position.x = intersects[0].point.x;
 					selectedModel.position.y = intersects[0].point.y;
 					selectedModel.position.z = intersects[0].point.z;
+					
+					//TO DO : update modelInfos as well
 
 				}
 			
