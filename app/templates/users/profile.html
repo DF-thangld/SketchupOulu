@@ -132,7 +132,12 @@
         for (var model_id in information)
         {
             var model = information[model_id];
-            if (model.file_type == 'obj')
+            load_model( model.file_type,
+                        '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
+                        model.original_filename,
+                        {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size},
+                        scene);
+            /*if (model.file_type == 'obj')
             {
                 var loader = new THREE.OBJMTLLoader(manager, model.id);
                 loader.load('{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/' + model.original_filename + ".obj",
@@ -165,7 +170,7 @@
                     dae.name = object_id;
                     scene.add(dae);
                 });
-            }
+            }*/
         }
         var control = new THREE.OrbitControls( camera, renderer.domElement );
 
