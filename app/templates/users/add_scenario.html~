@@ -366,7 +366,7 @@ function onDocumentMouseDown( event ) {
 					//}
 					//temp_object.name = Date.now()%1000;
 					//temp_object.name = modelsInfo[currentModelIndex].modelName;
-					temp_object.name = temp_object.length;
+					temp_object.name = sceneObjects.length;
 
 					scene.add( temp_object );
 					objects.push( temp_object );
