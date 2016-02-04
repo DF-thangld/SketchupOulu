@@ -77,11 +77,17 @@ var loaded_objects_number;
 
 //dropdown list
 var geometryIndex = 0;
-var modeIndex = 0;
+var modeIndex = 1;
+
+var isSelect;
+var selectedModel;
+
 
 var windowRatio = 2;
 var windowWidth = 972;
 var windowHeight = 500;
+
+
 function init()
 {
 	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
@@ -89,7 +95,10 @@ function init()
 	windowHeight = document.getElementById("ModelWindow").offsetHeight;
 
 	scene = new THREE.Scene();
-
+	
+	isSelect = false;// no object has been selected
+	selectedModel = null;
+	
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
@@ -208,6 +217,7 @@ function init()
 	// add mouse events to mode
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 
 	// display the scene
 	if (window.WebGLRenderingContext)
@@ -229,10 +239,6 @@ function init()
 	renderer.render( scene, camera);
 }
 
-function saveProject(){
-
-	alert("Saved!");
-}
 
 function switchGeometry(i) {
 
@@ -257,9 +263,9 @@ function switchGeometry(i) {
 function switchMode(i) {
 
 	var mode = parseInt(i);
-	if(modeIndex ==0 && mode!=0){// from 0 to other
+	if(modeIndex ==1 && mode!=1){// from 0 to other
 		current_object.visible=false;
-	}else if(modeIndex !=0 && mode==0){
+	}else if(modeIndex !=1 && mode==1){
 		current_object.visible=true;
 	}
 	modeIndex= mode ;
@@ -275,8 +281,7 @@ function switchMode(i) {
 	}
 	
 }
-function onDocumentMouseMove(event)
-{
+function onDocumentMouseMove(event){
 	event.preventDefault();
 	
 	var x = event.pageX - $('#ModelWindow').offset().left;
@@ -284,42 +289,63 @@ function onDocumentMouseMove(event)
 	var div_width =document.getElementById("ModelWindow").clientWidth;
 	var div_height=document.getElementById("ModelWindow").clientHeight;
 	
-	if(modeIndex ==0 
-		//&& x>=0 && x<=div_width
-		//&& y>=0 && y<=div_height 
-		){//add mode
-		//http://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
+	
+	switch(modeIndex){
+		case 0:{//select mode
+			if(isSelect == true){
+				mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
 
-		//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-		//mouse.set( ( event.clientX / document.getElementById("ModelWindow").clientWidth ) * 2 - 1, - ( event.clientY / document.getElementById("ModelWindow").clientHeight ) * 2 + 1 );
-		
-		
-		mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-		//console.log("x: "+div_width+" ,y: "+div_height);
-		
-		
-		
-		//console.log("event.clientX: "+event.clientX+" ,event.clientY: "+event.clientY);
-		//console.log("windowWidth: "+windowWidth+" ,windowHeight: "+windowHeight);
-		//console.log("window.innerWidth: "+window.innerWidth+" ,window.innerWidth: "+window.innerWidth);
-		raycaster.setFromCamera( mouse, camera );
+				raycaster.setFromCamera( mouse, camera );
 
-		//threejs raycast click detection not working on loaded 3dObject
-		//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
-		//var intersects = raycaster.intersectObjects( objects, true );	
-		var intersects = raycaster.intersectObjects( [plane], true );
-		if ( intersects.length > 0 )
-		{
+				var intersects = raycaster.intersectObjects( [plane], true );
+				if ( intersects.length > 0 )
+				{
 
-			current_object.position.x = intersects[0].point.x;
-			current_object.position.y = intersects[0].point.y;
-			current_object.position.z = intersects[0].point.z;
+					selectedModel.position.x = intersects[0].point.x;
+					selectedModel.position.y = intersects[0].point.y;
+					selectedModel.position.z = intersects[0].point.z;
 
+				}
+			
+			}
+			break;
+		
 		}
+		case 1:{//add mode
+			//http://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
+	
+		
+			mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
+
+			raycaster.setFromCamera( mouse, camera );
+
+			//threejs raycast click detection not working on loaded 3dObject
+			//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
+			//var intersects = raycaster.intersectObjects( objects, true );	
+			var intersects = raycaster.intersectObjects( [plane], true );
+			if ( intersects.length > 0 )
+			{
+
+				current_object.position.x = intersects[0].point.x;
+				current_object.position.y = intersects[0].point.y;
+				current_object.position.z = intersects[0].point.z;
+
+			}
+			break;
+		}
+		
 	}
 	
-	
 
+}
+function  onDocumentMouseUp( event ) {
+	switch(modeIndex){
+		case 0:{//select  -- release selected object
+			isSelect = false;
+			selectedModel = null;
+			break;
+		}
+	}
 }
 function onDocumentMouseDown( event ) {
 
@@ -337,7 +363,26 @@ function onDocumentMouseDown( event ) {
 	raycaster.setFromCamera( mouse, camera );
 
 		switch(modeIndex){
-			case 0:{
+			case 0:{//select
+				var intersects = raycaster.intersectObjects( objects, true );
+				if ( intersects.length > 0 ) {
+					var intersect = intersects[ 0 ];
+					var obj=intersect.object;
+					obj.name;
+					while( obj.parent != scene && obj.parent!=null ){
+						obj = obj.parent;
+						obj.name;
+					}
+
+					//operation
+					
+					selectedModel = scene.getObjectByName(obj.name);
+					isSelect = true;
+					
+				}
+				break;
+			}
+			case 1:{//add
 				var intersects = raycaster.intersectObjects( [plane], true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -365,7 +410,7 @@ function onDocumentMouseDown( event ) {
 				}
 				break;
 			}
-			case 1:{//delete mode
+			case 2:{//delete mode
 				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -385,7 +430,7 @@ function onDocumentMouseDown( event ) {
 				
 				break;
 			}
-			case 2:{//Enlarge mode
+			case 3:{//Enlarge mode
 				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -400,7 +445,7 @@ function onDocumentMouseDown( event ) {
 				}
 				break;
 			}
-			case 3:{//reduce
+			case 4:{//reduce
 				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -415,7 +460,7 @@ function onDocumentMouseDown( event ) {
 				}
 				break;
 			}
-			case 4:{//rotate left
+			case 5:{//rotate left
 				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -430,7 +475,7 @@ function onDocumentMouseDown( event ) {
 				}
 				break;
 			}
-			case 5:{//rotate right
+			case 6:{//rotate right
 				var intersects = raycaster.intersectObjects( objects, true );
 				if ( intersects.length > 0 ) {
 					var intersect = intersects[ 0 ];
@@ -679,16 +724,17 @@ function before_submit()
                     Model
 				</dt>
 				<dd>
-                    <div style="width:20%;height:500px;border:1px solid black; float:left; " id="ControlWindow">
+                    <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
                     	<b>Choose Building:</b>
                     	</br><select id="dropdown_model" onchange="switchGeometry(this.value)"></select>
                     	</br><b>Choose Mode:</b>
-                    	</br><button onclick="switchMode('0')" class="operation-button" type="button" >Add Model</button>
-                    	</br><button onclick="switchMode('1')" class="operation-button" type="button" >delete Model</button>
-                    	</br><button onclick="switchMode('2')" class="operation-button" type="button" >Enlarge Model</button>
-                    	</br><button onclick="switchMode('3')" class="operation-button" type="button" >Reduce Model</button>
-                    	</br><button onclick="switchMode('4')" class="operation-button" type="button" >Rotate Left</button>
-                    	</br><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Right</button>
+                    	</br><button onclick="switchMode('0')" class="operation-button" type="button" >Select Model</button>
+                    	</br><button onclick="switchMode('1')" class="operation-button" type="button" >Add Model</button>
+                    	</br><button onclick="switchMode('2')" class="operation-button" type="button" >delete Model</button>
+                    	</br><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button>
+                    	</br><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button>
+                    	</br><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button>
+                    	</br><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button>
                     </div>
 					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
                     </div>
