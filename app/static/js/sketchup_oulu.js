@@ -158,3 +158,39 @@ function edit_comment(comment_id)
 {
     show_alert('alert-danger', 'Function not yet implemented :)');
 }
+
+function load_model(file_type, directory, filename, addition_information, object_scene)
+{
+    if (file_type == 'obj')
+    {
+        var loader = new THREE.OBJMTLLoader(manager);
+        loader.load(directory + filename + ".obj",
+            directory + filename + ".mtl",
+            function ( object )
+        {
+            object.name = object_id;
+            object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+            object.position.x = addition_information.x;
+            object.position.y = addition_information.y;
+            object.position.z = addition_information.z;
+            object.name = addition_information.id;
+            object_scene.add( object );
+        });
+    }
+    else if (file_type == 'dae')
+    {
+        var loader = new THREE.ColladaLoader(manager);
+        loader.options.upAxis = 'X'; // Rotation by 90 degrees
+        loader.options.convertUpAxis = true; // Align the Y-axis
+        loader.load(directory + filename + ".dae", function (collada)
+        {
+            dae = collada.scene;
+            dae.scale.x = dae.scale.y = dae.scale.z = addition_information.size;
+            dae.position.x = addition_information.x;
+            dae.position.y = addition_information.y;
+            dae.position.z = addition_information.z;
+            dae.name = addition_information.id;
+            object_scene.add(dae);
+        });
+    }
+}
