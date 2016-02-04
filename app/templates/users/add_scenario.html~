@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block custom_css %}
-
+.operation-button{
+	width: 70%;
+    background-color:#9C8C42;
+    border: 2px solid #91782c;
+    color: #FFF;
+    text-align: center;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 10px;
+    margin:0 auto;
+}
 {% endblock %}
 {% block menu %}
 	{% include 'user_menu.html' %}
@@ -65,7 +76,6 @@ var currentModelIndex;
 var loaded_objects_number;
 
 //dropdown list
-var modeInfo = ["Add Model","Delete Model","Enlarge Model","Reduce Model","Rotate Left","Rotate Right"];
 var geometryIndex = 0;
 var modeIndex = 0;
 
@@ -129,47 +139,20 @@ function init()
 	
 	container = document.getElementById("ModelWindow");
 
-	//dropdown list
-	//info = document.createElement( 'div' );
-	info = document.getElementById("ControlWindow");
-	//info.style.position = 'absolute';
-	//info.style.top = '10px';
-	//info.style.width = '100%';
-	info.style.textAlign = 'center';
-	//info.innerHTML = 'Click to place the building. ';
-	//container.appendChild( info );
-
-	//create model selection list
-	var dropdown = '<select id="dropdown_model" onchange="switchGeometry(this.value)">';
-
-	for ( var i = 0; i < modelsInfo.length; i++) {
-		dropdown += '<option value="' + i + '"';
-
-		dropdown += (geometryIndex == i)  ? ' selected' : '';
-
-		dropdown += '>' + modelsInfo[i].modelName + '</option>';
-	}
-
-	dropdown += '</select>';
-
-	info.innerHTML = '<br>Choose Building: ' + dropdown; 
-
-	//create mode selection list
-	dropdown = '<select id="dropdown_mode" onchange="switchMode(this.value)">';
-
-	for ( var i = 0; i < modeInfo.length; i++) {
-		dropdown += '<option value="' + i + '"';
-
-		dropdown += (modeIndex == i)  ? ' selected' : '';
-
-		dropdown += '>' + modeInfo[i] + '</option>';
-	}
-
-	dropdown += '</select>';
-
-	info.innerHTML += '</br>Choose Mode: ' + dropdown; 
 	
-	info.innerHTML += '</br><button onclick="saveProject()">Save Project</button> ';
+
+
+	var dropdownlist = document.getElementById("dropdown_model");
+	for ( var i = 0; i < modelsInfo.length; i++) {
+	
+		var x = document.createElement("OPTION");
+		x.text = modelsInfo[i].modelName;
+		x.value = i;
+		if(i==0){
+			x.selected = true;
+		}
+		dropdownlist.add(x,dropdownlist[i]);
+	}
 	
 	
 	//webgl
@@ -365,8 +348,8 @@ function onDocumentMouseDown( event ) {
 					//	Date.now = function() { return new Date().getTime(); }
 					//}
 					//temp_object.name = Date.now()%1000;
-					//temp_object.name = modelsInfo[currentModelIndex].modelName;
-					temp_object.name = sceneObjects.length;
+					temp_object.name = modelsInfo[currentModelIndex].modelName;
+					//temp_object.name = sceneObjects.length;
 
 					scene.add( temp_object );
 					objects.push( temp_object );
@@ -623,7 +606,10 @@ function render()
 	renderer.render( scene, camera );
 }
 
-
+function test()
+{
+    alert("test!");
+}
 function before_submit()
 {
     // TODO: take information from model to "addition_information" field
@@ -633,6 +619,9 @@ function before_submit()
 {% endblock %}
 
 {% block main_content %}
+
+
+
 <div class="row" style="margin-top: 20px;">
 
 	<div class="col-lg-10 col-centered">
@@ -690,7 +679,16 @@ function before_submit()
                     Model
 				</dt>
 				<dd>
-                    <div style="width:20%;height:500px;border:1px solid black; float:left;" id="ControlWindow">
+                    <div style="width:20%;height:500px;border:1px solid black; float:left; " id="ControlWindow">
+                    	<b>Choose Building:</b>
+                    	</br><select id="dropdown_model" onchange="switchGeometry(this.value)"></select>
+                    	</br><b>Choose Mode:</b>
+                    	</br><button onclick="switchMode('0')" class="operation-button" type="button" >Add Model</button>
+                    	</br><button onclick="switchMode('1')" class="operation-button" type="button" >delete Model</button>
+                    	</br><button onclick="switchMode('2')" class="operation-button" type="button" >Enlarge Model</button>
+                    	</br><button onclick="switchMode('3')" class="operation-button" type="button" >Reduce Model</button>
+                    	</br><button onclick="switchMode('4')" class="operation-button" type="button" >Rotate Left</button>
+                    	</br><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Right</button>
                     </div>
 					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
                     </div>
