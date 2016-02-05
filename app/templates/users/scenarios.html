@@ -56,7 +56,6 @@ var raycaster = new THREE.Raycaster(); // create once and reuse
 var mouse = new THREE.Vector2(); // create once and reuse
 var isShiftDown = false;
 
-
 //all the vasiable objects in the scene
 var objects = [];//different objects may use same models
 var sceneObjects = {};//store information of objects including Model name and position
@@ -156,9 +155,8 @@ function init()
 
 	//render
 	renderer.render( scene, camera);
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
 }
-
-
 
 function onDocumentKeyDown(event)
 {
@@ -220,7 +218,7 @@ function animate() {
 
 	requestAnimationFrame( animate );
 
-	//controls.update();
+	controls.update();
 	
 	render();
 
@@ -228,88 +226,6 @@ function animate() {
 
 function render() 
 {
-
-	// 2.1 move around the scene
-	
-	if (move_forward){
-		switch(current_view)
-		{
-			case 0: camera.position.z += MOVING_SPEED; break;
-			case 1: camera.position.x -= MOVING_SPEED; break;
-			case 2: camera.position.z -= MOVING_SPEED; break;
-			case 3: camera.position.x += MOVING_SPEED; break;
-		}
-	}
-	if (move_backward)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.z -= MOVING_SPEED; break;
-			case 1: camera.position.x += MOVING_SPEED; break;
-			case 2: camera.position.z += MOVING_SPEED; break;
-			case 3: camera.position.x -= MOVING_SPEED; break;
-		}
-	}
-	if (move_left)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x += MOVING_SPEED; break;
-			case 1: camera.position.z += MOVING_SPEED; break;
-			case 2: camera.position.x -= MOVING_SPEED; break;
-			case 3: camera.position.z -= MOVING_SPEED; break;
-		}
-	}
-	if (move_right)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x -= MOVING_SPEED; break;
-			case 1: camera.position.z -= MOVING_SPEED; break;
-			case 2: camera.position.x += MOVING_SPEED; break;
-			case 3: camera.position.z += MOVING_SPEED; break;
-		}
-	}
-	if (move_up)
-	{
-		camera.position.y += MOVING_SPEED;
-	}
-	if (move_down)
-	{
-		camera.position.y -= MOVING_SPEED;
-	}
-	
-	// 2.2 rotating
-	if (is_rotating)
-	{
-		current_view++;
-		if (current_view >= views.length)
-			current_view = 0;
-		
-		// remember current position
-		var current_x = camera.position.x;
-		var current_y = camera.position.y;
-		var current_z = camera.position.z;
-		
-		// go to pre-defined position
-		camera.position.x = views[current_view].x;
-		camera.position.y = views[current_view].y;
-		camera.position.z = views[current_view].z;
-		
-		camera.target = center_position;
-		camera.lookAt( camera.target );
-		
-		// only rotate one time per click
-		is_rotating = false;
-		
-	}
-
-	//mouse position
-	
-	
-	// random stuffs
-	
-	
 	// update the scene
 	renderer.render( scene, camera );
 }
@@ -387,7 +303,6 @@ function render()
                 $('#user_data_form').show();
 
                 data.addition_information = JSON.parse(data.addition_information);
-                console.log(data);
                 //TODO: remove old objects
                 for (var model_id in scenario_information)
                 {
@@ -403,7 +318,7 @@ function render()
                     load_model( model.file_type,
                                 '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
                                 model.original_filename,
-                                {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size},
+                                {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size, 'rotate_x': model.rotate_x, 'rotate_y': model.rotate_y, 'rotate_z': model.rotate_z},
                                 scene);
                 }
                 animate();
@@ -435,9 +350,11 @@ function render()
             <div class="col-md-4">
                 <div class="row" style="margin-bottom:10px;">
                     <div class="col-md-12">
+						{% if g.user and g.user.username==user.username %}
                         <a type="button" style="width:100%; margin-bottom:10px;" class="btn btn-primary" href="{{ url_for('users.add_scenario') }}">
                             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add scenario
                         </a>
+						{% endif %}
                         <form id="scenario_search_form" method="POST" action="{{ url_for('users.get_user_scenarios', username=user.username) }}">
                             <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_scenarios();" placeholder="Search by scenario name" type="text" value="">
                         </form>

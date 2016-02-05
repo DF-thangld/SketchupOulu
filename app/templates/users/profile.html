@@ -136,7 +136,7 @@
             load_model( model.file_type,
                         '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
                         model.original_filename,
-                        {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size},
+                        model,
                         scene);
         }
         var control = new THREE.OrbitControls( camera, renderer.domElement );
@@ -180,7 +180,7 @@
         load_model( file_type,
                     '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
                     information.original_filename,
-                    {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1},
+                    {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
                     scene);
 
         var control = new THREE.OrbitControls( camera, renderer.domElement );

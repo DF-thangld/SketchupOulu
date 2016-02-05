@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 {% block custom_css %}
-.operation-button{
-	width: 70%;
-    background-color:#9C8C42;
-    border: 2px solid #91782c;
-    color: #FFF;
-    text-align: center;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    padding: 10px;
-    margin:0 auto;
-}
+
 {% endblock %}
 {% block menu %}
 	{% include 'user_menu.html' %}
@@ -19,12 +8,12 @@
 
 {% block onload_script %}
 // threejs functions
-init();
 {% set index = 0 %}
 {% for building_model in building_models %}
 init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
 {% set index = index + 1 %}
 {% endfor %}
+init();
 animate();
 {% endblock %}
 
@@ -66,8 +55,11 @@ var isShiftDown = false;
 
 
 //all the vasiable objects in the scene
-var sceneObjects = {};//store information of objects including Model name and position
-
+{% if 'addition_information' in request.form %}
+var sceneObjects = {{ request.form.get('addition_information')|safe }};
+{% else %}
+var sceneObjects = {};
+{% endif %}
 //3D models various
 //var chooseModel=0;
 var modelsInfo;
@@ -78,11 +70,10 @@ var current_object = null;
 
 //dropdown list
 var geometryIndex = 0;
-var modeIndex = 1;
+var modeIndex = -1;
 
 var isSelect;
 var selectedModel;
-
 
 var windowRatio = 2;
 var windowWidth = 972;
@@ -122,7 +113,7 @@ function init_building_model(id, file_type, information, index)
     load_model( file_type,
                 '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
                 information.original_filename,
-                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1},
+                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
                 building_scene,
                 function(object)
                 {
@@ -150,9 +141,17 @@ function init()
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
 
-	modelsInfo = Communicator.getModelsFromDB("Project's name");
-	sceneObjects = Communicator.getSceneFromDB("Project's name");
-	loaded_objects_number=0;
+	//pre-defined objects
+	for (var model_id in sceneObjects)
+	{
+		var model = sceneObjects[model_id];
+		console.log(model);
+		load_model( model.file_type,
+					'{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
+					model.original_filename,
+					model,
+					scene);
+	}
 
 	//document
 	//container = document.createElement( 'div' );
@@ -189,7 +188,6 @@ function init()
 
 	var line = new THREE.LineSegments( geometry, material );
 	scene.add( line );
-	
 
 	//create the lowest base, unvisible, just used for detect where to place the models
 	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
@@ -197,9 +195,7 @@ function init()
 
 	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
 	scene.add( plane );
-	//objects.push( plane );
-
-
+	
 	// add keyboard events to mode
 	document.addEventListener( 'keydown', onDocumentKeyDown, false );
 	document.addEventListener( 'keyup', onDocumentKeyUp, false );
@@ -236,7 +232,7 @@ function add_building_model(information)
 	load_model( information.file_type,
 				'{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
 				information.original_filename,
-				{'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1},
+				{'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
 				scene,
 				function(object)
 				{
@@ -246,43 +242,6 @@ function add_building_model(information)
 				});
 }
 
-
-function switchGeometry(i) 
-{
-    var position = new THREE.Vector3( 0, 0, 0 );
-	//remove the current from the scene
-    if (current_object != null)
-    {
-        position = current_object.position.clone();
-        bool=current_object.visible;
-	    scene.remove(current_object);
-    }
-
-	geometryIndex = i;
-
-	currentModelIndex= i;
-
-	current_object = new THREE.Mesh( models[currentModelIndex].geometry, models[currentModelIndex].material );
-    current_object.name = "scenario_" + generate_random_string(50);
-	current_object.position.x=position.x;
-	current_object.position.y=position.y;
-	current_object.position.z=position.z;
-    current_object.visible = true;
-	scene.add(current_object);
-    console.log(models[i]);
-    console.log(current_object);
-    switchMode(0);
-
-    //add object at center
-	var tmp = new THREE.Mesh( models[i].geometry, models[i].material );
-	tmp.name = "tmp_" + generate_random_string(50);
-	tmp.position.x = 0;
-	tmp.position.y = 0;
-	tmp.position.z = 0;
-	tmp.visible = true;
-	scene.add(tmp);
-	animate();
-}
 
 function switchMode(i) 
 {
@@ -301,8 +260,8 @@ function switchMode(i)
 			break;
 		}
 	}
-	
 }
+
 function onDocumentMouseMove(event){
 	event.preventDefault();
 	
@@ -365,7 +324,7 @@ function onDocumentMouseMove(event){
 	
 
 }
-function  onDocumentMouseUp( event ) {
+function onDocumentMouseUp( event ) {
 	switch(modeIndex){
 		case 0:{//select  -- release selected object
 			isSelect = false;
@@ -459,7 +418,7 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
-					sceneObjects[temp_object.name].scale = scene.getObjectByName(obj.name).scale.x;
+					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
 				}
 				break;
 			}
@@ -475,7 +434,7 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
-					sceneObjects[temp_object.name].scale = scene.getObjectByName(obj.name).scale.x;
+					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
 				}
 				break;
 			}
@@ -491,9 +450,9 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
-					sceneObjects[temp_object.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[temp_object.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[temp_object.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
+					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
 
 					//console.log(scene.getObjectByName(obj.name));
 					console.log(scene.getObjectByName(obj.name).rotation.x, scene.getObjectByName(obj.name).rotation.y, scene.getObjectByName(obj.name).rotation.z);
@@ -512,9 +471,9 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
-					sceneObjects[temp_object.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[temp_object.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[temp_object.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
+					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
 				}
 				break;
 			}
@@ -684,14 +643,9 @@ function render()
     }
 }
 
-function test()
-{
-    alert("test!");
-}
+
 function before_submit()
 {
-    // TODO: take information from model to "addition_information" field
-    //window.alert('TODO: take information from model to "addition_information" field');
 	$('#addition_information').val(JSON.stringify(sceneObjects));
 }
 
@@ -749,7 +703,6 @@ function before_submit()
 
 				</dd>
 			</dl>
-
 			<dl class="form successed">
 				<dt class="input-label">
                     Model
@@ -764,8 +717,7 @@ function before_submit()
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
                     </div>
-					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
-                    </div>
+					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
                     <div style="clear:both"></div>
                     <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
                         <!-- Wrapper for slides -->

@@ -159,8 +159,37 @@ function edit_comment(comment_id)
     show_alert('alert-danger', 'Function not yet implemented :)');
 }
 
+var loaded_objects = {};
 function load_model(file_type, directory, filename, addition_information, object_scene, onload)
 {
+    var unique_id = file_type + "|" + directory + "|" + filename;
+    if (unique_id in loaded_objects)
+    {
+        if (loaded_objects[unique_id] == null)
+        {
+            setTimeout(function(){
+                load_model(file_type, directory, filename, addition_information, object_scene, onload)
+            }, 100);
+            return;
+        }
+        var new_object = loaded_objects[unique_id].clone();
+
+        new_object.scale.x = new_object.scale.y = new_object.scale.z = addition_information.size;
+        new_object.position.x = addition_information.x;
+        new_object.position.y = addition_information.y;
+        new_object.position.z = addition_information.z;
+
+        new_object.rotation.x = addition_information.rotate_x;
+        new_object.rotation.y = addition_information.rotate_y;
+        new_object.rotation.z = addition_information.rotate_z;
+
+        new_object.name = addition_information.id;
+        object_scene.add( new_object );
+        if ( onload !== undefined )
+            onload(new_object);
+        return;
+    }
+    loaded_objects[file_type + "|" + directory + "|" + filename] = null;
     if (file_type == 'obj')
     {
         var loader = new THREE.OBJMTLLoader();
@@ -172,7 +201,13 @@ function load_model(file_type, directory, filename, addition_information, object
             object.position.x = addition_information.x;
             object.position.y = addition_information.y;
             object.position.z = addition_information.z;
+            object.rotation.x = addition_information.rotate_x;
+            object.rotation.y = addition_information.rotate_y;
+            object.rotation.z = addition_information.rotate_z;
             object.name = addition_information.id;
+
+            loaded_objects[file_type + "|" + directory + "|" + filename] = object;
+
             object_scene.add( object );
             if ( onload !== undefined )
                 onload(object);
@@ -190,10 +225,15 @@ function load_model(file_type, directory, filename, addition_information, object
             dae.position.x = addition_information.x;
             dae.position.y = addition_information.y;
             dae.position.z = addition_information.z;
+            dae.rotation.x = addition_information.rotate_x;
+            dae.rotation.y = addition_information.rotate_y;
+            dae.rotation.z = addition_information.rotate_z;
             dae.name = addition_information.id;
+            loaded_objects[file_type + "|" + directory + "|" + filename] = dae;
             object_scene.add(dae);
             if ( onload !== undefined )
                 onload(dae);
         });
     }
+
 }

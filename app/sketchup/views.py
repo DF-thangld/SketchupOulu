@@ -28,7 +28,11 @@ def view_scenario():
         elif not (g.user.is_admin() or scenario.owner == g.user):
             return render_template('404.html'), 404
 
-    return render_template("sketchup/view_scenario.html", scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
+    building_models = []
+    if g.user is not None and scenario.can_edit(g.user):
+        building_models = g.user.get_available_building_models(return_dict=True)
+
+    return render_template("sketchup/view_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
 @mod.route('/get_scenario/')
 def get_scenario():
@@ -61,18 +65,34 @@ def update_scenario(scenario_id):
     if not scenario.can_edit(g.user):
         return json.dumps(['Scenario not found']), 404
 
-    scenario_name = request.form.get('scenario_name', '')
-    is_public = request.form.get('is_public', 1)
-    if scenario_name == '':
-        errors.append('Scenario name cannot be blank')
+    if 'scenario_name' in request.form:
+        scenario_name = request.form.get('scenario_name', '')
+        if scenario_name == '':
+            errors.append('Scenario name cannot be blank')
+        scenario.name = scenario_name
+
+    if 'is_public' in request.form:
+        is_public = request.form.get('is_public', 1)
+        if is_public not in (1, 0):
+            is_public = 1
+        scenario.is_public = is_public
+
+    if 'scenario_description' in request.form:
+        description = request.form.get('scenario_description', '')
+        scenario.description = description
+
+    if 'addition_information' in request.form:
+        addition_information = request.form.get('addition_information', '')
+        try:
+            json.loads(addition_information)
+            scenario.addition_information = addition_information
+        except:
+            pass
+
     if len(errors) > 0:
         return json.dumps(errors), 400
 
-    scenario.name = scenario_name
-    scenario.is_public = is_public
-    scenario.description = request.form.get('scenario_description', scenario.description)
     db.session.commit()
-
     return json.dumps({
         'success': True
     }), 200
