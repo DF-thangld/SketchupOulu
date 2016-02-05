@@ -30,6 +30,7 @@ animate();
 
 {% block js_script %}
 var building_models = [];
+var objects = [];
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 //constant
@@ -65,7 +66,6 @@ var isShiftDown = false;
 
 
 //all the vasiable objects in the scene
-var objects = [];//different objects may use same models
 var sceneObjects = {};//store information of objects including Model name and position
 
 //3D models various
@@ -159,19 +159,6 @@ function init()
 	//document.body.appendChild( container );
 	
 	container = document.getElementById("ModelWindow");
-	var dropdownlist = document.getElementById("dropdown_model");
-	for ( var i = 0; i < modelsInfo.length; i++) {
-	
-		var x = document.createElement("OPTION");
-		x.text = modelsInfo[i].modelName;
-		x.value = i;
-		if(i==0){
-			x.selected = true;
-		}
-		dropdownlist.add(x,dropdownlist[i]);
-	}
-	
-	
 	//webgl
 	camera = new THREE.PerspectiveCamera( 45, windowRatio, 1, 10000 );
 	camera.position.set( views[0].x, views[0].y, views[0].z );
@@ -244,6 +231,8 @@ function init()
 
 function add_building_model(information)
 {
+    if (current_object != null)
+        scene.remove(current_object);
 	load_model( information.file_type,
 				'{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
 				information.original_filename,
@@ -252,6 +241,7 @@ function add_building_model(information)
 				function(object)
 				{
 					current_object = object;
+					object.addition_information = information;
 					switchMode(1);
 				});
 }
@@ -337,8 +327,11 @@ function onDocumentMouseMove(event){
 					selectedModel.position.y = intersects[0].point.y;
 					selectedModel.position.z = intersects[0].point.z;
 					
-					//TO DO : update modelInfos as well
-
+					//update modelInfos as well
+					var selected_model = sceneObjects[selectedModel.name];
+					selected_model.x = selectedModel.position.x;
+					selected_model.y = selectedModel.position.y;
+					selected_model.z = selectedModel.position.z;
 				}
 			
 			}
@@ -407,10 +400,8 @@ function onDocumentMouseDown( event )
 					}
 
 					//operation
-					
 					selectedModel = scene.getObjectByName(obj.name);
 					isSelect = true;
-					
 				}
 				break;
 			}
@@ -420,25 +411,21 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 
 					var temp_object=current_object.clone();
-
-					//if (!Date.now) {
-					//	Date.now = function() { return new Date().getTime(); }
-					//}
-					//temp_object.name = Date.now()%1000;
 					temp_object.name = "model_" + generate_random_string(50);
-					//temp_object.name = sceneObjects.length;
 
 					scene.add( temp_object );
-					objects.push( temp_object );
-					
-					sceneObjects[temp_object.name]={	
-						                                
-														"name":temp_object.name,
-														"index":currentModelIndex, //index of the model.
-														"x":temp_object.position.x,
-														"y":temp_object.position.y,
-														"z":temp_object.position.z
-														};
+					objects.push(temp_object);
+					sceneObjects[temp_object.name]={'id': temp_object.name, 
+													'directory': current_object.addition_information.directory,
+													'original_filename': current_object.addition_information.original_filename,
+													'file_type': current_object.addition_information.file_type,
+													'x': temp_object.position.x,
+													"y": temp_object.position.y,   
+													"z": temp_object.position.z, 
+													"size": temp_object.scale.x,     
+													"rotate_x": temp_object.rotation.x,
+													"rotate_y": temp_object.rotation.y,
+													"rotate_z": temp_object.rotation.z};
 				}
 				break;
 			}
@@ -456,8 +443,6 @@ function onDocumentMouseDown( event )
 					delete sceneObjects[obj.name];
 					scene.remove( scene.getObjectByName(obj.name) );
 					objects.splice( objects.indexOf( obj ), 1 );
-					
-					
 				}
 				
 				break;
@@ -474,6 +459,7 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
+					sceneObjects[temp_object.name].scale = scene.getObjectByName(obj.name).scale.x;
 				}
 				break;
 			}
@@ -489,6 +475,7 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
+					sceneObjects[temp_object.name].scale = scene.getObjectByName(obj.name).scale.x;
 				}
 				break;
 			}
@@ -504,6 +491,12 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
+					sceneObjects[temp_object.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[temp_object.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[temp_object.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
+
+					//console.log(scene.getObjectByName(obj.name));
+					console.log(scene.getObjectByName(obj.name).rotation.x, scene.getObjectByName(obj.name).rotation.y, scene.getObjectByName(obj.name).rotation.z);
 				}
 				break;
 			}
@@ -519,6 +512,9 @@ function onDocumentMouseDown( event )
 					}
 					
 					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
+					sceneObjects[temp_object.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[temp_object.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[temp_object.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
 				}
 				break;
 			}
@@ -695,7 +691,8 @@ function test()
 function before_submit()
 {
     // TODO: take information from model to "addition_information" field
-    window.alert('TODO: take information from model to "addition_information" field');
+    //window.alert('TODO: take information from model to "addition_information" field');
+	$('#addition_information').val(JSON.stringify(sceneObjects));
 }
 
 {% endblock %}
@@ -759,16 +756,13 @@ function before_submit()
 				</dt>
 				<dd>
                     <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-                    	<b>Choose Building:</b>
-                    	</br><select id="dropdown_model" onchange="switchGeometry(this.value)"></select>
-                    	</br><b>Choose Mode:</b>
-                    	</br><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button>
-                    	</br><button onclick="switchMode('1')" class="operation-button" type="button" >Add Model</button>
-                    	</br><button onclick="switchMode('2')" class="operation-button" type="button" >delete Model</button>
-                    	</br><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button>
-                    	</br><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button>
-                    	</br><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button>
-                    	</br><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button>
+                    	<div><b>Choose Mode:</b></div>
+                    	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
+                    	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
+                    	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
+                    	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
+                    	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
+                    	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
                     </div>
 					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
                     </div>
