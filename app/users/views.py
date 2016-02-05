@@ -25,7 +25,7 @@ def profile(username):
         return render_template('404.html')
 
     scenarios = user.get_scenarios(return_dict=True)
-    building_models = user.get_available_building_models(return_dict=True)
+    building_models = user.get_available_building_models(include_base_models=False,return_dict=True)
     comments = user.get_comments()
     return render_template("users/profile.html", user=user, scenarios=scenarios, building_models=building_models, comments=comments)
 
@@ -416,15 +416,16 @@ def user_own_scenarios():
 @requires_login
 def add_scenario():
     errors = []
+    building_models = g.user.get_available_building_models(return_dict=True)
     if request.method == 'GET':
-        return render_template("users/add_scenario.html", errors=errors)
+        return render_template("users/add_scenario.html", errors=errors, building_models=building_models)
     else:
         name = request.form.get('name', '')
         is_public = request.form.get('is_public', 0)
         addition_information = request.form.get('addition_information', '')
         if name.strip() == '':
             errors.append('Scenario name is required')
-            return render_template("users/add_scenario.html", errors=errors), 400
+            return render_template("users/add_scenario.html", errors=errors, building_models=building_models), 400
 
         scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
         scenario.description = request.form.get('description', '')

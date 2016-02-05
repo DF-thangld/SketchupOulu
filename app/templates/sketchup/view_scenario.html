@@ -878,9 +878,9 @@ function render()
                 <button class="btn btn-info" onclick="full_screen('ModelWindow');">Full screen</button>
                 {% if g.user %}
                 <button class="btn btn-primary" onclick="clone_scenario();">Clone this scenario</button>
-                    {% if g.user.is_admin() and scenario.is_base_scenario==0 %}
+                    {% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
                     <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
-                    {% elif g.user.is_admin() and scenario.is_base_scenario==1 %}
+                    {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
                     <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
                     {% endif %}
                 {% endif %}

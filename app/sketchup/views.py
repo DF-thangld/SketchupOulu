@@ -165,6 +165,8 @@ def delete_building_model(building_model_id):
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
         return json.dumps(['Building model not found']), 404
+    if building_model.is_base_item == 1:
+        return json.dumps(['Cannot delete base item']), 400
 
     if g.user is None or (not g.user.is_admin() and building_model.owner != g.user):
         return json.dumps(['Building model not found']), 404
@@ -193,27 +195,45 @@ def update_building_model(building_model_id):
         return json.dumps(['Building model not found']), 404
 
     #only change name
-    building_model_name = request.form.get('building_model_name', '')
-    if building_model_name != '':
-        building_model.name = building_model_name
+    if 'building_model_name' in request.form:
+        building_model_name = request.form.get('building_model_name', '')
+        if building_model_name != '':
+            building_model.name = building_model_name
+        else:
+            return json.dumps(['Model name is required']), 400
+
+    #change building status to building item
+    if g.user.is_admin():
+        if 'is_base_item' in request.form:
+            if building_model.is_base_item == 0:
+                building_model.is_base_item = 1
+            else:
+                building_model.is_base_item = 0
 
     #change addition information
-    addition_information = request.form.get('addition_information', '')
-    if addition_information != '':
-        try:
-            addition_information = json.loads(addition_information)
-            original_addition_information = json.loads(building_model.addition_information)
-            for key in addition_information:
-                original_addition_information[key] = addition_information[key]
+    if 'addition_information' in request.form:
+        addition_information = request.form.get('addition_information', '')
+        if addition_information != '':
+            try:
+                addition_information = json.loads(addition_information)
+                original_addition_information = json.loads(building_model.addition_information)
+                for key in addition_information:
+                    original_addition_information[key] = addition_information[key]
 
-            building_model.addition_information = json.dumps(original_addition_information)
-        except:
-            errors.append('Error in saving addition information, please contact an admin for more information')
+                building_model.addition_information = json.dumps(original_addition_information)
+            except:
+                return json.dumps(['Error in saving addition information, please contact an admin for more information']), 400
 
     db.session.commit()
+    returned_building_model = {}
+    if g.user.is_admin():
+        returned_building_model = {'id': building_model.id, 'name': building_model.name, 'addition_information': building_model.addition_information, 'is_base_item': building_model.is_base_item}
+    else:
+        returned_building_model = {'id': building_model.id, 'name': building_model.name, 'addition_information': building_model.addition_information}
 
     return json.dumps({
-        'success': True
+        'success': True,
+        'building_model': returned_building_model
     }), 200
 
 
@@ -258,3 +278,16 @@ def get_base_scenarios():
         scenarios.append(scenario.to_dict())
 
     return json.dumps({'scenarios': scenarios})
+
+@mod.route('/get_predefined_building_models', methods=['GET', 'POST'])
+def get_predefined_building_models():
+    query = BuildingModel.query.filter(BuildingModel.is_base_item==1)
+
+    query = query.order_by(BuildingModel.created_time.desc())
+    result = query.all()
+
+    building_models = []
+    for building_model in result:
+        building_models.append(building_model.to_dict())
+
+    return json.dumps(building_models)

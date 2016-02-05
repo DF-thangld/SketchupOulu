@@ -261,6 +261,44 @@ function render()
 
     }
 {% endif %}
+{% if g.user and g.user.is_admin() %}
+    function change_base_model_status()
+    {
+        bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+                    data: {'is_base_item': 1},
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.building_model.is_base_item == 0)
+                        {
+                            $('#base_model_button').removeClass('btn-danger');
+                            $('#base_model_button').addClass('btn-warning');
+                            $('#base_model_button').html('Promote to base model');
+                        }
+                        else
+                        {
+                            $('#base_model_button').removeClass('btn-warning');
+                            $('#base_model_button').addClass('btn-danger');
+                            $('#base_model_button').html('Demote to normal model');
+                        }
+                        show_alert('alert-success', 'Model status changed');
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
+{% endif %}
 
 {% endblock %}
 
@@ -309,6 +347,13 @@ function render()
                 <a class="btn btn-info" href="{{ url_for('static', filename='models/building_models/' + building_model.data_file) }}" download>Download model file</a>
                 {% if g.user %}
                 <button class="btn btn-primary" onclick="clone_building_model();">Clone this building model</button>
+                {% endif %}
+                {% if g.user and g.user.is_admin() %}
+                    {% if building_model.is_base_item==0 %}
+                        <button class="btn btn-warning" onclick="change_base_model_status();" id="base_model_button">Promote to base model</button>
+                    {% elif building_model.is_base_item==1 %}
+                        <button class="btn btn-danger" onclick="change_base_model_status();" id="base_model_button">Demote to normal model</button>
+                    {% endif %}
                 {% endif %}
                 </div>
             </div>

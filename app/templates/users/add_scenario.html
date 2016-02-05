@@ -20,14 +20,16 @@
 {% block onload_script %}
 // threejs functions
 init();
+{% set index = 0 %}
+{% for building_model in building_models %}
+init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
+{% set index = index + 1 %}
+{% endfor %}
 animate();
 {% endblock %}
 
 {% block js_script %}
-
-
-
-
+var building_models = [];
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 //constant
@@ -36,8 +38,6 @@ var BLOCK_SIZE = 50;
 var MOVING_SPEED = 10;
 var DEFAULT_HEIGHT = 1000;
 var DEFAULT_DISTANCE = 100;
-
-
 
 // threejs variables
 var container;
@@ -71,9 +71,10 @@ var sceneObjects = {};//store information of objects including Model name and po
 //3D models various
 //var chooseModel=0;
 var modelsInfo;
-var models; //models get from databsed, no contain repeated models
+var models = []; //models get from databsed, no contain repeated models
 var currentModelIndex;
-var loaded_objects_number;
+var loaded_objects_number = 0;
+var current_object = null;
 
 //dropdown list
 var geometryIndex = 0;
@@ -87,6 +88,51 @@ var windowRatio = 2;
 var windowWidth = 972;
 var windowHeight = 500;
 
+function init_building_model(id, file_type, information, index)
+{
+    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+    information = JSON.parse(information);
+
+    // variables
+    var building_scene = new THREE.Scene();
+    building_scene.name = "scene_building_model_" + id;
+    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
+    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
+    building_scene.add(building_camera);
+
+    // RENDERER
+    var building_renderer;
+    if ( Detector.webgl )
+        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
+    else
+        building_renderer = new THREE.CanvasRenderer();
+    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    building_renderer.setClearColor( 0xffffff, 1 );
+    var building_container = document.getElementById( 'building_model_' +id );
+    building_container.appendChild( building_renderer.domElement );
+
+    //LIGHT
+    var ambientLight = new THREE.AmbientLight(0xffffff);
+    building_scene.add(ambientLight);
+
+    //object
+    load_model( file_type,
+                '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
+                information.original_filename,
+                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1},
+                building_scene,
+                function(object)
+                {
+                    models[index] = object;
+                });
+
+    //move objects to global arrays
+    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
+    building_renderer.render( building_scene, building_camera );
+}
 
 function init()
 {
@@ -95,6 +141,7 @@ function init()
 	windowHeight = document.getElementById("ModelWindow").offsetHeight;
 
 	scene = new THREE.Scene();
+    scene.name = "add_scenario_scene";
 	
 	isSelect = false;// no object has been selected
 	selectedModel = null;
@@ -102,55 +149,16 @@ function init()
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
-	models = [];
+
 	modelsInfo = Communicator.getModelsFromDB("Project's name");
 	sceneObjects = Communicator.getSceneFromDB("Project's name");
 	loaded_objects_number=0;
-	for ( var i = 0; i < modelsInfo.length; i++) {
-		var model = modelsInfo[i];
-		var loader = new THREE.OBJMTLLoader();
-		loader.load( model.objPath, model.mtlPath, function ( object ) {
-
-			object.name = models.modelName;
-
-			models[models.length]=object;
-
-			if(models.length==1){
-				current_object= object;
-				currentModelIndex=0;
-				scene.add( current_object );
-			}
-			loaded_objects_number=loaded_objects_number+1;
-					if( loaded_objects_number == modelsInfo.length){
-						//make loading scene objects at last to make sure the 3D Object has been loaded
-						//add predefined scene objects
-					
-						
-						for(var property in sceneObjects){
-						    if( sceneObjects.hasOwnProperty(property) ){
-						        var model = sceneObjects[property];
-							    var obj = models[parseInt(model.index)].clone();
-							    obj.name = model.name;
-							    obj.position.x = model.x;
-							    obj.position.y = model.y;
-							    obj.position.z = model.z;
-							    scene.add( obj );
-                                objects.push( obj );    
-						    }
-						}
-					}
-		});
-	}	
 
 	//document
 	//container = document.createElement( 'div' );
 	//document.body.appendChild( container );
 	
 	container = document.getElementById("ModelWindow");
-
-	
-
-
 	var dropdownlist = document.getElementById("dropdown_model");
 	for ( var i = 0; i < modelsInfo.length; i++) {
 	
@@ -165,20 +173,15 @@ function init()
 	
 	
 	//webgl
-
-	//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
 	camera = new THREE.PerspectiveCamera( 45, windowRatio, 1, 10000 );
 	camera.position.set( views[0].x, views[0].y, views[0].z );
 	camera.target = center_position;
 	camera.lookAt( camera.target );
 
-	
-
 	//light
 	var ambient = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambient );
 
-	
 	//1. build the grid
 
 	var size = WORLD_SIZE/2, step = BLOCK_SIZE;
@@ -239,29 +242,60 @@ function init()
 	renderer.render( scene, camera);
 }
 
+function add_building_model(information)
+{
+	load_model( information.file_type,
+				'{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
+				information.original_filename,
+				{'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1},
+				scene,
+				function(object)
+				{
+					current_object = object;
+					switchMode(1);
+				});
+}
 
-function switchGeometry(i) {
 
-	var bool=current_object.visible;
+function switchGeometry(i) 
+{
+    var position = new THREE.Vector3( 0, 0, 0 );
 	//remove the current from the scene
-	var position = current_object.position.clone();
-	scene.remove(current_object);
+    if (current_object != null)
+    {
+        position = current_object.position.clone();
+        bool=current_object.visible;
+	    scene.remove(current_object);
+    }
 
 	geometryIndex = i;
 
 	currentModelIndex= i;
 
-	current_object=models[currentModelIndex];
+	current_object = new THREE.Mesh( models[currentModelIndex].geometry, models[currentModelIndex].material );
+    current_object.name = "scenario_" + generate_random_string(50);
 	current_object.position.x=position.x;
 	current_object.position.y=position.y;
 	current_object.position.z=position.z;
+    current_object.visible = true;
 	scene.add(current_object);
-	current_object.visible = bool;
-	
-	
-}
-function switchMode(i) {
+    console.log(models[i]);
+    console.log(current_object);
+    switchMode(0);
 
+    //add object at center
+	var tmp = new THREE.Mesh( models[i].geometry, models[i].material );
+	tmp.name = "tmp_" + generate_random_string(50);
+	tmp.position.x = 0;
+	tmp.position.y = 0;
+	tmp.position.z = 0;
+	tmp.visible = true;
+	scene.add(tmp);
+	animate();
+}
+
+function switchMode(i) 
+{
 	var mode = parseInt(i);
 	if(modeIndex ==1 && mode!=1){// from 0 to other
 		current_object.visible=false;
@@ -271,11 +305,9 @@ function switchMode(i) {
 	modeIndex= mode ;
 	switch(modeIndex){
 		case 0:{
-			
 			break;
 		}
 		case 1:{
-			
 			break;
 		}
 	}
@@ -349,18 +381,16 @@ function  onDocumentMouseUp( event ) {
 		}
 	}
 }
-function onDocumentMouseDown( event ) {
+function onDocumentMouseDown( event )
+{
 
 	//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
-
-		 				
 	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 	var x = event.pageX - $('#ModelWindow').offset().left;
 	var y = event.pageY - $('#ModelWindow').offset().top;
 	var div_width =document.getElementById("ModelWindow").clientWidth;
 	var div_height=document.getElementById("ModelWindow").clientHeight;
 	mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
 
 	raycaster.setFromCamera( mouse, camera );
 
@@ -395,14 +425,14 @@ function onDocumentMouseDown( event ) {
 					//	Date.now = function() { return new Date().getTime(); }
 					//}
 					//temp_object.name = Date.now()%1000;
-					temp_object.name = modelsInfo[currentModelIndex].modelName;
+					temp_object.name = "model_" + generate_random_string(50);
 					//temp_object.name = sceneObjects.length;
 
 					scene.add( temp_object );
 					objects.push( temp_object );
 					
 					sceneObjects[temp_object.name]={	
-						                                "modelName":modelsInfo[currentModelIndex].modelName,
+						                                
 														"name":temp_object.name,
 														"index":currentModelIndex, //index of the model.
 														"x":temp_object.position.x,
@@ -651,6 +681,11 @@ function render()
 	
 	// update the scene
 	renderer.render( scene, camera );
+    for (i=0; i < building_models.length; i++)
+    {
+        var building_model = building_models[i];
+        building_model['renderer'].render( building_model['scene'], building_model['camera'] );
+    }
 }
 
 function test()
@@ -666,9 +701,6 @@ function before_submit()
 {% endblock %}
 
 {% block main_content %}
-
-
-
 <div class="row" style="margin-top: 20px;">
 
 	<div class="col-lg-10 col-centered">
@@ -740,11 +772,44 @@ function before_submit()
                     </div>
 					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow">
                     </div>
+                    <div style="clear:both"></div>
+                    <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            {% set index = 0 %}
+                            {% for building_model in building_models %}
+                                {% if index%5 == 0 %}
+                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
+                                {% endif %}
+                                    <div class="col-lg-2" style="margin-top:5px;background-color: #fff;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
+                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
+                                        {{ building_model.name }}
+                                    </div>
+                                {% set index = index + 1 %}
+                                {% if index%5 == 0 %}
+                                    <div style="clear:both"></div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% if index%5 != 0 %}
+                                <div style="clear:both"></div>
+                            </div>
+                            {% endif %}
+
+                        </div>
+
+                          <!-- Left and right controls -->
+                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                          </a>
+                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                          </a>
+                    </div>
 				</dd>
 			</dl>
-
-
-
 			<div class="form-actions">
                 <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
 				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>

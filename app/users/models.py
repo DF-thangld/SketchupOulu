@@ -107,11 +107,18 @@ class User(db.Model):
                 scenarios.append(scenario.to_dict())
             return scenarios
 
-    def get_available_building_models(self, return_dict=False):
+    def get_available_building_models(self, include_base_models=True, return_dict=False):
         query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.owner==self)\
                 .order_by(sketchup.BuildingModel.created_time.desc())
         building_models = query.all()
-        #TODO: get pre-defined models
+
+        #get pre-defined models
+        if include_base_models:
+            query = sketchup.BuildingModel.query.filter(sketchup.BuildingModel.is_base_item==1)\
+                    .order_by(sketchup.BuildingModel.created_time.desc())
+            for building_model in query.all():
+                if building_model not in building_models:
+                    building_models.append(building_model)
 
         if not return_dict:
             return building_models

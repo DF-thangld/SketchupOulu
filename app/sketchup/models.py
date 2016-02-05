@@ -12,6 +12,7 @@ class BuildingModel(db.Model):
     name = db.Column(db.String(200))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     owner = db.relationship("User")
+    is_base_item = db.Column(db.SmallInteger, default=0)
     created_time = db.Column(db.DateTime)
     file_type = db.Column(db.String(50))
     data_file = db.Column(db.String(80))
@@ -19,6 +20,17 @@ class BuildingModel(db.Model):
     description = db.Column(db.String())
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
     comment_topic = db.relationship("CommentTopic")
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+
+        if isinstance(other, BuildingModel):
+            return self.id == other.id
+        return False
+
+    def __ne__(self, other):
+        return not (self == other)
 
     def can_edit(self, user):
         if user == self.owner:
@@ -55,7 +67,8 @@ class BuildingModel(db.Model):
                 'data_file': self.data_file,
                 'file_type': self.file_type,
                 'addition_information': json.loads(self.addition_information),
-                'description': self.description}
+                'description': self.description,
+                'is_base_item': self.is_base_item}
 
     def __repr__(self):
         return '<BuildingModel %r>' % (self.name)
