@@ -3,13 +3,13 @@ import datetime
 import zipfile
 import os
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.babel import gettext
 
 from app import db, send_mail, upload_file, app_dir
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
-from app.users.models import User
+from app.users.models import User, UserSession
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
@@ -31,6 +31,7 @@ def profile(username):
 
 
 @mod.route('/profile/')
+@requires_login
 def own_profile():
     return profile(g.user.username)
 
@@ -59,10 +60,15 @@ def login():
                 user.last_login = datetime.datetime.now()
                 user.last_login_attempt = None
                 user.login_attempts = 0
-                db.session.commit()
-
                 g.user = user
-                return redirect(url_for('users.own_profile'))
+
+                user_session = UserSession(user.id)
+                db.session.add(user_session)
+                db.session.commit()
+                response = make_response(redirect(url_for('users.own_profile')))
+                cookie_value = str(user.id) + '|' + user_session.token
+                response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
+                return response
             elif user and not check_password_hash(user.password, form.password.data):
                 user.last_login_attempt = datetime.datetime.now()
                 user.login_attempts += 1
@@ -110,15 +116,21 @@ def register():
                         password=generate_password_hash(form.password.data))
             db.session.add(user)
             db.session.commit()
+            # TODO: send confirm email and redirect to confirm page
 
             # Log the user in, as he now has an id
             session['user_id'] = user.id
             g.user = user
 
-            # flash will display a message to the user
-            # redirect user to the 'home' method of the user module.
-            # TODO: send confirm email and redirect to confirm page
-            return redirect(url_for('index'))
+            #add remember
+            user_session = UserSession(user.id)
+            db.session.add(user_session)
+            db.session.commit()
+            response = make_response(redirect(url_for('users.own_profile')))
+            cookie_value = str(user.id) + '|' + user_session.token
+            response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
+            return response
+
         else:
             for error in form.name.errors:
                 errors.append(error)
@@ -229,7 +241,9 @@ def logout():
     session.clear()
     session['user_id'] = None
     g.user = None
-    return redirect(url_for('index'))
+    response = make_response(redirect(url_for('index')))
+    response.set_cookie('session_id', '', expires=0, path='/')
+    return response
 
 @mod.route('/user_profile/', methods=['GET', 'POST'])
 @requires_login
