@@ -474,8 +474,6 @@ def get_user_building_models(username):
     else:
         query = BuildingModel.query.filter(BuildingModel.owner==user)\
 
-    if g.user is None or not (user == g.user or g.user.is_admin()):
-        query = query.filter(BuildingModel.is_public==1)
     query = query.order_by(BuildingModel.created_time.desc())
 
     page_data = query.paginate(page, 20, False)
