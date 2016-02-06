@@ -104,6 +104,8 @@ class Scenario(db.Model):
         self.comment_topic = CommentTopic('Comments for scenario id ' + self.id, owner, 'scenario')
 
     def can_access(self, user):
+        if user is None:
+            return False
         if user == self.owner:
             return True
         if user.is_admin():
@@ -115,6 +117,8 @@ class Scenario(db.Model):
         return False
 
     def can_edit(self, user):
+        if user is None:
+            return False
         if user == self.owner:
             return True
         if user.is_admin():
