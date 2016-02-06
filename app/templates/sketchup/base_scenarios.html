@@ -30,6 +30,8 @@ var DEFAULT_DISTANCE = 100;
 
 
 // threejs variables
+var scenario_information = {};
+var manager = new THREE.LoadingManager();
 var container;
 var camera, scene, renderer,controls;
 //var  gui = new dat.GUI();
@@ -83,43 +85,6 @@ function init()
 
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
-
-	models = [];
-	modelsInfo = Communicator.getModelsFromDB("Project's name");
-	sceneObjects = Communicator.getSceneFromDB("Project's name");
-	loaded_objects_number=0;
-	for ( var i = 0; i < modelsInfo.length; i++) {
-		var model = modelsInfo[i];
-		var loader = new THREE.OBJMTLLoader();
-		loader.load( model.objPath, model.mtlPath, function ( object ) {
-
-			object.name = models.modelName;
-
-			models[models.length]=object;
-
-			
-			loaded_objects_number=loaded_objects_number+1;
-					if( loaded_objects_number == modelsInfo.length){
-						//make loading scene objects at last to make sure the 3D Object has been loaded
-						//add predefined scene objects
-					
-						
-						for(var property in sceneObjects){
-						    if( sceneObjects.hasOwnProperty(property) ){
-						        var model = sceneObjects[property];
-							    var obj = models[parseInt(model.index)].clone();
-							    obj.name = model.name;
-							    obj.position.x = model.x;
-							    obj.position.y = model.y;
-							    obj.position.z = model.z;
-							    scene.add( obj );
-                                objects.push( obj );    
-						    }
-						}
-					}
-		});
-	}
-	
 	container = document.getElementById("ModelWindow");
 	
 	//webgl
@@ -169,8 +134,6 @@ function init()
 
 
 	// add keyboard events to mode
-	document.addEventListener( 'keydown', onDocumentKeyDown, false );
-	document.addEventListener( 'keyup', onDocumentKeyUp, false );
 	window.addEventListener( 'resize', onWindowResize, false );
 
 	// display the scene
@@ -189,50 +152,8 @@ function init()
 
 	//render
 	renderer.render( scene, camera);
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
 }
-
-
-
-function onDocumentKeyDown(event)
-{
-	switch ( event.keyCode ) {
-
-		case 16: isShiftDown = true; break; //shift, delete mode with click
-		case 38: move_forward = true; break; // up
-		case 40: move_backward = true; break; // down
-		case 37: move_left = true; break; // left
-		case 39: move_right = true; break; // right
-		case 87: move_up = true; break; // w
-		case 83: move_down = true; break; // s
-		//case 65: targetMoveLeft = true; break; // a
-		//case 68: targetMoveRight = true; break; // d
-		
-		case 90: is_rotating = true; break; // z
-
-		//case 78: chooseModel=1;//n choose next model
-		//case 77: chooseModel=-1;//m choose previous model
-
-	}
-}
-
-function onDocumentKeyUp(event)
-{
-	switch ( event.keyCode ) {
-
-		case 16: isShiftDown = false; break; //shift
-		case 38: move_forward = false; break; // up
-		case 40: move_backward = false; break; // down
-		case 37: move_left = false; break; // left
-		case 39: move_right = false; break; // right
-		case 87: move_up = false; break; // w
-		case 83: move_down = false; break; // s
-		//case 65: targetMoveLeft = false; break; // a
-		//case 68: targetMoveRight = false; break; // d
-		case 90: is_rotating = false; break; // z
-
-	}
-}
-
 
 // change window size
 function onWindowResize()
@@ -253,7 +174,7 @@ function animate() {
 
 	requestAnimationFrame( animate );
 
-	//controls.update();
+	controls.update();
 	
 	render();
 
@@ -261,87 +182,6 @@ function animate() {
 
 function render() 
 {
-
-	// 2.1 move around the scene
-	
-	if (move_forward){
-		switch(current_view)
-		{
-			case 0: camera.position.z += MOVING_SPEED; break;
-			case 1: camera.position.x -= MOVING_SPEED; break;
-			case 2: camera.position.z -= MOVING_SPEED; break;
-			case 3: camera.position.x += MOVING_SPEED; break;
-		}
-	}
-	if (move_backward)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.z -= MOVING_SPEED; break;
-			case 1: camera.position.x += MOVING_SPEED; break;
-			case 2: camera.position.z += MOVING_SPEED; break;
-			case 3: camera.position.x -= MOVING_SPEED; break;
-		}
-	}
-	if (move_left)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x += MOVING_SPEED; break;
-			case 1: camera.position.z += MOVING_SPEED; break;
-			case 2: camera.position.x -= MOVING_SPEED; break;
-			case 3: camera.position.z -= MOVING_SPEED; break;
-		}
-	}
-	if (move_right)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x -= MOVING_SPEED; break;
-			case 1: camera.position.z -= MOVING_SPEED; break;
-			case 2: camera.position.x += MOVING_SPEED; break;
-			case 3: camera.position.z += MOVING_SPEED; break;
-		}
-	}
-	if (move_up)
-	{
-		camera.position.y += MOVING_SPEED;
-	}
-	if (move_down)
-	{
-		camera.position.y -= MOVING_SPEED;
-	}
-	
-	// 2.2 rotating
-	if (is_rotating)
-	{
-		current_view++;
-		if (current_view >= views.length)
-			current_view = 0;
-		
-		// remember current position
-		var current_x = camera.position.x;
-		var current_y = camera.position.y;
-		var current_z = camera.position.z;
-		
-		// go to pre-defined position
-		camera.position.x = views[current_view].x;
-		camera.position.y = views[current_view].y;
-		camera.position.z = views[current_view].z;
-		
-		camera.target = center_position;
-		camera.lookAt( camera.target );
-		
-		// only rotate one time per click
-		is_rotating = false;
-		
-	}
-
-	//mouse position
-	
-	
-	// random stuffs
-	
 	
 	// update the scene
 	renderer.render( scene, camera );
@@ -415,8 +255,29 @@ function render()
                     new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
                     $('#comment_list').append(new_comment_html);
                 }
-                $('#no_scenario_block').fadeOut('fast');
-                $('#user_data_form').fadeIn('fast');
+                $('#no_scenario_block').hide();
+                $('#user_data_form').show();
+
+                data.addition_information = JSON.parse(data.addition_information);
+                //TODO: remove old objects
+                for (var model_id in scenario_information)
+                {
+                    var selectedObject = scene.getObjectByName(model_id);
+                    scene.remove( selectedObject );
+                }
+
+                //TODO: display new objects
+                scenario_information = data.addition_information;
+                for (var model_id in scenario_information)
+                {
+                    var model = scenario_information[model_id];
+                    load_model( model.file_type,
+                                '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
+                                model.original_filename,
+                                {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size, 'rotate_x': model.rotate_x, 'rotate_y': model.rotate_y, 'rotate_z': model.rotate_z},
+                                scene);
+                }
+                animate();
 
             }
         });
