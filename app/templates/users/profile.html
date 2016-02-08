@@ -365,8 +365,8 @@
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
                 <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
                 {% endif %}
-                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">Scenarios</a></li>
-                <li id="menu_scenarios" class=""><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">Building models</a></li>
+                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">My scenarios</a></li>
+                <li id="menu_scenarios" class=""><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">My models</a></li>
             </ul>
 		</div>
 

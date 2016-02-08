@@ -184,10 +184,16 @@
                     new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
                     $('#comment_list').append(new_comment_html);
                 }
-                $('#no_building_model_block').fadeOut('fast');
-                $('#user_data_form').fadeIn('fast');
+                $('#no_building_model_block').hide();
+                $('#user_data_form').show();
 
-                if (data.file_type == 'dae')
+                load_model( data.file_type,
+                    '{{ url_for('static', filename='models/building_models/') }}' + data.addition_information.directory + '/',
+                    data.addition_information.original_filename,
+                    {'id': data.id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+                    scene);
+
+                /*if (data.file_type == 'dae')
                 {
                     var loader = new THREE.ColladaLoader();
                     loader.options.upAxis = 'X'; // Rotation by 90 degrees
@@ -213,7 +219,7 @@
                         object.scale.x = object.scale.y = object.scale.z = 1;
                         scene.add( object );
                     });
-                }
+                }*/
 
 
                 var SCREEN_WIDTH = $('#building_model').innerWidth(), SCREEN_HEIGHT = $('#building_model').innerHeight();

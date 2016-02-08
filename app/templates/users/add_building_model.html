@@ -55,8 +55,9 @@
 				</dt>
 				<dd>
                     <select class="form-control" name="file_type" id="file_type">
-                        <option value="obj" {% if request.form.get('file_type')=='obj' %}selected{% endif %}>OBJ</option>
-                        <option value="dae" {% if request.form.get('file_type')=='dae' %}selected{% endif %}>DAE</option>
+                        <option value="obj" {% if request.form.get('file_type')=='obj' %}selected{% endif %}>Wavefront .obj file</option>
+                        <option value="objmtl" {% if request.form.get('file_type')=='objmtl' %}selected{% endif %}>Wavefront .obj file with materials</option>
+                        <option value="dae" {% if request.form.get('file_type')=='dae' %}selected{% endif %}>COLLADA .dae file with materials</option>
                     </select>
 				</dd>
 			</dl>

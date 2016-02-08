@@ -19,7 +19,14 @@
 		<ul class="header-nav left" role="navigation">
 			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">Home</a>
 			</li>
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a></li>
+            <li class="header-nav-item dropdown">
+                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">Profile</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('users.own_profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('users.user_building_models_page', username=g.user.username) }}">My models</a></li>
+                    <li><a href="{{ url_for('users.user_scenarios_page', username=g.user.username) }}">My scenario</a></li>
+                </ul>
 			</li>
             {% if g.user.is_admin() %}
             <li class="header-nav-item dropdown">
@@ -30,7 +37,6 @@
                     <li><a href="{{ url_for('index') }}">Scenarios</a></li>
                     <li><a href="{{ url_for('index') }}">Suggestions</a></li>
                     <li><a href="{{ url_for('index') }}">Building models</a></li>
-
                     <li class="divider"></li>
                     <li class="dropdown-header">Users control</li>
                     <li><a href="{{ url_for('admin.user_management') }}">User management</a></li>

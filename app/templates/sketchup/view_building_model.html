@@ -99,29 +99,14 @@ function init()
 	//   and increase values in model's exported .js file
 	//    to e.g. "colorAmbient" : [0.75, 0.75, 0.75]
 
-    {% if building_model.file_type == 'dae' %}
-    var loader = new THREE.ColladaLoader();
-	loader.options.upAxis = 'X'; // Rotation by 90 degrees
-	loader.options.convertUpAxis = true; // Align the Y-axis
-	loader.load('{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".dae") }}', function (collada) {
+    load_model( '{{ building_model.file_type }}',
+                '{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory) }}',
+                '{{ building_model.addition_information.original_filename }}',
+                {'id': '{{ building_model.id }}', 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+                scene,
+                function(object){console.log(object);});
 
-        dae = collada.scene;
-		dae.scale.x = dae.scale.y = dae.scale.z = 1;
-		dae.position.x = 0;
-        dae.name = '{{ building_model.id }}';
-		scene.add(dae);
-	});
-    {% elif building_model.file_type == 'obj' %}
-    var loader = new THREE.OBJMTLLoader();
-    loader.load('{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".obj") }}',
-        '{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory + "/" + building_model.addition_information.original_filename + ".mtl") }}',
-        function ( object )
-    {
-        object.name = '{{ building_model.id }}';
-        object.scale.x = object.scale.y = object.scale.z = 1;
-        scene.add( object );
-    });
-    {% endif %}
+
 
 	// addModelToScene function is called back after model has loaded
 

@@ -537,11 +537,17 @@ def add_building_model():
             zip_ref.extractall(os.path.join(app_dir, 'static/models/building_models'))
             zip_ref.close()
             os.rename(os.path.join(app_dir, 'static/models/building_models', uploaded_file['original_filename']), os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
+            #TODO: searching the unzipped files for fail-safe human errors with file type
             addition_information = {'original_filename': uploaded_file['original_filename'],
                                     'directory': uploaded_file['filename_without_extension'],
                                     'camera_x': 30, 'camera_y': 250, 'camera_z': 350,
                                     "camera_lookat_x": 31, "camera_lookat_y": 222, "camera_lookat_z": 366}
-            #TODO: searching the unzipped files for fail-safe human errors with file type
+        else:
+            addition_information = {'original_filename': uploaded_file['filename_without_extension'],
+                                    'directory': '',
+                                    'camera_x': 30, 'camera_y': 250, 'camera_z': 350,
+                                    "camera_lookat_x": 31, "camera_lookat_y": 222, "camera_lookat_z": 366}
+
 
         building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
         building_model.file_type = file_type

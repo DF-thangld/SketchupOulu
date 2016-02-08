@@ -162,6 +162,10 @@ function edit_comment(comment_id)
 var loaded_objects = {};
 function load_model(file_type, directory, filename, addition_information, object_scene, onload)
 {
+    if (directory.substr(directory.length - 2) == "//")
+        directory = directory.substr(0, directory.length - 1);
+    if (directory.substr(directory.length - 1) != "/")
+        directory = directory + '/';
     var unique_id = file_type + "|" + directory + "|" + filename;
     if (unique_id in loaded_objects)
     {
@@ -190,13 +194,42 @@ function load_model(file_type, directory, filename, addition_information, object
         return;
     }
     loaded_objects[file_type + "|" + directory + "|" + filename] = null;
-    if (file_type == 'obj')
+    if (file_type == 'objmtl')
     {
         var loader = new THREE.OBJMTLLoader();
+        console.log('load objmtl');
         loader.load(directory + filename + ".obj",
             directory + filename + ".mtl",
             function ( object )
         {
+            object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+            object.position.x = addition_information.x;
+            object.position.y = addition_information.y;
+            object.position.z = addition_information.z;
+            object.rotation.x = addition_information.rotate_x;
+            object.rotation.y = addition_information.rotate_y;
+            object.rotation.z = addition_information.rotate_z;
+            object.name = addition_information.id;
+
+            loaded_objects[file_type + "|" + directory + "|" + filename] = object;
+
+            object_scene.add( object );
+            if ( onload !== undefined )
+                onload(object);
+        });
+    }
+    else if (file_type == 'obj')
+    {
+        var loader = new THREE.OBJLoader();
+        console.log('load obj');
+        var file_url = directory + filename;
+        if (file_url.substr(file_url.length - 4) != ".obj")
+            file_url = file_url + ".obj";
+
+        loader.load(file_url,
+        function ( object )
+        {
+            //object = object.children[0];
             object.scale.x = object.scale.y = object.scale.z = addition_information.size;
             object.position.x = addition_information.x;
             object.position.y = addition_information.y;
