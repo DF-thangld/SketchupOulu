@@ -2,7 +2,7 @@ import os
 import sys
 import datetime
 
-from flask import Flask, render_template, g, session, request
+from flask import Flask, render_template, g, session, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.babel import Babel
 from smtplib import SMTP, SMTP_SSL
@@ -32,11 +32,17 @@ def check_locale():
         locale = request.args.get('lang')
         if locale in config.LANGUAGES:
             session['locale'] = locale
+            return redirect(request.url.replace('lang=' + locale, ''))
         else:
             session['locale'] = config.BABEL_DEFAULT_LOCALE
     elif 'locale' not in session:
         locale = request.accept_languages.best_match(config.LANGUAGES.keys())
         session['locale'] = locale
+
+@app.before_request
+def good_url():
+    if request.url[-1:] == '&' or request.url[-1:] == '?':
+        return redirect(request.url[:-1])
 
 def upload_file(upload_file, stored_directory, generate_filename=True, file_type="image"):
     original_filename_parts = upload_file.filename.split('.')
@@ -47,7 +53,6 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
     if generate_filename:
         filename_without_extension = utilities.generate_random_string(50)
         filename = filename_without_extension + '.' + file_extension
-
     else:
         filename_without_extension = original_filename
         filename = upload_file.filename

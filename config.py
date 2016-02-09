@@ -41,4 +41,4 @@ LANGUAGES = {
     'fi': 'Suomea'
 }
 
-BABEL_DEFAULT_LOCALE = 'fi'
+BABEL_DEFAULT_LOCALE = 'en'
