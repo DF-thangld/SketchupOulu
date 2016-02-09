@@ -8,7 +8,7 @@ import datetime
 from app import db, app_dir, send_mail
 from app.users.models import User, Group
 from app.sketchup.models import Scenario, BuildingModel
-from app.journal.models import JournalCategory, Journal
+from app.journal.models import JournalCategory, Journal, JournalContent
 from app.admin.decorators import requires_admin
 from app.admin.forms import UserSearchForm, SendEmailForm, CreateJournalCategoryForm, EditJournalCategoryForm, CreateJournalForm, EditJournalForm
 import config
@@ -343,12 +343,11 @@ def create_journal():
         create_journal_form.category_id.default = create_journal_form.category_id.data
     else:
         create_journal_form.category_id.default = category_id
-    #create_journal_form.is_activate.data = 1
 
     if not create_journal_form.is_submitted():
         create_journal_form.is_activate.checked = True
         create_journal_form.process()
-        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
     elif not create_journal_form.validate():
         # validate false,
         for error in create_journal_form.title.errors:
@@ -358,7 +357,7 @@ def create_journal():
         for error in create_journal_form.category_id.errors:
             errors.append(error)
 
-        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
     elif create_journal_form.validate():
         # create journal
         journal_activated = 0
@@ -367,13 +366,19 @@ def create_journal():
         category = JournalCategory.query.filter_by(id=create_journal_form.category_id.data).first()
         if category is None:
             errors.append('Category is required')
-            return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+            return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
 
         journal = Journal(create_journal_form.title.data, create_journal_form.content.data, g.user, category, journal_activated)
+        for language in config.LANGUAGES:
+            title_language = request.form.get('title_' + language, '')
+            content_language = request.form.get('content_' + language, '')
+            journal_content = JournalContent(title_language, content_language, journal, language)
+            db.session.add(journal_content)
+
         db.session.add(journal)
         db.session.commit()
         #redirect to journal page
-        return render_template("admin/create_journal.html", form=create_journal_form, errors=errors)
+        return redirect(url_for('admin.edit_journal', journal_id=journal.id))
 
 @mod.route('/delete_journal/', methods=['GET'])
 @requires_admin
@@ -422,6 +427,17 @@ def edit_journal():
     errors = []
     edit_journal_form.category_id.choices = [(category.id, category.name) for category in JournalCategory.query.order_by('name')]
     edit_journal_form.category_id.choices.insert(0, (0, '===== Category ====='))
+
+    journal_content_objs = journal.journal_contents
+    journal_contents = {}
+    for journal_content_obj in journal_content_objs:
+        journal_contents[journal_content_obj.locale] = journal_content_obj.to_dict()
+    for language in config.LANGUAGES:
+        if language not in journal_contents:
+            journal_contents[language] = {  'locale': language,
+                                            'content': '',
+                                            'title': ''}
+
     if not edit_journal_form.is_submitted():
         edit_journal_form.category_id.default = journal.category.id
         edit_journal_form.is_activate.checked = (journal.is_activated == 1)
@@ -429,13 +445,23 @@ def edit_journal():
         edit_journal_form.title.data = journal.title
         edit_journal_form.content.data = journal.content
 
-        return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 200
+        return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 200
     else:
+        for language in config.LANGUAGES:
+            if language not in journal_contents:
+                journal_contents[language] = {  'locale': language,
+                                                'content': '',
+                                                'title': ''}
+            if ('title_' +  language) in request.form:
+                journal_contents[language]['title'] = request.form.get('title_' + language)
+            if ('content_' +  language) in request.form:
+                journal_contents[language]['content'] = request.form.get('content_' + language)
+
         if edit_journal_form.validate():
             category = JournalCategory.query.filter_by(id=edit_journal_form.category_id.data).first()
             if category is None:
                 errors.append('Journal category not found')
-                return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 200
+                return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 400
             journal.category = category
             journal.title = edit_journal_form.title.data
             journal.content = edit_journal_form.content.data
@@ -446,8 +472,13 @@ def edit_journal():
             journal.is_activated = journal_activated
             journal.last_edited_user = g.user
             journal.last_edited_time = datetime.datetime.now()
+
+            for i in range(0, len(journal.journal_contents)):
+                journal.journal_contents.remove(journal.journal_contents[0])
+            for language in journal_contents:
+                jc = JournalContent(journal_contents[language]['title'], journal_contents[language]['content'], journal, language)
             db.session.commit()
-            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 400
+            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 200
         else:
             for error in edit_journal_form.title.errors:
                 errors.append(error)
@@ -455,7 +486,7 @@ def edit_journal():
                 errors.append(error)
             for error in edit_journal_form.category_id.errors:
                 errors.append(error)
-            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors), 400
+            return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 400
 
 
 @mod.route('/change_base_scenario_status/<scenario_id>', methods=['GET'])

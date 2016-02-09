@@ -2,7 +2,7 @@ import os
 import sys
 import datetime
 
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session, request
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.babel import Babel
 from smtplib import SMTP, SMTP_SSL
@@ -22,11 +22,21 @@ app_dir = os.path.dirname(os.path.realpath(__file__))
 
 db = SQLAlchemy(app)
 
-
 @babel.localeselector
-def get_locale():
-    return 'fi'
+def get_babel_locale():
+    return session['locale']
 
+@app.before_request
+def check_locale():
+    if 'lang' in request.args:
+        locale = request.args.get('lang')
+        if locale in config.LANGUAGES:
+            session['locale'] = locale
+        else:
+            session['locale'] = config.BABEL_DEFAULT_LOCALE
+    elif 'locale' not in session:
+        locale = request.accept_languages.best_match(config.LANGUAGES.keys())
+        session['locale'] = locale
 
 def upload_file(upload_file, stored_directory, generate_filename=True, file_type="image"):
     original_filename_parts = upload_file.filename.split('.')

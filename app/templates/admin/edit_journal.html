@@ -7,9 +7,11 @@
 {% endblock %}
 
 {% block onload_script %}
-    $('#content').summernote({
+    {% for language in languages %}
+    $('#content_{{ language }}').summernote({
         height: 300
     });
+    {% endfor %}
 
 {% endblock %}
 
@@ -25,8 +27,7 @@
             <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
            <li class = "active">Edit Journal</li>
         </ol>
-		<h2 style="font-size: 45px;">Edit Journal</h2>
-
+		<h2 style="font-size: 45px;">Edit Journal - <a href="{{ url_for('journal.view', journal_id=journal_id) }}" target="journal_{{ journal_id }}">View journal</a></h2>
 		<form accept-charset="UTF-8" action="{{ url_for('admin.edit_journal', journal_id=journal_id) }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
 			method="post">
@@ -59,6 +60,11 @@
                     {{ form.category_id(autocapitalize="off", autofocus="autofocus", value=form.category_id.data, style="width:100%") }}
 				</dd>
 			</dl>
+            <dl class="form successed">
+				<dt class="input-label">
+					{{ form.is_activate.label }} {{ form.is_activate() }}
+				</dt>
+			</dl>
 			<dl class="form">
 				<dt class="input-label">
 					{{ form.title.label(autocapitalize="off") }}
@@ -73,16 +79,31 @@
 					{{ form.content.label }}
 				</dt>
 				<dd>
-                    {{ form.content(value=form.content.data) }}
+                    {{ form.content(value=form.content.data, style="height:50px;min-height:50px;") }}
 				</dd>
 			</dl>
-            <dl class="form successed">
+            {% for language in languages %}
+            <div style="width:100%; border:1px solid black"></div>
+            <dl class="form">
 				<dt class="input-label">
-					{{ form.is_activate.label }} {{ form.is_activate() }}
+					<label for="title_{{ language }}">Journal name in {{ languages[language] }}</label>
 				</dt>
+				<dd>
+                    <input autocapitalize="off" id="title_{{ language }}" name="title_{{ language }}" style="width:100%" type="text" value="{{ journal_contents[language]['title'] }}">
+				</dd>
 			</dl>
+			<dl class="form successed">
+				<dt class="input-label">
+					<label for="content_{{ language }}">Journal content in {{ languages[language] }}</label>
+				</dt>
+				<dd>
+                    <textarea id="content_{{ language }}" name="content_{{ language }}">{{ journal_contents[language]['content'] }}</textarea>
+				</dd>
+			</dl>
+            {% endfor %}
+            <div style="width:100%; border:1px solid black"></div>
 
-			<div class="form-actions">
+			<div class="form-actions" style="margin-top:10px;">
                 <button type="submit" class="btn btn-primary" id="create_button" >Edit Journal</button>
 				<button type="reset" class="btn btn-warning" id="reset_button" onclick="window.location='{{ url_for('admin.edit_journal', journal_id=journal_id) }}'">Reset</button>
 			</div>

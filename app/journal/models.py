@@ -4,6 +4,7 @@ from app import db
 from app.users.models import User
 import app.sketchup.models as sketchup
 import sqlalchemy
+import config
 
 class JournalCategory(db.Model):
 
@@ -55,6 +56,7 @@ class Journal(db.Model):
     is_activated = db.Column(db.SmallInteger, default=1)
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
     comment_topic = db.relationship("CommentTopic")
+    journal_contents = db.relationship("JournalContent", back_populates="journal")
 
     def __init__(self, title, content, created_user, category, is_activated=1):
         self.title = title
@@ -63,7 +65,7 @@ class Journal(db.Model):
         self.is_activated = is_activated
         self.category = category
         self.post_time = datetime.datetime.now()
-        self.comment_topic = sketchup.CommentTopic('Comments for journal id ' + self.id, self.created_user)
+        self.comment_topic = sketchup.CommentTopic('Comments for journal title ' + self.title, self.created_user, 'journal')
 
     def to_dict(self, include_category=False, include_created_user=False, include_last_edited_user=False):
         category = None
@@ -87,5 +89,35 @@ class Journal(db.Model):
                 'last_edited_user': last_edited_user,
                 'last_edited_time': self.last_edited_time}
 
+    def get_journal_content(self, locale=config.BABEL_DEFAULT_LOCALE):
+        for journal_content in self.journal_contents:
+            if journal_content.locale == locale:
+                return journal_content
+
     def __repr__(self):
         return '<Journal %r>' % (self.title)
+
+class JournalContent(db.Model):
+    __tablename__ = 'journal_contents'
+    id = db.Column(db.Integer, primary_key=True)
+    journal_id = db.Column(db.Integer, db.ForeignKey('journals.id'))
+    journal = db.relationship("Journal", back_populates="journal_contents")
+    locale = db.Column(db.String(20), default='en')
+    title = db.Column(db.String(200), default='')
+    content = db.Column(db.UnicodeText(), default='')
+
+    def __init__(self, title, content, journal, locale):
+        self.title = title
+        self.content = content
+        self.journal = journal
+        self.locale = locale
+
+    def to_dict(self):
+        return {'locale': self.locale,
+                'content': self.content,
+                'title': self.title}
+
+    def __repr__(self):
+        return '<JournalContent %r for "%r">' % (self.locale, self.title)
+
+db.Index('idx_journal_locale', JournalContent.journal_id, JournalContent.locale)

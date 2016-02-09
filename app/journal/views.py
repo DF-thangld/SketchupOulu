@@ -20,4 +20,8 @@ def view():
     if journal.is_activated == 0 and not g.user.is_admin:
         return render_template('404.html'), 404
 
+    journal_content = journal.get_journal_content(session.get('locale'))
+    journal.title = journal_content.title
+    journal.content = journal_content.content
+
     return render_template("journal/view.html", journal=journal.to_dict(include_category=True, include_created_user=True, include_last_edited_user=True))

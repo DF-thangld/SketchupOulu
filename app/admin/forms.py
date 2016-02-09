@@ -21,13 +21,13 @@ class EditJournalCategoryForm(Form):
     description = TextField('Description')
 
 class CreateJournalForm(Form):
-    title = TextField('Name', [Required(message='Journal name is required')], default='')
-    content = TextAreaField('Content', [Required(message='Journal content is required')], default='')
+    title = TextField('Name (for admin view only) - Required', [Required(message='Journal name is required')], default='')
+    content = TextAreaField('Description (for admin view only) - Required', [Required(message='Journal description is required')], default='')
     is_activate = BooleanField('Is activated', default=1)
     category_id = SelectField('Category', [Required('Category is required'), NoneOf([0], 'Category is required')], coerce=int)
 
 class EditJournalForm(Form):
-    title = TextField('Name', [Required(message='Journal name is required')], default='')
-    content = TextAreaField('Content', [Required(message='Journal content is required')], default='')
+    title = TextField('Name (for admin view only)', [Required(message='Journal name is required')], default='')
+    content = TextAreaField('Description (for admin view only)', [Required(message='Journal description is required')], default='')
     is_activate = BooleanField('Is activated', default=1)
     category_id = SelectField('Category', [Required('Category is required'), NoneOf([0], 'Category is required')],  coerce=int)
