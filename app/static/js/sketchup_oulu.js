@@ -310,6 +310,7 @@ function load_model(file_type, directory, filename, addition_information, object
                         onload(object);
                 });
         }
+        catch(err) {console.log(err.message);}
     }
     else if (file_type == 'obj')
     {
@@ -337,6 +338,7 @@ function load_model(file_type, directory, filename, addition_information, object
                         onload(object);
                 });
         }
+        catch(err) {console.log(err.message);}
     }
     else if (file_type == 'dae')
     {
@@ -362,6 +364,7 @@ function load_model(file_type, directory, filename, addition_information, object
                     onload(dae);
             });
         }
+        catch(err) {console.log(err.message);}
 
     }
 

@@ -106,24 +106,12 @@
         container = document.getElementById( 'scenario_' +id );
         container.appendChild( renderer.domElement );
 
-        //GRID
-        /*var size = WORLD_SIZE/2, step = BLOCK_SIZE;
-        var geometry = new THREE.Geometry();
-        for ( var i = - size; i <= size; i += step ) {
 
-            geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-            geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-            geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-            geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-        }
-        var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
-        var line = new THREE.LineSegments( geometry, material );
-        scene.add( line );
 
         //LIGHT
         var ambientLight = new THREE.AmbientLight(0xffffff);
         scene.add(ambientLight);
-
+        var size = 1000;
         //object
         for (var model_id in information)
         {
@@ -136,8 +124,27 @@
                             model,
                             scene);
             }
-        }*/
-        init_scene(information, scene);
+            else if (model_id == 'size')
+            {
+                size = information['size'];
+            }
+        }
+
+        //GRID
+        var size = size/2, step = BLOCK_SIZE;
+        var geometry = new THREE.Geometry();
+        for ( var i = - size; i <= size; i += step ) {
+
+            geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+            geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+            geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+            geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+        }
+        var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
+        var line = new THREE.LineSegments( geometry, material );
+        scene.add( line );
+
+        //init_scene(information, scene);
         var control = new THREE.OrbitControls( camera, renderer.domElement );
 
         //move objects to global arrays
