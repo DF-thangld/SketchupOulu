@@ -57,11 +57,6 @@
     var scenarios = [];
     var manager = new THREE.LoadingManager();
 
-    //for control in scenario
-    window.onmouseover=function(e) {
-        console.log(e.target.id);
-    };
-
     window.addEventListener('resize', function()
     {
         for (i=0; i < building_models.length; i++)
@@ -112,7 +107,7 @@
         container.appendChild( renderer.domElement );
 
         //GRID
-        var size = WORLD_SIZE/2, step = BLOCK_SIZE;
+        /*var size = WORLD_SIZE/2, step = BLOCK_SIZE;
         var geometry = new THREE.Geometry();
         for ( var i = - size; i <= size; i += step ) {
 
@@ -132,13 +127,17 @@
         //object
         for (var model_id in information)
         {
-            var model = information[model_id];
-            load_model( model.file_type,
-                        '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-                        model.original_filename,
-                        model,
-                        scene);
-        }
+            if (model_id.substring(0, 6) == 'model_')
+            {
+                var model = information[model_id];
+                load_model( model.file_type,
+                            '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
+                            model.original_filename,
+                            model,
+                            scene);
+            }
+        }*/
+        init_scene(information, scene);
         var control = new THREE.OrbitControls( camera, renderer.domElement );
 
         //move objects to global arrays

@@ -101,38 +101,6 @@ function init()
 	var ambient = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambient );
 
-	
-	//1. build the grid
-
-	var size = WORLD_SIZE/2, step = BLOCK_SIZE;
-
-	var geometry = new THREE.Geometry();
-
-	for ( var i = - size; i <= size; i += step ) {
-
-		geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-		geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-
-		geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-		geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-		
-	}
-	
-	var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
-
-	var line = new THREE.LineSegments( geometry, material );
-	scene.add( line );
-	
-
-	//create the lowest base, unvisible, just used for detect where to place the models
-	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
-	geometry.rotateX( - Math.PI / 2 );
-
-	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
-	scene.add( plane );
-
-
-
 	// add keyboard events to mode
 	window.addEventListener( 'resize', onWindowResize, false );
 
@@ -268,15 +236,7 @@ function render()
 
                 //TODO: display new objects
                 scenario_information = data.addition_information;
-                for (var model_id in scenario_information)
-                {
-                    var model = scenario_information[model_id];
-                    load_model( model.file_type,
-                                '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-                                model.original_filename,
-                                {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size, 'rotate_x': model.rotate_x, 'rotate_y': model.rotate_y, 'rotate_z': model.rotate_z},
-                                scene);
-                }
+                init_scene(scenario_information, scene);
                 animate();
 
             }

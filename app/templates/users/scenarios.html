@@ -312,15 +312,8 @@ function render()
 
                 //TODO: display new objects
                 scenario_information = data.addition_information;
-                for (var model_id in scenario_information)
-                {
-                    var model = scenario_information[model_id];
-                    load_model( model.file_type,
-                                '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-                                model.original_filename,
-                                {'id': model.id, 'x': model.x, 'y': model.y, 'z': model.z, 'size': model.size, 'rotate_x': model.rotate_x, 'rotate_y': model.rotate_y, 'rotate_z': model.rotate_z},
-                                scene);
-                }
+
+                init_scene(data.addition_information, scene);
                 animate();
 
             }

@@ -21,7 +21,6 @@ animate();
 
 var is_loading = true;
 var building_models = [];
-var manager = new THREE.LoadingManager();
 
 
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -433,6 +432,7 @@ function save_scenario_content()
 		bootbox.hideAll();
 		if (result)
 		{
+            sceneObjects['size'] = WORLD_SIZE;
 			$.ajax({
 				type: "POST",
 				url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
@@ -471,20 +471,20 @@ function init()
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
-
 	//pre-defined objects
-	for (var model_id in sceneObjects)
-	{
-		var model = sceneObjects[model_id];
-		load_model( model.file_type,
-					'{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-					model.original_filename,
-					model,
-					scene, 
-					function(object){
-						objects.push(object);
-					});
-	}
+    init_scene(sceneObjects, scene);
+    {% if can_edit %}
+    manager.onLoad = function()
+    {
+        for (var i=0; i < scene.children.length; i++)
+        {
+            var model = scene.children[i];
+            if (model.name.substring(0, 6) == 'model_')
+                objects.push(model);
+        }
+        console.log(objects);
+    }
+    {% endif %}
 
 	//document
 	//container = document.createElement( 'div' );
@@ -502,34 +502,10 @@ function init()
 	scene.add( ambient );
 
 	//1. build the grid
-
-	var size = WORLD_SIZE/2, step = BLOCK_SIZE;
-
-	var geometry = new THREE.Geometry();
-
-	for ( var i = - size; i <= size; i += step ) {
-
-		geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-		geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-
-		geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-		geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-		
-	}
-	
-	var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
-
-	var line = new THREE.LineSegments( geometry, material );
-	scene.add( line );
-
-	//create the lowest base, unvisible, just used for detect where to place the models
-	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
-	geometry.rotateX( - Math.PI / 2 );
-
-	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
-	scene.add( plane );
 	
 	{% if can_edit %}
+    // insert model to objects
+
 	// add keyboard events to mode
 	document.addEventListener( 'keydown', onDocumentKeyDown, false );
 	document.addEventListener( 'keyup', onDocumentKeyUp, false );
@@ -897,7 +873,10 @@ function render()
 				<dt class="input-label">
 					{% if can_edit %}
 					<div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-                    	<div><b>Choose Mode:</b></div>
+                        <div><b>Model Control:</b></div>
+                        <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
+                        <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
+                    	<div><b>Model Control:</b></div>
                     	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
                     	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
                     	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>

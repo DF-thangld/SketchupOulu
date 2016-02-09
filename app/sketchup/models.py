@@ -9,16 +9,16 @@ class BuildingModel(db.Model):
 
     __tablename__ = 'custom_models'
     id = db.Column(db.String(100), primary_key=True)
-    name = db.Column(db.String(200))
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(200), index=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     owner = db.relationship("User")
-    is_base_item = db.Column(db.SmallInteger, default=0)
-    created_time = db.Column(db.DateTime)
+    is_base_item = db.Column(db.SmallInteger, default=0, index=True)
+    created_time = db.Column(db.DateTime, index=True)
     file_type = db.Column(db.String(50))
     data_file = db.Column(db.String(80))
     addition_information = db.Column(db.String())
     description = db.Column(db.String())
-    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
+    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     comment_topic = db.relationship("CommentTopic")
 
     def __eq__(self, other):
@@ -77,19 +77,19 @@ class Scenario(db.Model):
 
     __tablename__ = 'scenarios'
     id = db.Column(db.String(100), primary_key=True)
-    name = db.Column(db.String(200))
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(200), index=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     owner = db.relationship("User", primaryjoin="Scenario.owner_id == User.id")
-    created_time = db.Column(db.DateTime)
+    created_time = db.Column(db.DateTime, index=True)
     last_edited_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     last_edited_user = db.relationship("User", primaryjoin="Scenario.last_edited_user_id == User.id")
     last_edited_time = db.Column(db.DateTime)
     data_file = db.Column(db.String(80))
     addition_information = db.Column(db.String())
     description = db.Column(db.String())
-    is_base_scenario = db.Column(db.SmallInteger, default=0)
-    is_public = db.Column(db.SmallInteger, default=1)
-    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
+    is_base_scenario = db.Column(db.SmallInteger, default=0, index=True)
+    is_public = db.Column(db.SmallInteger, default=1, index=True)
+    comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     comment_topic = db.relationship("CommentTopic")
 
     def __init__(self, name, owner, addition_information, data_file='', description='', is_public=1):
@@ -213,7 +213,7 @@ class CommentTopic(db.Model):
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
-    topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'))
+    topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     topic = db.relationship("CommentTopic")
     content = db.Column(db.String(1000))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))

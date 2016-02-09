@@ -109,7 +109,8 @@ def update_user_info():
     #update groups
     groups_string = request.form.get('groups_value', '')
     if groups_string != '':
-        user.groups.clear()
+        for i in range(0, len(user.groups)):
+            user.groups.remove(user.groups[0])
         group_ids = groups_string.split('|')
         for group_id in group_ids:
             group = Group.query.filter_by(id=group_id).first()

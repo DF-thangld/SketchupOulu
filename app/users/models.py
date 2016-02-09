@@ -12,8 +12,8 @@ class User(db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    username = db.Column(db.String(80), unique=True, index=True)
+    email = db.Column(db.String(120), unique=True, index=True)
     password = db.Column(db.String(80))
     address = db.Column(db.String(80), default='')
     postal_code = db.Column(db.String(80), default='')
@@ -21,16 +21,17 @@ class User(db.Model):
     fullname = db.Column(db.String(80), default='')
     birthdate = db.Column(db.DateTime)
     profile_picture = db.Column(db.String(80), default='default_profile.png')
+    join_date = db.Column(db.DateTime)
 
     last_login = db.Column(db.DateTime)
     last_activity = db.Column(db.DateTime)
     last_login_attempt = db.Column(db.DateTime)
     
-    verification_code = db.Column(db.String(80))
+    verification_code = db.Column(db.String(80), default='', index=True)
     login_attempts = db.Column(db.Integer, default=0)
     banned = db.Column(db.SmallInteger, default=0)
-    login_token = db.Column(db.String(50), default='')
-    password_token = db.Column(db.String(50), default='')
+    login_token = db.Column(db.String(50), default='', index=True)
+    password_token = db.Column(db.String(50), default='', index=True)
 
     groups = db.relationship('Group', secondary=user_to_group,
         backref=db.backref('groups', lazy='dynamic'))
@@ -44,6 +45,7 @@ class User(db.Model):
                                     primaryjoin="User.comment_topic_id==CommentTopic.id", post_update=True)
 
     def __init__(self, username='', email='', password=''):
+        self.join_date = datetime.datetime.now()
         self.username = username
         self.email = email
         self.password = password
@@ -157,7 +159,6 @@ class User(db.Model):
                 return True
         return False
 
-
     def __repr__(self):
         return '<User %r>' % (self.username)
 
@@ -165,7 +166,7 @@ class Group(db.Model):
 
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String(80), unique=True, index=True)
     description = db.Column(db.String(200), default='')
 
     def __init__(self, name='', description=''):
@@ -197,3 +198,5 @@ class UserSession(db.Model):
 
     def __repr__(self):
         return '<UserSession %r>' % (str(self.user_id))
+
+db.Index('idx_user_token', UserSession.user_id, UserSession.token)

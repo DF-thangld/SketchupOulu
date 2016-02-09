@@ -57,6 +57,82 @@ $( document ).ready(function() {
 
 });
 
+function redraw_scenario_ground(current_scene)
+{
+    // remove old line
+    current_scene.remove( current_scene.getObjectByName('ground_layout') );
+    current_scene.remove( current_scene.getObjectByName('ground') );
+
+    // redraw plane ground
+    if (current_scene.hasOwnProperty('world_size'))
+        WORLD_SIZE = current_scene.world_size;
+    var size = WORLD_SIZE/2, step = BLOCK_SIZE;
+
+	var geometry = new THREE.Geometry();
+
+	for ( var i = - size; i <= size; i += step ) {
+
+		geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+		geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+
+		geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+		geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+
+	}
+
+	var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
+
+	var line = new THREE.LineSegments( geometry, material );
+    line.name = 'ground_layout';
+	current_scene.add( line );
+
+	//create the lowest base, unvisible, just used for detect where to place the models
+	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
+	geometry.rotateX( - Math.PI / 2 );
+
+	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+    plane.name = 'layout';
+	current_scene.add( plane );
+}
+
+function init_scene(information, current_scene)
+{
+    WORLD_SIZE = 1000;
+    for (var model_id in information)
+	{
+        if (model_id.substring(0, 6) == 'model_')
+        {
+            var model = information[model_id];
+            load_model( model.file_type,
+                        model_path + model.directory + '/',
+                        model.original_filename,
+                        model,
+                        current_scene);
+        }
+        else if (model_id == 'size')
+        {
+            WORLD_SIZE = information['size'];
+        }
+	}
+    current_scene.world_size = WORLD_SIZE;
+    redraw_scenario_ground(current_scene);
+}
+
+function enlarge_scenario()
+{
+    // define new value
+    WORLD_SIZE += 100;
+    scene.world_size = WORLD_SIZE;
+    redraw_scenario_ground(scene);
+}
+
+function shrink_scenario()
+{
+    // define new value
+    WORLD_SIZE -= 100;
+    scene.world_size = WORLD_SIZE;
+    redraw_scenario_ground(scene);
+}
 
 function find_by_id(array, id)
 {
@@ -160,6 +236,7 @@ function edit_comment(comment_id)
 }
 
 var loaded_objects = {};
+var manager = new THREE.LoadingManager();
 function load_model(file_type, directory, filename, addition_information, object_scene, onload)
 {
     if (directory.substr(directory.length - 2) == "//")
@@ -167,13 +244,29 @@ function load_model(file_type, directory, filename, addition_information, object
     if (directory.substr(directory.length - 1) != "/")
         directory = directory + '/';
     var unique_id = file_type + "|" + directory + "|" + filename;
+
+    if (!addition_information.hasOwnProperty('size'))
+        addition_information.size = 1;
+    if (!addition_information.hasOwnProperty('x'))
+        addition_information.x = 0;
+    if (!addition_information.hasOwnProperty('y'))
+        addition_information.y = 0;
+    if (!addition_information.hasOwnProperty('z'))
+        addition_information.z = 0;
+    if (!addition_information.hasOwnProperty('rotate_x'))
+        addition_information.rotate_x = 0;
+    if (!addition_information.hasOwnProperty('rotate_y'))
+        addition_information.rotate_y = 0;
+    if (!addition_information.hasOwnProperty('rotate_z'))
+        addition_information.rotate_z = 0;
+
     if (unique_id in loaded_objects)
     {
         if (loaded_objects[unique_id] == null)
         {
             setTimeout(function(){
                 load_model(file_type, directory, filename, addition_information, object_scene, onload)
-            }, 100);
+            }, 50);
             return;
         }
         var new_object = loaded_objects[unique_id].clone();
@@ -196,8 +289,7 @@ function load_model(file_type, directory, filename, addition_information, object
     loaded_objects[file_type + "|" + directory + "|" + filename] = null;
     if (file_type == 'objmtl')
     {
-        var loader = new THREE.OBJMTLLoader();
-        console.log('load objmtl');
+        var loader = new THREE.OBJMTLLoader(manager);
         loader.load(directory + filename + ".obj",
             directory + filename + ".mtl",
             function ( object )
@@ -220,8 +312,7 @@ function load_model(file_type, directory, filename, addition_information, object
     }
     else if (file_type == 'obj')
     {
-        var loader = new THREE.OBJLoader();
-        console.log('load obj');
+        var loader = new THREE.OBJLoader(manager);
         var file_url = directory + filename;
         if (file_url.substr(file_url.length - 4) != ".obj")
             file_url = file_url + ".obj";
@@ -248,7 +339,7 @@ function load_model(file_type, directory, filename, addition_information, object
     }
     else if (file_type == 'dae')
     {
-        var loader = new THREE.ColladaLoader();
+        var loader = new THREE.ColladaLoader(manager);
         loader.options.upAxis = 'X'; // Rotation by 90 degrees
         loader.options.convertUpAxis = true; // Align the Y-axis
         loader.load(directory + filename + ".dae", function (collada)

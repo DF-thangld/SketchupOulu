@@ -646,6 +646,7 @@ function render()
 
 function before_submit()
 {
+    sceneObjects['size'] = WORLD_SIZE;
 	$('#addition_information').val(JSON.stringify(sceneObjects));
 }
 
@@ -709,7 +710,10 @@ function before_submit()
 				</dt>
 				<dd>
                     <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-                    	<div><b>Choose Mode:</b></div>
+                    	<div><b>Model Control:</b></div>
+                        <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
+                        <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
+                    	<div><b>Model Control:</b></div>
                     	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
                     	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
                     	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
