@@ -11,7 +11,7 @@ DEBUG = False
 ADMINS = frozenset(['youremail@yourdomain.com'])
 SECRET_KEY = 'This string will be replaced with a proper key in production.'
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://sketchup_oulu:abcxyz@vm0112.virtues.fi:3306/sketchup_oulu'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://sketchup_oulu:abcxyz@vm0106.virtues.fi:7557/sketchup_oulu'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 DATABASE_CONNECT_OPTIONS = {}
