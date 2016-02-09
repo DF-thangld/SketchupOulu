@@ -290,25 +290,26 @@ function load_model(file_type, directory, filename, addition_information, object
     if (file_type == 'objmtl')
     {
         var loader = new THREE.OBJMTLLoader(manager);
-        loader.load(directory + filename + ".obj",
-            directory + filename + ".mtl",
-            function ( object )
-        {
-            object.scale.x = object.scale.y = object.scale.z = addition_information.size;
-            object.position.x = addition_information.x;
-            object.position.y = addition_information.y;
-            object.position.z = addition_information.z;
-            object.rotation.x = addition_information.rotate_x;
-            object.rotation.y = addition_information.rotate_y;
-            object.rotation.z = addition_information.rotate_z;
-            object.name = addition_information.id;
+        try {
+            loader.load(directory + filename + ".obj",
+                directory + filename + ".mtl",
+                function (object) {
+                    object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+                    object.position.x = addition_information.x;
+                    object.position.y = addition_information.y;
+                    object.position.z = addition_information.z;
+                    object.rotation.x = addition_information.rotate_x;
+                    object.rotation.y = addition_information.rotate_y;
+                    object.rotation.z = addition_information.rotate_z;
+                    object.name = addition_information.id;
 
-            loaded_objects[file_type + "|" + directory + "|" + filename] = object;
+                    loaded_objects[file_type + "|" + directory + "|" + filename] = object;
 
-            object_scene.add( object );
-            if ( onload !== undefined )
-                onload(object);
-        });
+                    object_scene.add(object);
+                    if (onload !== undefined)
+                        onload(object);
+                });
+        }
     }
     else if (file_type == 'obj')
     {
@@ -316,48 +317,52 @@ function load_model(file_type, directory, filename, addition_information, object
         var file_url = directory + filename;
         if (file_url.substr(file_url.length - 4) != ".obj")
             file_url = file_url + ".obj";
+        try {
+            loader.load(file_url,
+                function (object) {
+                    //object = object.children[0];
+                    object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+                    object.position.x = addition_information.x;
+                    object.position.y = addition_information.y;
+                    object.position.z = addition_information.z;
+                    object.rotation.x = addition_information.rotate_x;
+                    object.rotation.y = addition_information.rotate_y;
+                    object.rotation.z = addition_information.rotate_z;
+                    object.name = addition_information.id;
 
-        loader.load(file_url,
-        function ( object )
-        {
-            //object = object.children[0];
-            object.scale.x = object.scale.y = object.scale.z = addition_information.size;
-            object.position.x = addition_information.x;
-            object.position.y = addition_information.y;
-            object.position.z = addition_information.z;
-            object.rotation.x = addition_information.rotate_x;
-            object.rotation.y = addition_information.rotate_y;
-            object.rotation.z = addition_information.rotate_z;
-            object.name = addition_information.id;
+                    loaded_objects[file_type + "|" + directory + "|" + filename] = object;
 
-            loaded_objects[file_type + "|" + directory + "|" + filename] = object;
-
-            object_scene.add( object );
-            if ( onload !== undefined )
-                onload(object);
-        });
+                    object_scene.add(object);
+                    if (onload !== undefined)
+                        onload(object);
+                });
+        }
     }
     else if (file_type == 'dae')
     {
         var loader = new THREE.ColladaLoader(manager);
         loader.options.upAxis = 'X'; // Rotation by 90 degrees
         loader.options.convertUpAxis = true; // Align the Y-axis
-        loader.load(directory + filename + ".dae", function (collada)
-        {
-            dae = collada.scene;
-            dae.scale.x = dae.scale.y = dae.scale.z = addition_information.size;
-            dae.position.x = addition_information.x;
-            dae.position.y = addition_information.y;
-            dae.position.z = addition_information.z;
-            dae.rotation.x = addition_information.rotate_x;
-            dae.rotation.y = addition_information.rotate_y;
-            dae.rotation.z = addition_information.rotate_z;
-            dae.name = addition_information.id;
-            loaded_objects[file_type + "|" + directory + "|" + filename] = dae;
-            object_scene.add(dae);
-            if ( onload !== undefined )
-                onload(dae);
-        });
+        try {
+            loader.load(directory + filename + ".dae", function (collada)
+            {
+                console.log(directory + filename + ".dae");
+                dae = collada.scene;
+                dae.scale.x = dae.scale.y = dae.scale.z = addition_information.size;
+                dae.position.x = addition_information.x;
+                dae.position.y = addition_information.y;
+                dae.position.z = addition_information.z;
+                dae.rotation.x = addition_information.rotate_x;
+                dae.rotation.y = addition_information.rotate_y;
+                dae.rotation.z = addition_information.rotate_z;
+                dae.name = addition_information.id;
+                loaded_objects[file_type + "|" + directory + "|" + filename] = dae;
+                object_scene.add(dae);
+                if ( onload !== undefined )
+                    onload(dae);
+            });
+        }
+
     }
 
 }
