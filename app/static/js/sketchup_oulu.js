@@ -57,6 +57,175 @@ $( document ).ready(function() {
 
 });
 
+function show_alert(alert_type, alert_content)
+{
+    $('#alert_panel').addClass(alert_type);
+    $('#alert_content').html(alert_content);
+    $('#alert_panel').fadeIn();
+    setTimeout(function(){
+        $('#alert_panel').fadeOut(function(){$('#alert_panel').removeClass(alert_type);});
+
+    }, 3000);
+}
+
+function generate_random_string(length)
+{
+
+    var possible_1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var possible_2 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    var text = possible_1.charAt(Math.floor(Math.random() * possible_1.length));
+    for( var i=1; i < length; i++ )
+        text += possible_2.charAt(Math.floor(Math.random() * possible_2.length));
+
+    return text;
+}
+
+function format_date(date)
+{
+    var result = '';
+    result += date.getDate().toString() + '.' + date.getMonth().toString() + '.' + date.getFullYear().toString() + ' ';
+    result += date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString();
+    return result;
+}
+
+function get_comments(comment_type, comment_id, page, element_id, on_load)
+{
+    $.ajax({
+        type: "GET",
+        data: {'comment_type': comment_type,
+                'comment_id': comment_id,
+                'page': page},
+        url: get_comment_url,
+        dataType: 'json',
+        success: function(data)
+        {
+            $('#' + element_id).html('');
+            var comment_panel_html = '';
+            comment_panel_html += '<div id="comment_panel" style="margin-top:10px;">';
+            comment_panel_html += '    <div class="detailBox">';
+            comment_panel_html += '        <div class="titleBox">';
+            comment_panel_html += '          <label>Comment Box</label>';
+            comment_panel_html += '        </div>';
+            comment_panel_html += '        <div class="commentBox">';
+            comment_panel_html += '            <input type="hidden" id="comment_type_' + comment_id + '" value="' + comment_type + '" />';
+            comment_panel_html += '            <input type="hidden" id="object_id_' + comment_id + '" value="' + comment_id + '" />';
+            comment_panel_html += '            <input type="hidden" id="page_' + comment_id + '" value="' + page.toString() + '" />';
+            if (data.can_add_comment)
+            {
+                comment_panel_html += '            <textarea id="new_comment_' + comment_id + '" name="new_comment_' + comment_id + '" style="width:100%" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>';
+                comment_panel_html += '            <div class="form-group">';
+                comment_panel_html += '                <button class="btn btn-default" onclick="add_comment(\'' + comment_type + '\', \'' + comment_id + '\', $(\'#new_comment_' + comment_id + '\').val());">Add</button>';
+                comment_panel_html += '            </div>';
+            }
+            comment_panel_html += '        </div>';
+            comment_panel_html += '        <div class="actionBox">';
+            comment_panel_html += '            <ul class="commentList" id="comment_list_' + comment_id + '">';
+            for (var i=0; i < data.comments.length; i++)
+            {
+                var comment = data.comments[i];
+                comment_panel_html += '<li id="comment_' + comment.id.toString() + '">';
+                comment_panel_html += '    <div class="commenterImage">';
+                comment_panel_html += '        <a href="' + base_url + 'users/' + comment.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:50px;max-height:50px;" src="' + profile_url + comment.owner.profile_picture + '"></a>';
+                comment_panel_html += '    </div>';
+                comment_panel_html += '    <div class="commentText">';
+                comment_panel_html += '        <p id="comment_content_' + comment.id.toString() + '">' + comment.content + '</p> ';
+                comment_panel_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + comment.owner.username + '/profile/">' + comment.owner.username + '</a> on ' + comment.created_time + '</span>';
+                if (comment.can_edit)
+                {
+                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + comment.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">Delete</a>)</span>';
+                }
+                comment_panel_html += '    </div>';
+                comment_panel_html += '</li>';
+            }
+            comment_panel_html += '            </ul>';
+            comment_panel_html += '        </div>';
+            comment_panel_html += '    </div>';
+            comment_panel_html += '</div>';
+            $('#' + element_id).html(comment_panel_html);
+            if (data.can_add_comment)
+                $('#new_comment_' + comment_id).autoHeight();
+            if (on_load !== undefined)
+                on_load(element_id);
+        }
+    });
+}
+
+function add_comment(comment_type, comment_id, comment_text, on_added)
+{
+    console.log(comment_type);
+    console.log(comment_id);
+    console.log(comment_text);
+    comment_type = ( comment_type !== undefined ) ? comment_type : $('#comment_type').val();
+    comment_id = ( comment_id !== undefined ) ? comment_id : $('#object_id').val();
+    comment_text = ( comment_text !== undefined ) ? comment_text : $('#new_comment').val();
+    if (comment_text.trim() == '')
+    {
+        show_alert('alert-danger', 'Comment content is required');
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url: add_comment_url,
+        data: {'comment_type': comment_type,
+                'object_id': comment_id,
+                'content': comment_text},
+        dataType: 'json',
+        success: function(data)
+        {
+
+            var new_comment_html = '<li id="comment_' + data.id.toString() + '">';
+            new_comment_html += '    <div class="commenterImage">';
+            new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:50px;max-height:50px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
+            new_comment_html += '    </div>';
+            new_comment_html += '    <div class="commentText">';
+            new_comment_html += '        <p id="comment_content_' + data.id.toString() + '">' + data.content + '</p> ';
+            new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
+            new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
+            new_comment_html += '    </div>';
+            new_comment_html += '</li>';
+
+            $('#comment_list_' + comment_id).prepend(new_comment_html);
+            show_alert('alert-success', 'Comment added');
+            $('#new_comment_' + comment_id.toString()).val('');
+            if (on_added !== undefined)
+                on_added(comment_id);
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+
+function display_edit_comment_form()
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}
+
+function delete_comment(comment_id)
+{
+    $.ajax({
+        type: "POST",
+        url: delete_comment_url,
+        data: {'comment_id': comment_id},
+        dataType: 'json',
+        success: function(data)
+        {
+            $('#comment_' + data.comment_id).remove();
+            show_alert('alert-success', 'Comment deleted');
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+function edit_comment(comment_id)
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}
+
 function redraw_scenario_ground(current_scene)
 {
     // remove old line
@@ -145,95 +314,9 @@ function find_by_id(array, id)
     return null;
 }
 
-function generate_random_string(length)
-{
 
-    var possible_1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var possible_2 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    var text = possible_1.charAt(Math.floor(Math.random() * possible_1.length));
-    for( var i=1; i < length; i++ )
-        text += possible_2.charAt(Math.floor(Math.random() * possible_2.length));
 
-    return text;
-}
-
-function show_alert(alert_type, alert_content)
-{
-    $('#alert_panel').addClass(alert_type);
-    $('#alert_content').html(alert_content);
-    $('#alert_panel').fadeIn();
-    setTimeout(function(){
-        $('#alert_panel').fadeOut(function(){$('#alert_panel').removeClass(alert_type);});
-
-    }, 3000);
-}
-
-function format_date(date)
-{
-    var result = '';
-    result += date.getDate().toString() + '.' + date.getMonth().toString() + '.' + date.getFullYear().toString() + ' ';
-    result += date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString();
-    return result;
-}
-
-function add_comment()
-{
-    if ($('#new_comment').val().trim() == '')
-    {
-        show_alert('alert-danger', 'Comment content is required');
-        return;
-    }
-    $.ajax({
-        type: "POST",
-        url: add_comment_url,
-        data: {'comment_type': $('#comment_type').val(),
-                'object_id': $('#object_id').val(),
-                'content': $('#new_comment').val()},
-        dataType: 'json',
-        success: function(data)
-        {
-            var new_comment_html = '';
-            new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="' + profile_url + '/' + data.owner.profile_picture + '" /></div>';
-            new_comment_html += '<div class="commentText"><p class="">' + data.content + '</p> <span class="date sub-text">By ' + data.owner.username + ' on ' + Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
-            $('#comment_list').prepend(new_comment_html);
-            show_alert('alert-success', 'Comment added');
-            $('#new_comment').val('');
-        },
-        error: function(data)
-        {
-            show_alert('alert-danger', data.responseJSON[0]);
-        }
-    });
-}
-
-function display_edit_comment_form()
-{
-    show_alert('alert-danger', 'Function not yet implemented :)');
-}
-
-function delete_comment(comment_id)
-{
-    $.ajax({
-        type: "POST",
-        url: delete_comment_url,
-        data: {'comment_id': comment_id},
-        dataType: 'json',
-        success: function(data)
-        {
-            $('#comment_' + data.comment_id).remove();
-            //show_alert('alert-success', 'Comment deleted');
-        },
-        error: function(data)
-        {
-            show_alert('alert-danger', data.responseJSON[0]);
-        }
-    });
-}
-function edit_comment(comment_id)
-{
-    show_alert('alert-danger', 'Function not yet implemented :)');
-}
 
 var loaded_objects = {};
 var manager = new THREE.LoadingManager();
@@ -290,27 +373,25 @@ function load_model(file_type, directory, filename, addition_information, object
     if (file_type == 'objmtl')
     {
         var loader = new THREE.OBJMTLLoader(manager);
-        try {
-            loader.load(directory + filename + ".obj",
-                directory + filename + ".mtl",
-                function (object) {
-                    object.scale.x = object.scale.y = object.scale.z = addition_information.size;
-                    object.position.x = addition_information.x;
-                    object.position.y = addition_information.y;
-                    object.position.z = addition_information.z;
-                    object.rotation.x = addition_information.rotate_x;
-                    object.rotation.y = addition_information.rotate_y;
-                    object.rotation.z = addition_information.rotate_z;
-                    object.name = addition_information.id;
+        loader.load(directory + filename + ".obj",
+            directory + filename + ".mtl",
+            function (object) {
+                object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+                object.position.x = addition_information.x;
+                object.position.y = addition_information.y;
+                object.position.z = addition_information.z;
+                object.rotation.x = addition_information.rotate_x;
+                object.rotation.y = addition_information.rotate_y;
+                object.rotation.z = addition_information.rotate_z;
+                object.name = addition_information.id;
 
-                    loaded_objects[file_type + "|" + directory + "|" + filename] = object;
+                loaded_objects[file_type + "|" + directory + "|" + filename] = object;
 
-                    object_scene.add(object);
-                    if (onload !== undefined)
-                        onload(object);
-                });
-        }
-        catch(err) {console.log(err.message);}
+                object_scene.add(object);
+                if (onload !== undefined)
+                    onload(object);
+            }, function(){},
+        function(){});
     }
     else if (file_type == 'obj')
     {
@@ -336,7 +417,9 @@ function load_model(file_type, directory, filename, addition_information, object
                     object_scene.add(object);
                     if (onload !== undefined)
                         onload(object);
-                });
+                },
+                function(){},
+                function(){});
         }
         catch(err) {console.log(err.message);}
     }
@@ -348,7 +431,6 @@ function load_model(file_type, directory, filename, addition_information, object
         try {
             loader.load(directory + filename + ".dae", function (collada)
             {
-                console.log(directory + filename + ".dae");
                 dae = collada.scene;
                 dae.scale.x = dae.scale.y = dae.scale.z = addition_information.size;
                 dae.position.x = addition_information.x;
@@ -362,7 +444,9 @@ function load_model(file_type, directory, filename, addition_information, object
                 object_scene.add(dae);
                 if ( onload !== undefined )
                     onload(dae);
-            });
+            },
+            function(){},
+            function(){});
         }
         catch(err) {console.log(err.message);}
 

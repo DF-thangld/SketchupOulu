@@ -296,19 +296,33 @@ def get_comments():
     else:
         page = 1
 
+    can_add_comment = False
+
     main_object = None
     if comment_type == 'user':
         main_object = User.query.filter_by(id=comment_id).first()
+        can_add_comment = True
     elif comment_type == 'scenario':
         main_object = Scenario.query.filter_by(id=comment_id).first()
+        if main_object.can_access(g.user):
+            can_add_comment = True
     elif comment_type == 'building_model':
         main_object = BuildingModel.query.filter_by(id=comment_id).first()
+        can_add_comment = True
     if main_object is None:
         return json.dumps(['Comment topic not found']), 404
 
-    return json.dumps({'comments': main_object.comment_topic.get_latest_comments(page=page, return_dict=True),
+    comments = main_object.comment_topic.get_latest_comments(page=page, return_dict=True)
+    for comment in comments:
+        if g.user is not None and (g.user.is_admin() or g.user.username == comment['owner']['username']):
+            comment['can_edit'] = True
+        else:
+            comment['can_edit'] = False
+
+    return json.dumps({'comments': comments,
                        'total_page': main_object.comment_topic.total_page,
-                       'current_page': main_object.comment_topic.current_page})
+                       'current_page': main_object.comment_topic.current_page,
+                       'can_add_comment': can_add_comment})
 
 
 @mod.route('/add_comment/', methods=['POST'])

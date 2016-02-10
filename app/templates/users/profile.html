@@ -224,32 +224,8 @@
         $('#homepage_panel').hide();
         $("#profile_menu li").removeClass("active");
         $('#menu_comment').addClass('active');
-        $('#user_data_form').fadeOut('fast');
-        $('#user_data_form').html('');
-        $('#comment_list').html('');
-		$.ajax({
-			type: "GET",
-            dataType: 'json',
-            data: {'comment_type': 'user',
-                    'comment_id': {{ user.id }},
-                    'page': $('#comment_current_page').val()},
-			url: "{{ url_for('users.get_comments') }}",
-			success: function(data)
-            {
-				console.log(data);
+		get_comments('user', {{ user.id }}, 1, 'user_data_form', function(element){$('#user_data_form').show();});
 
-                for (i=0; i < data.comments.length; i++)
-                {
-                    comment = data.comments[i];
-                    var new_comment_html = '';
-                    new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
-                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
-                    $('#comment_list').append(new_comment_html);
-                }
-                $('#user_data_form').html($('#user_comment_panel').html());
-                $('#user_data_form').fadeIn('fast');
-			}
-		});
     }
 
     function display_homepage()
@@ -258,7 +234,6 @@
         $("#profile_menu li").removeClass("active");
         $('#menu_homepage').addClass('active');
 
-        //$('#user_data_form').html($('#homepage_panel').html());
         $('#homepage_panel').fadeIn('fast', function(){
             for (i=0; i < building_models.length; i++)
             {
@@ -371,8 +346,8 @@
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">Profile</a></li>
                 <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">Change_password</a></li>
                 {% endif %}
-                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">My scenarios</a></li>
-                <li id="menu_scenarios" class=""><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">My models</a></li>
+                <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">Scenarios</a></li>
+                <li id="menu_scenarios" class=""><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">Models</a></li>
             </ul>
 		</div>
 
@@ -423,31 +398,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="user_comment_panel" style="display:none;">
-
-            <div class="detailBox">
-                <div class="titleBox">
-                  <label>Comment Box</label>
-                </div>
-                <div class="commentBox">
-                    <input type="hidden" id="comment_type" value="user" />
-                    <input type="hidden" id="object_id" value="{{ user.id }}" />
-                    <input type="hidden" id="comment_current_page" value="1" />
-                    <textarea id="new_comment" style="min-height:30px;width:100%;height:100px;" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
-                    <div class="form-group">
-                        <button class="btn btn-default" onclick="add_comment();">Add</button>
-                    </div>
-                </div>
-                <div class="actionBox">
-                    <ul class="commentList" id="comment_list">
-
-                    </ul>
-
-                </div>
-            </div>
-
         </div>
 
         {% if g.user and g.user.username==user.username %}

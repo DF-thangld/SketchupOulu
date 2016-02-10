@@ -175,15 +175,7 @@
                 $('#created_time').html(Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss'));
                 $('#object_id').val(data.id);
 
-                $('#comment_list').html('');
-                for (i=0; i < data.comments.length; i++)
-                {
-                    comment = data.comments[i];
-                    var new_comment_html = '';
-                    new_comment_html += '<li><div class="commenterImage"><img style="max-width:50px;max-height:50px;" src="{{ url_for('static', filename='images/profile_pictures') }}/' + comment.owner.profile_picture + '" /></div>';
-                    new_comment_html += '<div class="commentText"><p class="">' + comment.content + '</p> <span class="date sub-text">By <a href="{{ request.url_root }}users/' + comment.owner.username + '/profile">' + comment.owner.username + '</a> on ' + Date.parse(comment.created_time).toString('dd.MM.yyyy hh:mm:ss') + '</span></div></li>';
-                    $('#comment_list').append(new_comment_html);
-                }
+                get_comments('building_model', data.id, 1, 'building_model_comment_panel');
                 $('#no_building_model_block').hide();
                 $('#user_data_form').show();
 
@@ -192,35 +184,6 @@
                     data.addition_information.original_filename,
                     {'id': data.id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
                     scene);
-
-                /*if (data.file_type == 'dae')
-                {
-                    var loader = new THREE.ColladaLoader();
-                    loader.options.upAxis = 'X'; // Rotation by 90 degrees
-                    loader.options.convertUpAxis = true; // Align the Y-axis
-                    loader.load('{{ url_for('static', filename='models/building_models/') }}' + data.addition_information.directory + "/" + data.addition_information.original_filename + ".dae", function (collada) {
-
-                        dae = collada.scene;
-                        dae.position.x = 0;
-                        dae.name = data.id;
-                        dae.scale.x = dae.scale.y = dae.scale.z = 1;
-                        scene.add(dae);
-                    });
-
-                }
-                else if (data.file_type == 'obj')
-                {
-                    var loader = new THREE.OBJMTLLoader();
-                    loader.load('{{ url_for('static', filename='models/building_models/') }}' + data.addition_information.directory + "/" + data.addition_information.original_filename + ".obj",
-                        '{{ url_for('static', filename='models/building_models/') }}' + data.addition_information.directory + "/" + data.addition_information.original_filename + ".mtl",
-                        function ( object )
-                    {
-                        object.name = data.id;
-                        object.scale.x = object.scale.y = object.scale.z = 1;
-                        scene.add( object );
-                    });
-                }*/
-
 
                 var SCREEN_WIDTH = $('#building_model').innerWidth(), SCREEN_HEIGHT = $('#building_model').innerHeight();
                 camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
@@ -298,27 +261,7 @@
                     <input type="hidden" id="building_model_id" value="" />
                     <div style="width:100%;height:500px;border:1px solid black;" id="building_model"></div>
                 </div>
-                <div id="building_model_comment_panel" style="margin-top:10px;">
-                    <div class="detailBox">
-                        <div class="titleBox">
-                          <label>Comment Box</label>
-                        </div>
-                        <div class="commentBox">
-                            <input type="hidden" id="comment_type" value="building_model" />
-                            <input type="hidden" id="object_id" value="" />
-                            <textarea id="new_comment" style="width:100%" class="form-control form-group" type="text" placeholder="Your comments" ></textarea>
-                            <div class="form-group">
-                                <button class="btn btn-default" onclick="add_comment();">Add</button>
-                            </div>
-                        </div>
-                        <div class="actionBox">
-                            <ul class="commentList" id="comment_list">
-
-                            </ul>
-
-                        </div>
-                    </div>
-                </div>
+                <div id="building_model_comment_panel"></div>
             </div>
         </div>
 

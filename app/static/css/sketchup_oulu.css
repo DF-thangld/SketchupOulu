@@ -546,8 +546,8 @@ dl.form>dd input.long {
 
 dl.form>dd textarea {
 	width: 100%;
-	height: 200px;
-	min-height: 200px
+	height: 50px;
+	min-height: 30px
 }
 
 dl.form>dd textarea.short {
@@ -13782,7 +13782,6 @@ svg.octicon, svg.mega-octicon {
 }
 .commenterImage img {
     width:100%;
-    border-radius:50%;
 }
 .commentText p {
     margin:0;
