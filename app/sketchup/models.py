@@ -1,6 +1,8 @@
 import datetime
 import json
 
+from flask.ext.babel import format_datetime
+
 from app import db
 from app import utilities
 import sqlalchemy
@@ -63,7 +65,7 @@ class BuildingModel(db.Model):
                 'name': self.name,
                 'owner': owner,
                 'comments': comments,
-                'created_time': self.created_time.isoformat(),
+                'created_time': format_datetime(self.created_time),
                 'data_file': self.data_file,
                 'file_type': self.file_type,
                 'addition_information': json.loads(self.addition_information),

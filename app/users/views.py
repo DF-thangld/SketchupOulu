@@ -48,11 +48,21 @@ def login():
         if form.validate():
             user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
 
-            if user.banned == 1:
+            
+            # we use werzeug to validate user's password
+            if user is None:
+                errors.append(gettext('Wrong email or password'))
+                return render_template("users/login.html", form=form, errors=errors)
+            elif user and not check_password_hash(user.password, form.password.data):
+                user.last_login_attempt = datetime.datetime.now()
+                user.login_attempts += 1
+                db.session.commit()
+                errors.append(gettext('Wrong email or password'))
+                return render_template("users/login.html", form=form, errors=errors)
+            elif user and check_password_hash(user.password, form.password.data) and user.banned == 1:
                 errors.append(gettext('The account was banned, please contact an admin for more information'))
                 return render_template("users/login.html", form=form, errors=errors)
-            # we use werzeug to validate user's password
-            if user and check_password_hash(user.password, form.password.data):
+            elif user and check_password_hash(user.password, form.password.data):
                 # the session can't be modified as it's signed,
                 # it's a safe place to store the user id
                 session['user_id'] = user.id
@@ -69,18 +79,6 @@ def login():
                 cookie_value = str(user.id) + '|' + user_session.token
                 response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
                 return response
-            elif user and not check_password_hash(user.password, form.password.data):
-                user.last_login_attempt = datetime.datetime.now()
-                user.login_attempts += 1
-
-                #TODO: check and maybe banned user
-
-                db.session.commit()
-                errors.append(gettext('Wrong email or password'))
-                return render_template("users/login.html", form=form, errors=errors)
-            else:
-                errors.append(gettext('Wrong email or password'))
-                return render_template("users/login.html", form=form, errors=errors)
         else:
             for error in form.email.errors:
                 errors.append(error)

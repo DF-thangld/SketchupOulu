@@ -7,3 +7,4 @@ validate_email
 flask-uploads
 Flask-Babel
 Flask-Testing
+flipflop==1.0

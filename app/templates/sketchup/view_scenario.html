@@ -15,13 +15,15 @@ init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}',
 init();
 animate();
 get_comments('scenario', '{{ scenario.id }}', 1, 'scenario_comment_panel');
-
+$('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_model = false;});
 {% endblock %}
 
 {% block js_script %}
 //run before load
 
-var is_loading = true;
+var is_loading = true
+var mouse_on_model = false;
+
 var building_models = [];
 
 
@@ -33,7 +35,6 @@ var BLOCK_SIZE = 50;
 var MOVING_SPEED = 10;
 var DEFAULT_HEIGHT = 1000;
 var DEFAULT_DISTANCE = 100;
-
 
 
 // threejs variables
@@ -389,28 +390,34 @@ function onDocumentMouseDown( event )
 
 function onDocumentKeyDown(event)
 {
-	switch ( event.keyCode ) {
+	if (mouse_on_model)
+	{
+		event.preventDefault();
+		switch ( event.keyCode ) {
 
-		case 16: isShiftDown = true; break; //shift, delete mode with click
-		case 38: move_forward = true; break; // up
-		case 40: move_backward = true; break; // down
-		case 37: move_left = true; break; // left
-		case 39: move_right = true; break; // right
-		case 87: move_up = true; break; // w
-		case 83: move_down = true; break; // s
-		//case 65: targetMoveLeft = true; break; // a
-		//case 68: targetMoveRight = true; break; // d
-		
-		case 90: is_rotating = true; break; // z
+			case 16: isShiftDown = true; break; //shift, delete mode with click
+			case 38: move_forward = true; break; // up
+			case 40: move_backward = true; break; // down
+			case 37: move_left = true; break; // left
+			case 39: move_right = true; break; // right
+			case 87: move_up = true; break; // w
+			case 83: move_down = true; break; // s
+			//case 65: targetMoveLeft = true; break; // a
+			//case 68: targetMoveRight = true; break; // d
+			
+			case 90: is_rotating = true; break; // z
 
-		//case 78: chooseModel=1;//n choose next model
-		//case 77: chooseModel=-1;//m choose previous model
+			//case 78: chooseModel=1;//n choose next model
+			//case 77: chooseModel=-1;//m choose previous model
 
+		}
 	}
 }
 
 function onDocumentKeyUp(event)
 {
+	if (mouse_on_model)
+		event.preventDefault();
 	switch ( event.keyCode ) {
 
 		case 16: isShiftDown = false; break; //shift
@@ -573,7 +580,8 @@ function animate() {
 function render() 
 {
 	{% if can_edit %}
-	if (move_forward){
+	if (move_forward)
+	{
 		switch(current_view)
 		{
 			case 0: camera.position.z += MOVING_SPEED; break;

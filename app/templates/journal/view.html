@@ -22,7 +22,7 @@
         {% if journal.last_edited_user %}
         <div style="float:right">Last edited by {{ journal.last_edited_user.username }} at {{ journal.last_edited_time }}</div>
         {% endif %}
-        {% if g.user.is_admin() %}
+        {% if g.user and g.user.is_admin() %}
         <div style="float:left;"><a href="{{ url_for('admin.edit_journal', journal_id=journal.id) }}">Edit journal</a></div>
         {% endif %}
         <div style="clear:both;"></div>
