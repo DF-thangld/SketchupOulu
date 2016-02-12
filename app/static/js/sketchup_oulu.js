@@ -352,6 +352,8 @@ function load_model(file_type, directory, filename, addition_information, object
             }, 50);
             return;
         }
+		else if (loaded_objects[unique_id] == false)
+			return;
         var new_object = loaded_objects[unique_id].clone();
 
         new_object.scale.x = new_object.scale.y = new_object.scale.z = addition_information.size;
@@ -391,7 +393,7 @@ function load_model(file_type, directory, filename, addition_information, object
                 if (onload !== undefined)
                     onload(object);
             }, function(){},
-        function(){});
+        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
     }
     else if (file_type == 'obj')
     {
@@ -419,7 +421,7 @@ function load_model(file_type, directory, filename, addition_information, object
                         onload(object);
                 },
                 function(){},
-                function(){});
+                function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
         }
         catch(err) {console.log(err.message);}
     }
@@ -446,7 +448,7 @@ function load_model(file_type, directory, filename, addition_information, object
                     onload(dae);
             },
             function(){},
-            function(){});
+            function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
         }
         catch(err) {console.log(err.message);}
 

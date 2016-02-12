@@ -2,6 +2,7 @@ import json
 import datetime
 import zipfile
 import os
+import shutil
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 from werkzeug import check_password_hash, generate_password_hash
@@ -530,12 +531,9 @@ def add_building_model():
     else:
         addition_information = ''
         name = request.form.get('name', '')
-        file_type = request.form.get('file_type', '')
 
         if name.strip() == '':
             errors.append('Scenario name is required')
-        if file_type.strip() == '':
-            errors.append('File type is required')
         if request.files['data_file'].filename == '':
             errors.append('Model file is required')
         if len(errors) > 0:
@@ -543,18 +541,73 @@ def add_building_model():
 
         uploaded_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
         data_file = uploaded_file['filename']
+        if os.stat(os.path.join(app_dir, 'static/models/building_models', data_file)).st_size >= 1024*1024*10:
+            errors.append('File too big, max file size is 10MB')
+            os.remove(os.path.join(app_dir, 'static/models/building_models', data_file))
+            return render_template("users/add_building_model.html", errors=errors), 400
         #check if file type is zip => unzip it
         if uploaded_file['extension'] == 'zip':
+
+            tmp = data_file
+
             zip_ref = zipfile.ZipFile(os.path.join(app_dir, 'static/models/building_models', data_file), 'r')
-            zip_ref.extractall(os.path.join(app_dir, 'static/models/building_models'))
+            zip_ref.extractall(os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
             zip_ref.close()
-            os.rename(os.path.join(app_dir, 'static/models/building_models', uploaded_file['original_filename']), os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
-            #TODO: searching the unzipped files for fail-safe human errors with file type
-            addition_information = {'original_filename': uploaded_file['original_filename'],
+            #os.rename(os.path.join(app_dir, 'static/models/building_models', uploaded_file['original_filename']), os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension']))
+            zipped_dir = os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension'])
+
+            #check if inside of the zip is a dir of contain file, if contain only 1 dir => move file from inside that dir outside
+            tmp_files = os.listdir(zipped_dir)
+            if len(tmp_files) == 1 and not os.path.isfile(os.path.join(zipped_dir, tmp_files[0])): #contain only 1 dir
+                inside_files = os.listdir(os.path.join(zipped_dir, tmp_files[0]))
+                new_name = utilities.generate_random_string(50)
+                os.rename(os.path.join(zipped_dir, tmp_files[0]), os.path.join(zipped_dir, new_name))
+                for file in inside_files:
+                    try:
+                        shutil.move(os.path.join(zipped_dir, new_name, file), os.path.join(zipped_dir, file))
+                    except:
+                        pass
+                try:
+                    shutil.rmtree(os.path.join(zipped_dir, new_name)) #delete unzipped folder
+                except:
+                    pass
+
+
+            files = [f for f in os.listdir(zipped_dir) if os.path.isfile(os.path.join(zipped_dir, f))]
+            important_file_index = -1
+            important_file_name = ''
+            file_index = -1
+            for file in files:
+                filename_parts = file.split('.')
+                current_filename = filename_parts[0]
+                for i in range(1, len(filename_parts)-1):
+                    current_filename += '.' + filename_parts[i]
+                extension = filename_parts[len(filename_parts)-1].lower()
+                os.rename(os.path.join(zipped_dir, file), os.path.join(zipped_dir, current_filename+'.'+extension))
+                if important_file_index < 0:
+                    file_index += 1
+                    if extension in ['dae', 'obj']:
+                        important_file_name = current_filename
+                        important_file_index = file_index
+                        file_type = extension
+
+            if important_file_index < 0: # user uploaded unrecognized file
+                errors.append('Unrecognized model file format')
+                os.remove(os.path.join(app_dir, 'static/models/building_models', data_file))
+                try:
+                    shutil.rmtree(os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension'])) #delete unzipped folder
+                except:
+                    pass
+                return render_template("users/add_building_model.html", errors=errors), 400
+            if file_type == 'obj': # important file is obj inside a zipped => objmtl
+                file_type = 'objmtl'
+
+            addition_information = {'original_filename': important_file_name,
                                     'directory': uploaded_file['filename_without_extension'],
                                     'camera_x': 30, 'camera_y': 250, 'camera_z': 350,
                                     "camera_lookat_x": 31, "camera_lookat_y": 222, "camera_lookat_z": 366}
         else:
+            file_type = uploaded_file['extension']
             addition_information = {'original_filename': uploaded_file['filename_without_extension'],
                                     'directory': '',
                                     'camera_x': 30, 'camera_y': 250, 'camera_z': 350,

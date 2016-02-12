@@ -50,6 +50,7 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
     for i in range(1, len(original_filename_parts)-1):
         original_filename += '.' + original_filename_parts[i]
     file_extension = original_filename_parts[len(original_filename_parts)-1]
+    file_extension = file_extension.lower()
     if generate_filename:
         filename_without_extension = utilities.generate_random_string(50)
         filename = filename_without_extension + '.' + file_extension

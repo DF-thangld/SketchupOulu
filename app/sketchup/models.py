@@ -171,6 +171,7 @@ class CommentTopic(db.Model):
     created_time = db.Column(db.DateTime)
     is_suggestion = db.Column(db.SmallInteger, default=0)
     comment_type = db.Column(db.String(20))
+    comments = db.relationship("Comment", cascade="delete")
     total_page = 0
     current_page = 0
 

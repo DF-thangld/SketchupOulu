@@ -3,7 +3,7 @@
 
 {% endblock %}
 {% block menu %}
-	{% include 'user_menu.html' %}
+	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block onload_script %}
@@ -12,6 +12,39 @@
 {% endblock %}
 
 {% block js_script %}
+function validate_data()
+{
+    $('#errors_panel').html('');
+    var errors = [];
+    var file_input = document.getElementById('data_file');
+    if ($('#name').val().trim() == '')
+        errors.push('Model name is required');
+    if (!file_input.files[0])
+    {
+        errors.push("Model file is required");
+    }
+    if (file_input.files[0] && file_input.files[0].size >= 1024*1024*10)
+    {
+        errors.push("File too big, max file size is 10MB");
+    }
+    if (errors.length > 0)
+    {
+        var error_content = '';
+        error_content += '<div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">';
+        error_content += '      <div class="container">';
+        error_content += '      There were problems creating your scenario:';
+        for (var i=0; i < errors.length; i++)
+        {
+            error_content += '              <div>- ' + errors[i] + '</div>';
+        }
+
+        error_content += '      </div>';
+        error_content += '</div>';
+        $('#errors_panel').html(error_content);
+        return false;
+    }
+    return true;
+}
 {% endblock %}
 
 {% block main_content %}
@@ -27,11 +60,9 @@
 
 		<form accept-charset="UTF-8" action="{{ url_for('users.add_building_model') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
-			method="post" enctype="multipart/form-data">
-			<div style="margin: 0; padding: 0; display: inline">
-			</div>
-
-           {% if errors|length > 0 %}
+			method="post" enctype="multipart/form-data" onsubmit="return validate_data();">
+            <div id="errors_panel">
+            {% if errors|length > 0 %}
             <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
                   There were problems creating your scenario:
@@ -41,9 +72,10 @@
                   </div>
             </div>
             {% endif %}
+            </div>
 			<dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="name">Model name</label>
+					<label autocapitalize="off" autofocus="autofocus" for="name">Model name*</label>
 				</dt>
 				<dd>
                     <input type="text" id="name" name="name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ request.form.get('name', '') }}">
@@ -51,19 +83,7 @@
 			</dl>
             <dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="name">File type</label>
-				</dt>
-				<dd>
-                    <select class="form-control" name="file_type" id="file_type">
-                        <option value="obj" {% if request.form.get('file_type')=='obj' %}selected{% endif %}>Wavefront .obj file</option>
-                        <option value="objmtl" {% if request.form.get('file_type')=='objmtl' %}selected{% endif %}>Wavefront .obj file with materials</option>
-                        <option value="dae" {% if request.form.get('file_type')=='dae' %}selected{% endif %}>COLLADA .dae file with materials</option>
-                    </select>
-				</dd>
-			</dl>
-            <dl class="form">
-				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="data_file">Data file</label>
+					<label autocapitalize="off" autofocus="autofocus" for="data_file">Data file (max file size: 10MB)*</label>
 				</dt>
 				<dd>
                     <input type="file" name="data_file" id="data_file">

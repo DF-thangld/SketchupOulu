@@ -7,4 +7,6 @@ Include
 Lib
 Scripts
 pip-selfcheck.json
+python2
+python2.7
 *.pyc
