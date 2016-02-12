@@ -264,7 +264,7 @@ function redraw_scenario_ground(current_scene)
 	current_scene.add( plane );
 }
 
-function init_scene(information, current_scene)
+function init_scene(information, current_scene, on_model_loaded)
 {
     WORLD_SIZE = 1000;
     for (var model_id in information)
@@ -276,7 +276,8 @@ function init_scene(information, current_scene)
                         model_path + model.directory + '/',
                         model.original_filename,
                         model,
-                        current_scene);
+                        current_scene,
+						on_model_loaded);
         }
         else if (model_id == 'size')
         {

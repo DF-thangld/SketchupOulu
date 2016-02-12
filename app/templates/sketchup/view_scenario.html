@@ -168,6 +168,7 @@ function switchMode(i)
 
 function onDocumentMouseMove(event){
 	event.preventDefault();
+    console.log();
 	
 	var x = event.pageX - $('#ModelWindow').offset().left;
 	var y = event.pageY - $('#ModelWindow').offset().top;
@@ -481,19 +482,9 @@ function init()
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
 	//pre-defined objects
-    init_scene(sceneObjects, scene);
-    {% if can_edit %}
-    manager.onLoad = function()
-    {
-        for (var i=0; i < scene.children.length; i++)
-        {
-            var model = scene.children[i];
-            if (model.name.substring(0, 6) == 'model_')
-                objects.push(model);
-        }
-        console.log(objects);
-    }
-    {% endif %}
+    init_scene(sceneObjects, scene, function(model){
+		objects.push(model);
+	});
 
 	//document
 	//container = document.createElement( 'div' );
