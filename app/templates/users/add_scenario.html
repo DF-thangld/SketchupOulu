@@ -265,8 +265,11 @@ function switchMode(i)
 function onDocumentMouseMove(event){
 	event.preventDefault();
 	
+	
+    
 	var x = event.pageX - $('#ModelWindow').offset().left;
 	var y = event.pageY - $('#ModelWindow').offset().top;
+
 	var div_width =document.getElementById("ModelWindow").clientWidth;
 	var div_height=document.getElementById("ModelWindow").clientHeight;
 	
@@ -721,7 +724,12 @@ function before_submit()
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
                     </div>
-					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
+                   
+					<div style="width:80%;height:500px; float:right" id="ModelWindow"></div>
+                     <div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
+						<span id="metric">100m</span>
+					</div>
                     <div style="clear:both"></div>
                     <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
                         <!-- Wrapper for slides -->

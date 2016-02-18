@@ -121,8 +121,16 @@ function init()
 	//render
 	renderer.render( scene, camera);
     controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.addEventListener( 'change', controlsChange );
 }
+function controlsChange() {
 
+	var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
+    console.debug( metric );
+    
+    document.getElementById("metric").innerHTML=metric +"m";
+
+}
 // change window size
 function onWindowResize()
 {
@@ -289,11 +297,17 @@ function render()
 
                 <div id="scenario_content">
                     <input type="hidden" id="scenario_id" value="" />
-
                     <div style="width:100%;height:500px;border:1px solid black;" id="ModelWindow">
+                    	<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
+						<span id="metric">100m</span>
+						</div>
                     </div>
+                    
+					
                 </div>
-                <div id="scenario_comment_panel"></div>
+                
+                <div id="scenario_comment_panel" ></div>
             </div>
         </div>
 
