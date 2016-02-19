@@ -32,8 +32,6 @@ var DEFAULT_DISTANCE = 100;
 // threejs variables
 var container;
 var camera, scene, renderer,controls;
-//var  gui = new dat.GUI();
-//var controlPanel;//a list contains buttons and preview pictures
 var plane;
 
 // keyboard control variables
@@ -193,7 +191,8 @@ function init()
 	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
 	geometry.rotateX( - Math.PI / 2 );
 
-	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+	//plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( ) );
 	scene.add( plane );
 	
 	// add keyboard events to mode
@@ -259,7 +258,32 @@ function switchMode(i)
 		case 1:{
 			break;
 		}
+		case 7:{
+			var preview = document.getElementById( "preview" );
+			var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+			var reader  = new FileReader();
+			reader.onloadend = function () {
+				preview.src = reader.result;
+				
+				var loader = new THREE.TextureLoader();
+				loader.load(reader.result,function(texture){
+					var geometry = new THREE.SphereGeometry( 200, 25, 200 );
+					var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
+					var mesh = new THREE.Mesh( geometry, material );
+					plane.material= material;
+				} );
+			}
+
+			if (file) {
+				reader.readAsDataURL(file); //reads the data as a URL
+			} else {
+				preview.src = "";
+			}
+			break;
+		}
+
 	}
+	
 }
 
 function onDocumentMouseMove(event){
@@ -723,6 +747,9 @@ function before_submit()
                     	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
+                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')"><br>
+							<img id="preview" src="" height="50" alt="Image preview...">
+                    	</div>
                     </div>
                    
 					<div style="width:80%;height:500px; float:right" id="ModelWindow"></div>
