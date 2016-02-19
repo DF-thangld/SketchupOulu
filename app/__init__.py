@@ -1,6 +1,7 @@
 import os
 import sys
 import datetime
+import logging
 
 from flask import Flask, render_template, g, session, request, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -16,6 +17,7 @@ import app.utilities as utilities
 
 app = Flask(__name__)
 app.config.from_object('config')
+
 babel = Babel(app)
 
 app_dir = os.path.dirname(os.path.realpath(__file__))
@@ -127,6 +129,10 @@ def not_found(error):
 @app.route('/')
 def index():
     return render_template('homepage.html'), 200
+
+@app.route('/raise_error')
+def raise_error():
+    raise TypeError('raise choi test loi')
 
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule

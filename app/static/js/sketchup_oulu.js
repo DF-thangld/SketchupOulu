@@ -128,7 +128,7 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
                 comment_panel_html += '    <div class="commenterImage">';
                 comment_panel_html += '        <a href="' + base_url + 'users/' + comment.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:50px;max-height:50px;" src="' + profile_url + comment.owner.profile_picture + '"></a>';
                 comment_panel_html += '    </div>';
-                comment_panel_html += '    <div class="commentText">';
+                comment_panel_html += '    <div class="commentText"  style="display: block;">';
                 comment_panel_html += '        <p id="comment_content_' + comment.id.toString() + '">' + comment.content + '</p> ';
                 comment_panel_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + comment.owner.username + '/profile/">' + comment.owner.username + '</a> on ' + comment.created_time + '</span>';
                 if (comment.can_edit)

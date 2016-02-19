@@ -1,6 +1,5 @@
 import datetime
 import json
-
 from flask.ext.babel import format_datetime
 
 from app import db
@@ -218,19 +217,21 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     topic = db.relationship("CommentTopic")
-    content = db.Column(db.String(1000))
+    content = db.Column(db.String(5000))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     owner = db.relationship("User", primaryjoin="Comment.owner_id == User.id")
     created_time = db.Column(db.DateTime)
+    description = db.Column(db.String(1000))
     last_edited_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     last_edited_user = db.relationship("User", primaryjoin="Comment.last_edited_user_id == User.id")
     last_edited_time = db.Column(db.DateTime)
 
-    def __init__(self, owner, topic, content):
+    def __init__(self, owner, topic, content, description=''):
         self.owner = owner
         self.topic = topic
         self.content = content
         self.created_time = datetime.datetime.now()
+        self.description = description
 
     def to_dict(self, include_owner=False, include_topic=False):
         owner = None
@@ -244,6 +245,7 @@ class Comment(db.Model):
                 'owner': owner,
                 'topic': topic,
                 'created_time': utilities.format_datetime(self.created_time),
+                'description': self.description,
                 'content': self.content}
 
     def __repr__(self):

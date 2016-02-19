@@ -47,9 +47,8 @@ def login():
     # make sure data are valid, but doesn't validate password is right
     if form.is_submitted():
         if form.validate():
-            user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
+            user = User.query.filter_by(email=form.email.data.lower()).first()  # @UndefinedVariable
 
-            
             # we use werzeug to validate user's password
             if user is None:
                 errors.append(gettext('Wrong email or password'))
@@ -111,7 +110,7 @@ def register():
                 return render_template("users/register.html", form=form, errors=errors)
 
             # Insert the record in our database and commit it
-            user = User(username=form.name.data, email=form.email.data,
+            user = User(username=form.name.data.lower(), email=form.email.data,
                         password=generate_password_hash(form.password.data))
             db.session.add(user)
             db.session.commit()
@@ -317,6 +316,7 @@ def get_comments():
             comment['can_edit'] = True
         else:
             comment['can_edit'] = False
+        comment['content'] = comment['content'].replace('\n', '<br />')
 
     return json.dumps({'comments': comments,
                        'total_page': main_object.comment_topic.total_page,
@@ -616,7 +616,7 @@ def add_building_model():
 
         building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
         building_model.file_type = file_type
-        building_model.addition_information = json.dumps(addition_information)
+        building_model.addition_information = json.dumps(addition_information, ensure_ascii=False)
         db.session.add(building_model)
         db.session.commit()
         return redirect(url_for('sketchup.view_building_model', id=building_model.id))
