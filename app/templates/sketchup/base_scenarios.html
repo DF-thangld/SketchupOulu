@@ -125,8 +125,10 @@ function init()
 }
 function controlsChange() {
 
-	var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
-    console.debug( metric );
+	//var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
+    //console.debug( metric );
+    
+    var metric= Math.ceil( camera.position.y/10 );
     
     document.getElementById("metric").innerHTML=metric +"m";
 
