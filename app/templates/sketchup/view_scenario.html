@@ -61,6 +61,10 @@ var raycaster = new THREE.Raycaster(); // create once and reuse
 var mouse = new THREE.Vector2(); // create once and reuse
 var isShiftDown = false;
 
+//whether intersect with plane or objects
+var intersectObjects=[];
+var IsOnTop=false;
+
 
 //all the vasiable objects in the scene
 var objects = [];//different objects may use same models
@@ -251,7 +255,8 @@ function onDocumentMouseMove(event){
 			//threejs raycast click detection not working on loaded 3dObject
 			//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
 			//var intersects = raycaster.intersectObjects( objects, true );	
-			var intersects = raycaster.intersectObjects( [plane], true );
+			//var intersects = raycaster.intersectObjects( [plane], true );
+			var intersects = raycaster.intersectObjects( intersectObjects, true );
 			if ( intersects.length > 0 )
 			{
 
