@@ -163,6 +163,44 @@ function switchMode(i)
 		case 1:{
 			break;
 		}
+		case 7:{
+			var preview = document.getElementById( "preview" );
+			var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+			var reader  = new FileReader();
+			reader.onloadend = function () {
+				preview.src = reader.result;
+				
+				var loader = new THREE.TextureLoader();
+				loader.load(reader.result,function(texture){
+					var geometry = new THREE.SphereGeometry( 200, 25, 200 );
+					var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
+					var mesh = new THREE.Mesh( geometry, material );
+					plane.material= material;
+				} );
+			}
+
+			if (file) {
+				reader.readAsDataURL(file); //reads the data as a URL
+			} else {
+				preview.src = "";
+			}
+			break;
+		}
+		case 8:{
+			
+			if(IsOnTop){
+				//change to build on ground mode
+				IsOnTop=false;
+				intersectObjects=[plane];
+				document.getElementById("buildWhere").innerHTML="Build On Top";
+			}else{
+				//change to build on top mode
+				IsOnTop=true;
+				intersectObjects=objects;
+				document.getElementById("buildWhere").innerHTML="Build On Ground";
+			}
+			break;
+		}
 	}
 }
 
@@ -572,7 +610,9 @@ function animate() {
 function render() 
 {
 	{% if can_edit %}
-	/*if (move_forward)
+	var cameraMove = false;// camera is moving, then need to calculate the metric
+	/*
+	if (move_forward)
 	{
 		switch(current_view)
 		{
@@ -581,6 +621,7 @@ function render()
 			case 2: camera.position.z -= MOVING_SPEED; break;
 			case 3: camera.position.x += MOVING_SPEED; break;
 		}
+		cameraMove =true;
 	}
 	if (move_backward)
 	{
@@ -591,6 +632,7 @@ function render()
 			case 2: camera.position.z += MOVING_SPEED; break;
 			case 3: camera.position.x -= MOVING_SPEED; break;
 		}
+		cameraMove =true;
 	}
 	if (move_left)
 	{
@@ -601,6 +643,7 @@ function render()
 			case 2: camera.position.x -= MOVING_SPEED; break;
 			case 3: camera.position.z -= MOVING_SPEED; break;
 		}
+		cameraMove =true;
 	}
 	if (move_right)
 	{
@@ -611,14 +654,17 @@ function render()
 			case 2: camera.position.x += MOVING_SPEED; break;
 			case 3: camera.position.z += MOVING_SPEED; break;
 		}
+		cameraMove =true;
 	}
 	if (move_up)
 	{
 		camera.position.y += MOVING_SPEED;
+		cameraMove =true;
 	}
 	if (move_down)
 	{
 		camera.position.y -= MOVING_SPEED;
+		cameraMove =true;
 	}*/
 	
 	// 2.2 rotating
@@ -643,8 +689,18 @@ function render()
 		
 		// only rotate one time per click
 		is_rotating = false;
+		cameraMove =true;
 		
 	}
+	if(cameraMove){
+		//var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
+		var metric= Math.ceil( camera.position.y/10 );
+    	//console.debug( metric );
+    
+    	document.getElementById("metric").innerHTML=metric +"m";
+	}
+	
+	
 	for (i=0; i < building_models.length; i++)
     {
         var building_model = building_models[i];
@@ -924,8 +980,17 @@ function render()
                     	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
+                    	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
+                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
+							<img id="preview" src="" height="35" alt="Image preview...">
+						</div>
+						
                     </div>
 					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
+					<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
+						<span id="metric">100m</span>
+					</div>
                     <div style="clear:both"></div>
                     <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
                         <!-- Wrapper for slides -->

@@ -308,7 +308,7 @@ function switchMode(i)
 }
 
 function onDocumentMouseMove(event){
-	event.preventDefault();
+	//event.preventDefault();
 	
 	
     
@@ -687,7 +687,7 @@ function render()
 
 	if(cameraMove){
 		//var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
-		var metric= Math.ceil( camera.position.y );
+		var metric= Math.ceil( camera.position.y/10 );
     	//console.debug( metric );
     
     	document.getElementById("metric").innerHTML=metric +"m";
@@ -786,8 +786,8 @@ function before_submit()
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
                     	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')"><br>
-							<img id="preview" src="" height="50" alt="Image preview...">
+                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
+							<img id="preview" src="" height="35" alt="Image preview...">
                     	</div>
                     </div>
                    

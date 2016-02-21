@@ -308,7 +308,7 @@ function switchMode(i)
 }
 
 function onDocumentMouseMove(event){
-	event.preventDefault();
+	//event.preventDefault();
 	
 	
     
@@ -786,13 +786,13 @@ function before_submit()
                     	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
                     	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
                     	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')"><br>
-							<img id="preview" src="" height="50" alt="Image preview...">
+                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
+							<img id="preview" src="" height="35" alt="Image preview...">
                     	</div>
                     </div>
                    
 					<div style="width:80%;height:500px; float:right" id="ModelWindow"></div>
-                     <div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+					<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
 						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
 						<span id="metric">100m</span>
 					</div>
