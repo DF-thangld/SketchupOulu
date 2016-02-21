@@ -34,6 +34,9 @@ def view_scenario():
 
     return render_template("sketchup/view_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
+
+
+
 @mod.route('/get_scenario/')
 def get_scenario():
     errors = []

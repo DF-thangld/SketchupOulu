@@ -536,6 +536,7 @@ function init()
 	{% if not can_edit %}
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	{% endif %}
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	//render
 	renderer.render( scene, camera);
@@ -563,7 +564,7 @@ function animate() {
 	{% if not can_edit %}
 	controls.update();
 	{% endif %}
-	
+	controls.update();
 	render();
 
 }
@@ -571,7 +572,7 @@ function animate() {
 function render() 
 {
 	{% if can_edit %}
-	if (move_forward)
+	/*if (move_forward)
 	{
 		switch(current_view)
 		{
@@ -618,7 +619,7 @@ function render()
 	if (move_down)
 	{
 		camera.position.y -= MOVING_SPEED;
-	}
+	}*/
 	
 	// 2.2 rotating
 	if (is_rotating)
@@ -749,6 +750,44 @@ function render()
     }
 {% endif %}
 
+{% if g.user and g.user.username == scenario.owner.username %}
+	function display_suggest_form()
+	{
+		var box = bootbox.dialog({
+                title: "Suggest scenario to admin",
+                message: '<div class="row">  ' +
+                    '<div class="col-md-12"> ' +
+                    '<dl class="form">' +
+					'	<dt class="input-label">' +
+					'		<label autocapitalize="off" for="title">Suggest content</label>' +
+					'	</dt>' +
+					'	<dd>' +
+		            '       <textarea id="suggest_content" style="width: 100%; height: 94px; overflow-y: hidden; margin-top: 0px; margin-bottom: 15px;"></textarea>' +
+					'	</dd>' +
+					'</dl>' +
+                    '</div>  </div>',
+                buttons: {
+                    success: {
+                        label: "Save",
+                        className: "btn-success",
+                        callback: function () {
+                            window.alert($('#suggest_content').val());
+                        }
+                    }
+                }
+            }
+        );
+        box.on("shown.bs.modal", function() {
+		  $('#suggest_content').autoHeight();
+		});
+	}
+	
+	function do_suggest_scenario()
+	{
+	
+	}
+{% endif %}
+
 {% if g.user %}
     function clone_scenario()
     {
@@ -861,9 +900,10 @@ function render()
 				{% if can_edit %}
                 <button class="btn btn-warning" onclick="save_scenario_content();">Save scenario</button>
 				{% endif %}
+				{% if g.user and g.user.username == scenario.owner.username %}
+                <button class="btn btn-warning" onclick="display_suggest_form();">Suggest scenario to admin</button>
+				{% endif %}
 				</div>
-				
-				
             </div>
             <div style="clear:both"></div>
             <input type="hidden" name="addition_information" value="" id="addition_information"/>

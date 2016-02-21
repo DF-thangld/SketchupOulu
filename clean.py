@@ -39,6 +39,8 @@ for file in files:
             except:
                 pass
 
+
+
 print('Delete files:')
 for file in deleted_files:
     print(file)

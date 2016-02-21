@@ -11,7 +11,11 @@ def before_request():
     if session.get('user_id'):
         user = User.query.filter_by(id=session.get('user_id')).first()
         g.user = user
-
+        if 'locale' in session and g.user.default_locale != session['locale']:
+            g.user.default_locale = session['locale']
+            db.session.commit()
+        elif 'locale' not in session:
+            session['locale'] = g.user.default_locale 
     else:
         #check cookie for session
         session_id = request.cookies.get('session_id')

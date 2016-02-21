@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-30 08:56+0200\n"
-"PO-Revision-Date: 2016-01-30 08:57+0200\n"
+"POT-Creation-Date: 2016-02-20 14:33+0200\n"
+"PO-Revision-Date: 2016-02-20 14:34+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
@@ -19,31 +19,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
 
+#: app/static/js/sketchup_oulu.js:139
+msgid "By <a href=\"users//profile/\"></a> on "
+msgstr "By <a href=\"users//profile/\"></a> kello on "
+
+#: app/static/js/sketchup_oulu.js:142
+msgid "Edit"
+msgstr "Muokata"
+
+#: app/static/js/sketchup_oulu.js:142
+msgid "Delete"
+msgstr ""
+
 #: app/templates/users/login.html:56
 msgid "Create an account"
-msgstr "Luo tili"
+msgstr "Poistaa"
 
-#: app/users/views.py:49 app/users/views.py:168
-msgid "The account was banned, please contact an admin for more information"
-msgstr "Tili kiellettiin, ota yhteyttä admin lisätietoja"
-
-#: app/users/views.py:71 app/users/views.py:74
+#: app/users/views.py:54 app/users/views.py:60
 msgid "Wrong email or password"
-msgstr "Väärä sähköpostiosoite tai salasana"
+msgstr ""
 
-#: app/users/views.py:99
+#: app/users/views.py:63 app/users/views.py:180
+msgid "The account was banned, please contact an admin for more information"
+msgstr ""
+
+#: app/users/views.py:105
 msgid "Duplicate email address"
-msgstr "Monista sähköpostiosoite"
+msgstr ""
 
-#: app/users/views.py:101
+#: app/users/views.py:107
 msgid "Duplicate username"
-msgstr "Monista Käyttäjätunnus"
+msgstr ""
 
-#: app/users/views.py:153
-msgid "[SketchupOulu] Your new password"
-msgstr "[SketchupOulu] Uusi salasana"
+#: app/users/views.py:159
+msgid "Finally, support has come to help you :)<br /><br />"
+msgstr ""
+
+#: app/users/views.py:160
+#, python-format
+msgid "Your new password: <b>%(new_password)s</b><br /><br />"
+msgstr ""
+
+#: app/users/views.py:161
+msgid "Thanks,<br />"
+msgstr ""
+
+#: app/users/views.py:162
+msgid "Sketchup Oulu team"
+msgstr ""
 
 #: app/users/views.py:164
+msgid "[SketchupOulu] Your new password"
+msgstr ""
+
+#: app/users/views.py:176
 msgid "Account not found"
-msgstr "Tili ei löytynyt"
+msgstr ""
 

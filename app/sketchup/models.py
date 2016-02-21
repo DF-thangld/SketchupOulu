@@ -148,9 +148,9 @@ class Scenario(db.Model):
         return {'id': self.id,
                 'name': self.name,
                 'owner': owner,
-                'created_time': self.created_time.isoformat(),
+                'created_time': format_datetime(self.created_time),
                 'last_edited_user': last_edited_user,
-                'last_edited_time': utilities.format_datetime(self.last_edited_time),
+                'last_edited_time': format_datetime(self.last_edited_time),
                 'data_file': self.data_file,
                 'addition_information': self.addition_information,
                 'description': self.description,
@@ -206,7 +206,7 @@ class CommentTopic(db.Model):
         return {'id': self.id,
                 'title': self.title,
                 'owner': owner,
-                'created_time': self.created_time.isoformat(),
+                'created_time': format_datetime(self.created_time),
                 'comments': comments}
 
     def __repr__(self):
@@ -244,7 +244,7 @@ class Comment(db.Model):
         return {'id': self.id,
                 'owner': owner,
                 'topic': topic,
-                'created_time': utilities.format_datetime(self.created_time),
+                'created_time': format_datetime(self.created_time),
                 'description': self.description,
                 'content': self.content}
 

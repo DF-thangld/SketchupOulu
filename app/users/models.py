@@ -2,6 +2,7 @@ import datetime
 from app import db
 import app.utilities as utilities
 import app.sketchup.models as sketchup
+from flask.ext.babel import format_datetime
 
 user_to_group = db.Table('user_to_group',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
@@ -22,6 +23,7 @@ class User(db.Model):
     birthdate = db.Column(db.DateTime)
     profile_picture = db.Column(db.String(80), default='default_profile.png')
     join_date = db.Column(db.DateTime)
+    default_locale = db.Column(db.String(10), default='fi')
 
     last_login = db.Column(db.DateTime)
     last_activity = db.Column(db.DateTime)

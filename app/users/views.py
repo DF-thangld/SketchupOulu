@@ -324,6 +324,29 @@ def get_comments():
                        'can_add_comment': can_add_comment})
 
 
+@mod.route('/suggest_scenario/<scenario_id>', methods=['POST'])
+@requires_login
+def suggest_scenario(scenario_id):
+    errors = []
+    content = request.form.get('content', '')
+    if content == '':
+        errors.append('Suggest content is required')
+        return json.dumps(errors), 400
+    
+    scenario = Scenario.query.get(object_id)
+    if scenario is None:
+        errors.append('Scenario not found')
+        return json.dumps(errors), 404
+    comment_topic = scenario.comment_topic
+    
+    new_comment = Comment(g.user, comment_topic, content)
+    new_comment.description = 'Suggest for scenario'
+    db.session.add(new_comment)
+    db.session.commit()
+
+    return json.dumps(new_comment.to_dict(include_owner=True)), 200
+
+
 @mod.route('/add_comment/', methods=['POST'])
 @requires_login
 def add_comment():
