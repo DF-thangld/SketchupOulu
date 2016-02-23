@@ -255,7 +255,8 @@ function onDocumentMouseMove(event){
 			//threejs raycast click detection not working on loaded 3dObject
 			//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
 			//var intersects = raycaster.intersectObjects( objects, true );	
-			var intersects = raycaster.intersectObjects( [plane], true );
+			//var intersects = raycaster.intersectObjects( [plane], true );
+			var intersects = raycaster.intersectObjects( intersectObjects, true );
 			if ( intersects.length > 0 )
 			{
 

@@ -149,6 +149,8 @@ function init_building_model(id, file_type, information, index)
     //move objects to global arrays
     building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
     building_renderer.render( building_scene, building_camera );
+    
+    
 }
 
 function switchMode(i) 
@@ -581,6 +583,7 @@ function init()
 	{% endif %}
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+	intersectObjects=[plane];
 	//render
 	renderer.render( scene, camera);
 }

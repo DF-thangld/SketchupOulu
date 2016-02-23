@@ -81,6 +81,8 @@ var windowRatio = 2;
 var windowWidth = 972;
 var windowHeight = 500;
 
+var stats;
+
 function init_building_model(id, file_type, information, index)
 {
     $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
@@ -189,7 +191,6 @@ function init()
 	var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
 
 	var line = new THREE.LineSegments( geometry, material );
-	intersectObjects=[line];
 	IsOnTop=false;
 	scene.add( line );
 
@@ -199,6 +200,7 @@ function init()
 
 	//plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
 	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( ) );
+	intersectObjects=[plane];
 	scene.add( plane );
 	
 	// add keyboard events to mode
@@ -225,6 +227,14 @@ function init()
 	);
 	
 	container.appendChild( renderer.domElement );
+
+
+	//
+	stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.top = ' 500px';
+	container.appendChild( stats.domElement );
+	//
 
 	//render
 	renderer.render( scene, camera);
@@ -355,9 +365,7 @@ function onDocumentMouseMove(event){
 			raycaster.setFromCamera( mouse, camera );
 
 			//threejs raycast click detection not working on loaded 3dObject
-			//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
-			//var intersects = raycaster.intersectObjects( objects, true );	
-			//var intersects = raycaster.intersectObjects( [plane], true );
+
 			var intersects = raycaster.intersectObjects( intersectObjects, true );
 			if ( intersects.length > 0 )
 			{
@@ -595,6 +603,9 @@ function animate() {
 	requestAnimationFrame( animate );
 
 	//controls.update();
+	
+	
+	stats.update();
 	
 	render();
 
