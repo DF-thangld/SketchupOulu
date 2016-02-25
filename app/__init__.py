@@ -131,9 +131,9 @@ def not_found(error):
 def index():
     return render_template('homepage.html'), 200
 
-@app.route('/raise_error')
-def raise_error():
-    raise TypeError('raise choi test loi')
+@app.route('/404')
+def page_not_found():
+    return render_template('404.html'), 404
 
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule
