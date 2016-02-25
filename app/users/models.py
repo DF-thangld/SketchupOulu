@@ -165,11 +165,12 @@ class User(db.Model):
         return '<User %r>' % (self.username)
 
 class Group(db.Model):
-
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, index=True)
     description = db.Column(db.String(200), default='')
+    users = db.relationship("User",
+                    secondary=user_to_group)
 
     def __init__(self, name='', description=''):
         self.name = name

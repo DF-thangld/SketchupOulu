@@ -157,9 +157,6 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
 
 function add_comment(comment_type, comment_id, comment_text, on_added)
 {
-    console.log(comment_type);
-    console.log(comment_id);
-    console.log(comment_text);
     comment_type = ( comment_type !== undefined ) ? comment_type : $('#comment_type').val();
     comment_id = ( comment_id !== undefined ) ? comment_id : $('#object_id').val();
     comment_text = ( comment_text !== undefined ) ? comment_text : $('#new_comment').val();

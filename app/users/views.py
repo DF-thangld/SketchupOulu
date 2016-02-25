@@ -10,7 +10,7 @@ from flask.ext.babel import gettext
 
 from app import db, send_mail, upload_file, app_dir
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
-from app.users.models import User, UserSession
+from app.users.models import User, UserSession, Group
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
@@ -333,7 +333,7 @@ def suggest_scenario(scenario_id):
         errors.append('Suggest content is required')
         return json.dumps(errors), 400
     
-    scenario = Scenario.query.get(object_id)
+    scenario = Scenario.query.get(scenario_id)
     if scenario is None:
         errors.append('Scenario not found')
         return json.dumps(errors), 404
@@ -344,6 +344,13 @@ def suggest_scenario(scenario_id):
     db.session.add(new_comment)
     db.session.commit()
 
+    #send email to admins about the suggested content
+    admin_group = Group.query.get(1)
+    admins = admin_group.users
+    admin_emails = []
+    for admin in admins:
+        admin_emails.append(admin.email)
+    send_mail(admin_emails, gettext('[SketchupOulu] New suggest for ' + scenario.name), render_template("users/suggest_scenario_email_content.html", suggest_content=content, scenario=scenario.to_dict(), user=g.user.username))
     return json.dumps(new_comment.to_dict(include_owner=True)), 200
 
 

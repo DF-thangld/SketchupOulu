@@ -1,0 +1,5 @@
+<h1>User {{ user }} send a suggest about scenario <a href="{{ url_for('sketchup.view_scenario', id=scenario.id, _external=True) }}">{{ scenario.name }}</a></h1>
+<div>
+    <b>Suggest content:</b><br/>
+    {{suggest_content}}
+</div>

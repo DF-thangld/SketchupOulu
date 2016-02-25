@@ -832,10 +832,48 @@ function render()
                     '</div>  </div>',
                 buttons: {
                     success: {
-                        label: "Save",
+                        label: "Send",
                         className: "btn-success",
-                        callback: function () {
-                            window.alert($('#suggest_content').val());
+                        callback: function ()
+						{
+                            if ($('#suggest_content').val().trim() == '')
+							{
+								window.alert('Message content is required');
+								return;
+							}
+
+							$.ajax({
+								type: "POST",
+								url: '{{url_for ('users.suggest_scenario', scenario_id=scenario.id) }}',
+								data: {'content': $('#suggest_content').val()},
+								dataType: 'json',
+								success: function(data)
+								{
+									var new_comment_html = '<li id="comment_' + data.id.toString() + '">';
+									new_comment_html += '    <div class="commenterImage">';
+									new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
+									new_comment_html += '    </div>';
+									new_comment_html += '    <div class="commentText">';
+									if (data.description != '')
+									{
+										new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
+									}
+									new_comment_html += '        <p id="comment_content_' + data.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + data.content + '</p> ';
+									new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
+									new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
+									new_comment_html += '    </div>';
+									new_comment_html += '</li>';
+
+									$('#comment_list_{{scenario.id}}').prepend(new_comment_html);
+									show_alert('alert-success', 'Suggestion sent');
+								},
+								error: function(data)
+								{
+									show_alert('alert-danger', data.responseJSON[0]);
+								}
+							});
+
+
                         }
                     }
                 }
