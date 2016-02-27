@@ -95,22 +95,7 @@ var windowHeight = 500;
 {% if can_edit %}
 
 
-function add_building_model(information)
-{
-    if (current_object != null)
-        scene.remove(current_object);
-	load_model( information.file_type,
-				'{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
-				information.original_filename,
-				{'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-				scene,
-				function(object)
-				{
-					current_object = object;
-					object.addition_information = information;
-					switchMode(1);
-				});
-}
+
 
 function init_building_model(id, file_type, information, index)
 {
@@ -224,17 +209,6 @@ function init()
 	//light
 	var ambient = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambient );
-
-	//1. build the grid
-	
-	{% if can_edit %}
-    // insert model to objects
-
-	// add keyboard events to mode
-	
-	{% else %}
-	
-	{% endif %}
 
 	// display the scene
 	if (window.WebGLRenderingContext)

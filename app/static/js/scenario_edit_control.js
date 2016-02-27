@@ -32,12 +32,15 @@ $('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_m
 function animate() 
 {
 	requestAnimationFrame( animate );
-	if (isShiftDown)
+	if (isShiftDown && (mouse_on_model || is_fullscreen))
 	{
+		control.enabled = true;
 		control.update();
 		var metric= Math.ceil( controlling_camera.position.y/10 );
     	document.getElementById("metric").innerHTML=metric +"m";
 	}
+	else
+		control.enabled = false;
 	render();
 }
 
@@ -49,6 +52,27 @@ function render()
         building_model['renderer'].render( building_model['scene'], building_model['camera'] );
     }
 	renderer.render( scene, camera );
+}
+
+function add_building_model(information)
+{
+    if (current_object != null)
+        scene.remove(current_object);
+    
+    
+    model_options = {'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0};
+    
+	load_model( information.file_type,
+				MODEL_PATH + information.directory + '/',
+				information.original_filename,
+				model_options,
+				scene,
+				function(object)
+				{
+					current_object = object;
+					object.addition_information = information;
+					switchMode(1);
+				});
 }
 
 function switchMode(i) 
@@ -108,13 +132,17 @@ function switchMode(i)
 	}
 }
 
-document.addEventListener( 'keydown', onDocumentKeyDown, false );
-document.addEventListener( 'keyup', onDocumentKeyUp, false );
-window.addEventListener( 'resize', onWindowResize, false );
-// add mouse events to mode
-document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+$( document ).ready(function()
+{
+	document.addEventListener( 'keydown', onDocumentKeyDown, false );
+	document.addEventListener( 'keyup', onDocumentKeyUp, false );
+	window.addEventListener( 'resize', onWindowResize, false );
+	// add mouse events to mode
+	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+});
+
 
 function onDocumentKeyDown(event)
 {
