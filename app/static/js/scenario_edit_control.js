@@ -13,6 +13,8 @@ var control = null;
 // variables
 var mode_index = -1;
 var actions = [];
+var redo_actions = [];
+var temp_variable = null;
 var is_fullscreen = false;
 var old_width = 0;
 var old_height = 0;
@@ -26,8 +28,11 @@ var isControlDown = false;
 function get_screen_width(){return window.innerWidth - TRIM_SCREEN_VALUE;}
 function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
 
-$('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_model = false;});
 
+$( document ).ready(function()
+{
+	$('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_model = false;});
+});
 
 function animate() 
 {
@@ -41,6 +46,7 @@ function animate()
 	}
 	else
 		control.enabled = false;
+	//console.log(isShiftDown, mouse_on_model, is_fullscreen);
 	render();
 }
 
@@ -51,13 +57,13 @@ function render()
         var building_model = building_models[i];
         building_model['renderer'].render( building_model['scene'], building_model['camera'] );
     }
-	renderer.render( scene, camera );
+	renderer.render( controlling_scene, controlling_camera );
 }
 
 function add_building_model(information)
 {
     if (current_object != null)
-        scene.remove(current_object);
+    	controlling_scene.remove(current_object);
     
     
     model_options = {'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0};
@@ -66,7 +72,7 @@ function add_building_model(information)
 				MODEL_PATH + information.directory + '/',
 				information.original_filename,
 				model_options,
-				scene,
+				controlling_scene,
 				function(object)
 				{
 					current_object = object;
@@ -75,7 +81,7 @@ function add_building_model(information)
 				});
 }
 
-function switchMode(i) 
+function switchMode(i)
 {
 	var mode = parseInt(i);
 	if(mode_index ==1 && mode!=1){// from 0 to other
@@ -132,6 +138,129 @@ function switchMode(i)
 	}
 }
 
+function undo_action(on_finish)
+{
+	action = actions.pop();
+	if (action == null)
+		return;
+	redo_actions.push(action);
+	switch(action['action'])
+	{
+		case 'MOVE':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			
+			object.position.x = action['old_value']['x'];
+			object.position.y = action['old_value']['y'];
+			object.position.z = action['old_value']['z'];
+			
+			//update modelInfos as well
+			var selected_model = sceneObjects[action['object_id']];
+			selected_model.x = action['old_value']['x'];
+			selected_model.y = action['old_value']['y'];
+			selected_model.z = action['old_value']['z'];
+			break;
+		case 'ADD_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			controlling_scene.remove(object);
+			delete sceneObjects[action['object_id']];
+			objects.splice( objects.indexOf( obj ), 1 );
+			break;
+		case 'DELETE_MODEL':
+			controlling_scene.add(action['old_value']['scene_object']);
+			sceneObjects[action['object_id']] = action['old_value']['object'];
+			objects.push(action['old_value']['scene_object']);
+			break;
+		case 'RESIZE_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			object.scale.x = action['old_value'];
+			object.scale.y = action['old_value'];
+			object.scale.z = action['old_value'];
+			sceneObjects[action['object_id']].size = action['old_value'];
+			break;
+		case 'ROTATE_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			object.rotation.x = action['old_value'].x;
+			object.rotation.y = action['old_value'].y;
+			object.rotation.z = action['old_value'].z;
+			
+			sceneObjects[action['object_id']].rotate_x = action['old_value'].x;
+			sceneObjects[action['object_id']].rotate_y = action['old_value'].y;
+			sceneObjects[action['object_id']].rotate_z = action['old_value'].z;
+			break;
+		case 'RESIZE_SCENE':
+			WORLD_SIZE = action['old_value'];
+		    controlling_scene.world_size = WORLD_SIZE;
+		    redraw_scenario_ground(controlling_scene);
+		    break;
+	}
+	
+	if (on_finish !== undefined)
+		on_finish(action);
+}
+
+function redo_action(on_finish)
+{
+	action = redo_actions.pop();
+	if (action == null)
+		return;
+	actions.push(action);
+	
+	switch(action['action'])
+	{
+		case 'MOVE':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			
+			object.position.x = action['new_value']['x'];
+			object.position.y = action['new_value']['y'];
+			object.position.z = action['new_value']['z'];
+			
+			//update modelInfos as well
+			var selected_model = sceneObjects[action['object_id']];
+			selected_model.x = action['new_value']['x'];
+			selected_model.y = action['new_value']['y'];
+			selected_model.z = action['new_value']['z'];
+			break;
+		case 'ADD_MODEL':
+			controlling_scene.add(action['new_value']['scene_object']);
+			sceneObjects[action['object_id']] = action['new_value']['object'];
+			objects.push(action['new_value']['scene_object']);
+			break;
+		case 'DELETE_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			controlling_scene.remove(object);
+			delete sceneObjects[action['object_id']];
+			objects.splice( objects.indexOf( obj ), 1 );
+			break;
+		case 'RESIZE_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			object.scale.x = action['new_value'];
+			object.scale.y = action['new_value'];
+			object.scale.z = action['new_value'];
+			sceneObjects[action['object_id']].size = action['new_value'];
+			break;
+		case 'ROTATE_MODEL':
+			var object = controlling_scene.getObjectByName(action['object_id']);
+			object.rotation.x = action['new_value'].x;
+			object.rotation.y = action['new_value'].y;
+			object.rotation.z = action['new_value'].z;
+			
+			sceneObjects[action['object_id']].rotate_x = action['new_value'].x;
+			sceneObjects[action['object_id']].rotate_y = action['new_value'].y;
+			sceneObjects[action['object_id']].rotate_z = action['new_value'].z;
+			break;
+		case 'RESIZE_SCENE':
+			WORLD_SIZE = action['new_value'];
+		    controlling_scene.world_size = WORLD_SIZE;
+		    redraw_scenario_ground(controlling_scene);
+		    break;
+	}
+	
+	if (on_finish !== undefined)
+		on_finish(action);
+}
+
+
+
 $( document ).ready(function()
 {
 	document.addEventListener( 'keydown', onDocumentKeyDown, false );
@@ -179,7 +308,7 @@ function onDocumentKeyDown(event)
 
 function onDocumentKeyUp(event)
 {
-	if (mouse_on_model)
+	if (mouse_on_model || is_fullscreen)
 		event.preventDefault();
 	switch ( event.keyCode ) 
 	{
@@ -259,8 +388,17 @@ function onDocumentMouseMove(event)
 }
 
 function onDocumentMouseUp( event ) {
-	switch(mode_index){
+	switch(mode_index)
+	{
 		case 0:{//select  -- release selected object
+			
+			//log action
+			if (selectedModel != null)
+				actions.push({	'action': 'MOVE', 
+								'object_id': selectedModel.name, 
+								'old_value': temp_variable, 
+								'new_value': {'x': selectedModel.position.x, 'y': selectedModel.position.y, 'z': selectedModel.position.z}});
+			
 			isSelect = false;
 			selectedModel = null;
 			break;
@@ -286,13 +424,14 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
 
 					//operation
-					selectedModel = scene.getObjectByName(obj.name);
+					selectedModel = controlling_scene.getObjectByName(obj.name);
+					temp_variable = {'x': selectedModel.position.x, 'y': selectedModel.position.y, 'z': selectedModel.position.z};
 					isSelect = true;
 				}
 				break;
@@ -305,7 +444,7 @@ function onDocumentMouseDown( event )
 					var temp_object=current_object.clone();
 					temp_object.name = "model_" + generate_random_string(50);
 
-					scene.add( temp_object );
+					controlling_scene.add( temp_object );
 					objects.push(temp_object);
 					sceneObjects[temp_object.name]={'id': temp_object.name, 
 													'directory': current_object.addition_information.directory,
@@ -318,6 +457,12 @@ function onDocumentMouseDown( event )
 													"rotate_x": temp_object.rotation.x,
 													"rotate_y": temp_object.rotation.y,
 													"rotate_z": temp_object.rotation.z};
+					
+					// log the add model action
+					actions.push({	'action': 'ADD_MODEL', 
+						'object_id': temp_object.name, 
+						'old_value': '', 
+						'new_value': {'scene_object': temp_object, 'object': sceneObjects[temp_object.name]}});
 				}
 				break;
 			}
@@ -327,14 +472,21 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
 
+					// log the add model action
+					actions.push({	'action': 'DELETE_MODEL', 
+						'object_id': obj.name, 
+						'old_value': {'scene_object': controlling_scene.getObjectByName(obj.name), 'object': sceneObjects[obj.name]}, 
+						'new_value': ''});
+					
 					delete sceneObjects[obj.name];
-					scene.remove( scene.getObjectByName(obj.name) );
+					controlling_scene.remove( controlling_scene.getObjectByName(obj.name) );
 					objects.splice( objects.indexOf( obj ), 1 );
+					
 				}
 				
 				break;
@@ -345,14 +497,19 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
 					
-					scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-					console.log(sceneObjects[obj.name]);
+					var old_scale = controlling_scene.getObjectByName(obj.name).scale.x;
+					
+					controlling_scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
+					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
+					actions.push({	'action': 'RESIZE_MODEL', 
+						'object_id': obj.name, 
+						'old_value': old_scale, 
+						'new_value': controlling_scene.getObjectByName(obj.name).scale.x});
 				}
 				break;
 			}
@@ -362,14 +519,18 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
+					var old_scale = controlling_scene.getObjectByName(obj.name).scale.x;
 					
-					scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-					console.log(sceneObjects[obj.name]);
+					controlling_scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
+					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
+					actions.push({	'action': 'RESIZE_MODEL', 
+						'object_id': obj.name, 
+						'old_value': old_scale, 
+						'new_value': controlling_scene.getObjectByName(obj.name).scale.x});
 				}
 				break;
 			}
@@ -379,15 +540,25 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
+					var old_value = {'x': controlling_scene.getObjectByName(obj.name).rotation.x, 
+							'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
+							'z': controlling_scene.getObjectByName(obj.name).rotation.z};
 					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
+					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
+					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
+					
+					actions.push({	'action': 'ROTATE_MODEL', 
+						'object_id': obj.name, 
+						'old_value': old_value, 
+						'new_value': {'x': controlling_scene.getObjectByName(obj.name).rotation.x, 
+									'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
+									'z': controlling_scene.getObjectByName(obj.name).rotation.z}});
 				}
 				break;
 			}
@@ -397,15 +568,25 @@ function onDocumentMouseDown( event )
 					var intersect = intersects[ 0 ];
 					var obj=intersect.object;
 					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
+					while( obj.parent != controlling_scene && obj.parent!=null ){
 						obj = obj.parent;
 						obj.name;
 					}
+					var old_value = {'x': controlling_scene.getObjectByName(obj.name).rotation.x, 
+							'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
+							'z': controlling_scene.getObjectByName(obj.name).rotation.z};
 					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
+					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
+					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
+					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
+					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
+					
+					actions.push({	'action': 'ROTATE_MODEL', 
+						'object_id': obj.name, 
+						'old_value': old_value, 
+						'new_value': {'x': controlling_scene.getObjectByName(obj.name).rotation.x, 
+									'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
+									'z': controlling_scene.getObjectByName(obj.name).rotation.z}});
 				}
 				break;
 			}
@@ -414,6 +595,33 @@ function onDocumentMouseDown( event )
 		
 		render();
 	
+}
+			
+function enlarge_scenario()
+{
+    // define new value
+	var old_value = WORLD_SIZE;
+    WORLD_SIZE += 100;
+    controlling_scene.world_size = WORLD_SIZE;
+    redraw_scenario_ground(controlling_scene);
+    
+    actions.push({	'action': 'RESIZE_SCENE', 
+		'object_id': 'scene', 
+		'old_value': old_value, 
+		'new_value': WORLD_SIZE});
+}
+
+function shrink_scenario()
+{
+	var old_value = WORLD_SIZE;
+    // define new value
+    WORLD_SIZE -= 100;
+    controlling_scene.world_size = WORLD_SIZE;
+    redraw_scenario_ground(controlling_scene);
+    actions.push({	'action': 'RESIZE_SCENE', 
+		'object_id': 'scene', 
+		'old_value': old_value, 
+		'new_value': WORLD_SIZE});
 }
 
 

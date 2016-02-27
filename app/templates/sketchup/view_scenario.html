@@ -551,10 +551,12 @@ function init()
 	                    	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
 	                    	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
 	                    	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
+	                    	<div>
+	                    		<button onclick="undo_action()" class="operation-button" style="width:30%" type="button" >Undo</button>
+	                    		<button onclick="redo_action()" class="operation-button" style="width:30%" type="button" >Redo</button>
+	                    	</div>
+	                    	
 	                    	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-	                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
-								<img id="preview" src="" height="35" alt="Image preview...">
-							</div>
 							
 	                    </div>
 						<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>

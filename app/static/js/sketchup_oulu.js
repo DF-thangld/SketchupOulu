@@ -293,21 +293,7 @@ function init_scene(information, current_scene, on_model_loaded)
     redraw_scenario_ground(current_scene);
 }
 
-function enlarge_scenario()
-{
-    // define new value
-    WORLD_SIZE += 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
-function shrink_scenario()
-{
-    // define new value
-    WORLD_SIZE -= 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
 function find_by_id(array, id)
 {
