@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block custom_script_file %}
+<script src="{{ url_for('static', filename='js/scenario_edit_control.js') }}"></script>
+{% endblock %}
+
 {% block custom_css %}
 
 {% endblock %}
@@ -144,18 +148,10 @@ function init()
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
-
 	//pre-defined objects
-	for (var model_id in sceneObjects)
-	{
-		var model = sceneObjects[model_id];
-		console.log(model);
-		load_model( model.file_type,
-					'{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-					model.original_filename,
-					model,
-					scene);
-	}
+    init_scene(sceneObjects, scene, function(model){
+		objects.push(model);
+	});
 
 	//document
 	//container = document.createElement( 'div' );
@@ -172,6 +168,7 @@ function init()
 	var ambient = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambient );
 
+    /*
 	//1. build the grid
 
 	var size = WORLD_SIZE/2, step = BLOCK_SIZE;
@@ -238,6 +235,45 @@ function init()
 
 	//render
 	renderer.render( scene, camera);
+    */
+    //1. build the grid
+
+	{% if can_edit %}
+    // insert model to objects
+
+	// add keyboard events to mode
+
+	{% else %}
+
+	{% endif %}
+
+	// display the scene
+	if (window.WebGLRenderingContext)
+		renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
+	else
+		renderer = new THREE.CanvasRenderer(); //using the (slower) Canvas 2D Context API
+
+	renderer.setClearColor( 0xf0f0f0 ); //0xffffff
+	renderer.setPixelRatio( window.devicePixelRatio );
+	//renderer.setPixelRatio( document.getElementById("ModelWindow").offsetWidth/
+	//						document.getElementById("ModelWindow").offsetHeight );
+	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
+		 				document.getElementById("ModelWindow").offsetHeight
+	);
+
+	container.appendChild( renderer.domElement );
+	{% if not can_edit %}
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	{% endif %}
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+	intersectObjects=[plane];
+	//render
+	renderer.render( scene, camera);
+	control = controls;
+	controlling_renderer = renderer;
+	controlling_scene = scene;
+	controlling_camera = camera;
 }
 
 function add_building_model(information)
@@ -258,358 +294,6 @@ function add_building_model(information)
 }
 
 
-function switchMode(i) 
-{
-	var mode = parseInt(i);
-	if(modeIndex ==1 && mode!=1){// from 0 to other
-		current_object.visible=false;
-	}else if(modeIndex !=1 && mode==1){
-		current_object.visible=true;
-	}
-	modeIndex= mode ;
-	switch(modeIndex){
-		case 0:{
-			break;
-		}
-		case 1:{
-			break;
-		}
-		case 7:{
-			var preview = document.getElementById( "preview" );
-			var file    = document.querySelector('input[type=file]').files[0]; //sames as here
-			var reader  = new FileReader();
-			reader.onloadend = function () {
-				preview.src = reader.result;
-				
-				var loader = new THREE.TextureLoader();
-				loader.load(reader.result,function(texture){
-					var geometry = new THREE.SphereGeometry( 200, 25, 200 );
-					var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
-					var mesh = new THREE.Mesh( geometry, material );
-					plane.material= material;
-				} );
-			}
-
-			if (file) {
-				reader.readAsDataURL(file); //reads the data as a URL
-			} else {
-				preview.src = "";
-			}
-			break;
-		}
-		case 8:{
-			
-			if(IsOnTop){
-				//change to build on ground mode
-				IsOnTop=false;
-				intersectObjects=[plane];
-				document.getElementById("buildWhere").innerHTML="Build On Top";
-			}else{
-				//change to build on top mode
-				IsOnTop=true;
-				intersectObjects=objects;
-				document.getElementById("buildWhere").innerHTML="Build On Ground";
-			}
-			break;
-		}
-
-	}
-	
-}
-
-function onDocumentMouseMove(event){
-	//event.preventDefault();
-	
-	
-    
-	var x = event.pageX - $('#ModelWindow').offset().left;
-	var y = event.pageY - $('#ModelWindow').offset().top;
-
-	var div_width =document.getElementById("ModelWindow").clientWidth;
-	var div_height=document.getElementById("ModelWindow").clientHeight;
-	
-	
-	switch(modeIndex){
-		case 0:{//select mode
-			if(isSelect == true){
-				mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-				raycaster.setFromCamera( mouse, camera );
-
-				var intersects = raycaster.intersectObjects( [plane], true );
-				
-				if ( intersects.length > 0 )
-				{
-
-					selectedModel.position.x = intersects[0].point.x;
-					selectedModel.position.y = intersects[0].point.y;
-					selectedModel.position.z = intersects[0].point.z;
-					
-					//update modelInfos as well
-					var selected_model = sceneObjects[selectedModel.name];
-					selected_model.x = selectedModel.position.x;
-					selected_model.y = selectedModel.position.y;
-					selected_model.z = selectedModel.position.z;
-				}
-			
-			}
-			break;
-		
-		}
-		case 1:{//add mode
-			//http://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
-	
-		
-			mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-			raycaster.setFromCamera( mouse, camera );
-
-			//threejs raycast click detection not working on loaded 3dObject
-
-			var intersects = raycaster.intersectObjects( intersectObjects, true );
-			if ( intersects.length > 0 )
-			{
-
-				current_object.position.x = intersects[0].point.x;
-				current_object.position.y = intersects[0].point.y;
-				current_object.position.z = intersects[0].point.z;
-
-			}
-			break;
-		}
-		
-	}
-	
-
-}
-function onDocumentMouseUp( event ) {
-	switch(modeIndex){
-		case 0:{//select  -- release selected object
-			isSelect = false;
-			selectedModel = null;
-			break;
-		}
-	}
-}
-function onDocumentMouseDown( event )
-{
-
-	//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
-	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-	var x = event.pageX - $('#ModelWindow').offset().left;
-	var y = event.pageY - $('#ModelWindow').offset().top;
-	var div_width =document.getElementById("ModelWindow").clientWidth;
-	var div_height=document.getElementById("ModelWindow").clientHeight;
-	mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-	raycaster.setFromCamera( mouse, camera );
-
-		switch(modeIndex){
-			case 0:{//select
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-
-					//operation
-					selectedModel = scene.getObjectByName(obj.name);
-					isSelect = true;
-				}
-				break;
-			}
-			case 1:{//add
-				var intersects = raycaster.intersectObjects( [plane], true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-
-					var temp_object=current_object.clone();
-					temp_object.name = "model_" + generate_random_string(50);
-
-					scene.add( temp_object );
-					objects.push(temp_object);
-					sceneObjects[temp_object.name]={'id': temp_object.name, 
-													'directory': current_object.addition_information.directory,
-													'original_filename': current_object.addition_information.original_filename,
-													'file_type': current_object.addition_information.file_type,
-													'x': temp_object.position.x,
-													"y": temp_object.position.y,   
-													"z": temp_object.position.z, 
-													"size": temp_object.scale.x,     
-													"rotate_x": temp_object.rotation.x,
-													"rotate_y": temp_object.rotation.y,
-													"rotate_z": temp_object.rotation.z};
-				}
-				break;
-			}
-			case 2:{//delete mode
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-
-					delete sceneObjects[obj.name];
-					scene.remove( scene.getObjectByName(obj.name) );
-					objects.splice( objects.indexOf( obj ), 1 );
-				}
-				
-				break;
-			}
-			case 3:{//Enlarge mode
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-				}
-				break;
-			}
-			case 4:{//reduce
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-				}
-				break;
-			}
-			case 5:{//rotate left
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
-
-					//console.log(scene.getObjectByName(obj.name));
-					console.log(scene.getObjectByName(obj.name).rotation.x, scene.getObjectByName(obj.name).rotation.y, scene.getObjectByName(obj.name).rotation.z);
-				}
-				break;
-			}
-			case 6:{//rotate right
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
-				}
-				break;
-			}
-
-		}
-		
-		render();
-	
-}
-
-function onDocumentKeyDown(event)
-{
-	switch ( event.keyCode ) {
-
-		case 16: isShiftDown = true; break; //shift, delete mode with click
-		case 38: move_forward = true; break; // up
-		case 40: move_backward = true; break; // down
-		case 37: move_left = true; break; // left
-		case 39: move_right = true; break; // right
-		case 87: move_up = true; break; // w
-		case 83: move_down = true; break; // s
-		//case 65: targetMoveLeft = true; break; // a
-		//case 68: targetMoveRight = true; break; // d
-		
-		case 90: is_rotating = true; break; // z
-
-		//case 78: chooseModel=1;//n choose next model
-		//case 77: chooseModel=-1;//m choose previous model
-
-	}
-}
-
-function onDocumentKeyUp(event)
-{
-	switch ( event.keyCode ) {
-
-		case 16: isShiftDown = false; break; //shift
-		case 38: move_forward = false; break; // up
-		case 40: move_backward = false; break; // down
-		case 37: move_left = false; break; // left
-		case 39: move_right = false; break; // right
-		case 87: move_up = false; break; // w
-		case 83: move_down = false; break; // s
-		//case 65: targetMoveLeft = false; break; // a
-		//case 68: targetMoveRight = false; break; // d
-		case 90: is_rotating = false; break; // z
-
-	}
-}
-
-
-// change window size
-function onWindowResize()
-{
-
-	//camera.aspect = window.innerWidth / window.innerHeight;
-	camera.aspect = windowRatio;
-	camera.updateProjectionMatrix();
-
-	//renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
-		 				document.getElementById("ModelWindow").offsetHeight
-	);
-}
-
-function animate() {
-
-	requestAnimationFrame( animate );
-
-	//controls.update();
-	
-	
-	stats.update();
-	
-	render();
-
-}
 
 function render() 
 {
@@ -790,13 +474,13 @@ function before_submit()
                         <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
                         <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
                     	<div><b>Model Control:</b></div>
-                    	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
-                    	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
-                    	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
-                    	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
-                    	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
-                    	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
-                    	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
+                    	<div><button id = "button_0" onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
+                    	<div><button id = "button_2" onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
+                    	<div><button id = "button_3" onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
+                    	<div><button id = "button_4" onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
+                    	<div><button id = "button_5" onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
+                    	<div><button id = "button_6" onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
+                    	<div><button id = "button_8" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
                     	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
 							<img id="preview" src="" height="35" alt="Image preview...">
                     	</div>

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 
 from flask import g, session, request, make_response
@@ -15,7 +16,7 @@ def before_request():
             g.user.default_locale = session['locale']
             db.session.commit()
         elif 'locale' not in session:
-            session['locale'] = g.user.default_locale 
+            session['locale'] = g.user.default_locale
     else:
         #check cookie for session
         session_id = request.cookies.get('session_id')
