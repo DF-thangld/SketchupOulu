@@ -92,6 +92,8 @@
 
     <!-- custom javascript file -->
     <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
+    {% block custom_script_file %}
+	{% endblock %}
 
     <script>
     var add_comment_url = '{{ url_for('users.add_comment') }}';

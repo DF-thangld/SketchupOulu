@@ -15,6 +15,7 @@ mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 @mod.route('/view_scenario/')
 def view_scenario():
     scenario_id=request.args.get('id', '')
+    
     if scenario_id == '':
         return render_template('404.html'), 404
 

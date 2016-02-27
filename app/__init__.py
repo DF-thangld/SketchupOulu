@@ -125,7 +125,10 @@ if not app.config['DEBUG']:
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404
+    if request.endpoint != 'static':
+        return render_template('404.html'), 404
+    else:
+        return '', 404
 
 @app.route('/')
 def index():
@@ -133,6 +136,7 @@ def index():
 
 @app.route('/404')
 def page_not_found():
+    print(request.url)
     return render_template('404.html'), 404
 
 from app.users.views import mod as usersModule

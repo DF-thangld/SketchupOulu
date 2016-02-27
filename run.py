@@ -31,7 +31,7 @@ def before_request():
                 db.session.delete(user_session)
                 db.session.commit()
                 user = User.query.filter_by(id=user_id).first()
-                if user is not None and user_session.expired_time >= datetime.datetime.now():
+                if user is not None and user.banned != 1 and user_session.expired_time >= datetime.datetime.now():
                     new_user_session = UserSession(user.id)
                     db.session.add(new_user_session)
                     db.session.commit()
