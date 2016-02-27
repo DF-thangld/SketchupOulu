@@ -452,13 +452,32 @@ function init()
 
 
 {% endif %}
-
     var old_style = '';
     function full_screen(container_id)
     {
         var SCREEN_WIDTH = $('#' + container_id).innerWidth(), SCREEN_HEIGHT = $('#' + container_id).innerHeight();
         old_style = $('#' + container_id).attr('style');
         $('#' + container_id).attr('style', 'position: absolute;width: 100%;min-height: 100%;left: 0;top: 0;');
+    }
+    
+    function do_switch_mode(mode)
+    {
+    	
+    	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
+    	if (mode_index != mode)
+    	{
+	    	for (var mode_key in buttons)
+				$('#' + buttons[mode_key]).removeClass('disabled');
+			$('#' + buttons[mode]).addClass('disabled');
+			switchMode(mode);
+		}
+		else
+		{
+			$('#' + buttons[mode]).removeClass('disabled');
+			switchMode('-1');
+		}
+		
+    	
     }
 
 {% endblock %}
@@ -523,21 +542,21 @@ function init()
                 </div>
                 {% endif %}
                 <div>
-                <button class="btn btn-info" onclick="full_screen('ModelWindow');">Full screen</button>
+                <button class="btn btn-default" onclick="full_screen('ModelWindow');">Full screen</button>
                 {% if g.user %}
-                <button class="btn btn-primary" onclick="clone_scenario();">Clone this scenario</button>
-                    {% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
-                    <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
-                    {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
-                    <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
-                    {% endif %}
+                <button class="btn btn-default" onclick="clone_scenario();">Clone this scenario</button>
                 {% endif %}
 				{% if can_edit %}
-                <button class="btn btn-warning" onclick="save_scenario_content();">Save scenario</button>
+                <button class="btn btn-default" onclick="save_scenario_content();">Save scenario</button>
 				{% endif %}
 				{% if g.user and g.user.username == scenario.owner.username %}
-                <button class="btn btn-warning" onclick="display_suggest_form();">Suggest scenario to admin</button>
+                <button class="btn btn-default" onclick="display_suggest_form();">Suggest scenario to admin</button>
 				{% endif %}
+				{% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
+                <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
+                {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
+                <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
+                {% endif %}
 				</div>
             </div>
             <div style="clear:both"></div>
@@ -551,22 +570,26 @@ function init()
 						{% if can_edit %}
 						<div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
 	                        <div><b>Model Control:</b></div>
-	                        <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
-	                        <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
+	                        <div>
+	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
+	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
+	                        </div>
 	                    	<div><b>Model Control:</b></div>
-	                    	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
-	                    	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
-	                    	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
-	                    	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
-	                    	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
-	                    	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
+	                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
+							<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
 	                    	<div>
-	                    		<button onclick="undo_action()" class="operation-button" style="width:30%" type="button" >Undo</button>
-	                    		<button onclick="redo_action()" class="operation-button" style="width:30%" type="button" >Redo</button>
+	                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
+	                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
 	                    	</div>
-	                    	
-	                    	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-							
+	                    	<div>
+	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
+	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
+	                    	</div>
+	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+	                    	<div>
+	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
+	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
+	                    	</div>
 	                    </div>
 						<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
 						<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">

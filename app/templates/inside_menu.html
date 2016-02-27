@@ -11,7 +11,7 @@
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ g.user.username }}
             </a>
 
-            <a class="btn" href="{{ url_for('users.logout') }}"
+            <a class="btn btn-info" href="{{ url_for('users.logout') }}"
 				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign out
             </a>
 		</div>
@@ -19,7 +19,7 @@
         <div class="header-actions" role="navigation">
 			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
 				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
-				up</a> <a class="btn" href="{{ url_for('users.login') }}"
+				up</a> <a class="btn btn-info" href="{{ url_for('users.login') }}"
 				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
 				in</a>
 		</div>

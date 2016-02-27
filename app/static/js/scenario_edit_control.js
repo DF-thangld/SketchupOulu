@@ -144,6 +144,12 @@ function undo_action(on_finish)
 	if (action == null)
 		return;
 	redo_actions.push(action);
+	
+	//user interface change
+	if (actions.length == 0)
+		$('#btn_undo_action').addClass('disabled');
+	$('#btn_redo_action').removeClass('disabled');
+	
 	switch(action['action'])
 	{
 		case 'MOVE':
@@ -163,7 +169,7 @@ function undo_action(on_finish)
 			var object = controlling_scene.getObjectByName(action['object_id']);
 			controlling_scene.remove(object);
 			delete sceneObjects[action['object_id']];
-			objects.splice( objects.indexOf( obj ), 1 );
+			objects.splice( objects.indexOf( object ), 1 );
 			break;
 		case 'DELETE_MODEL':
 			controlling_scene.add(action['old_value']['scene_object']);
@@ -205,6 +211,11 @@ function redo_action(on_finish)
 		return;
 	actions.push(action);
 	
+	//user interface change
+	if (redo_actions.length == 0)
+		$('#btn_redo_action').addClass('disabled');
+	$('#btn_undo_action').removeClass('disabled');
+	
 	switch(action['action'])
 	{
 		case 'MOVE':
@@ -229,7 +240,7 @@ function redo_action(on_finish)
 			var object = controlling_scene.getObjectByName(action['object_id']);
 			controlling_scene.remove(object);
 			delete sceneObjects[action['object_id']];
-			objects.splice( objects.indexOf( obj ), 1 );
+			objects.splice( objects.indexOf( object ), 1 );
 			break;
 		case 'RESIZE_MODEL':
 			var object = controlling_scene.getObjectByName(action['object_id']);
@@ -613,6 +624,8 @@ function enlarge_scenario()
 
 function shrink_scenario()
 {
+	if (WORLD_SIZE <= 0)
+		return;
 	var old_value = WORLD_SIZE;
     // define new value
     WORLD_SIZE -= 100;
