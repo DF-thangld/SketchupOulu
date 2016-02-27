@@ -134,6 +134,10 @@ def not_found(error):
 def index():
     return render_template('homepage.html'), 200
 
+@app.route('/static/js/constants.js')
+def constants_js():
+    return render_template('constants.js'), 200
+
 @app.route('/404')
 def page_not_found():
     print(request.url)

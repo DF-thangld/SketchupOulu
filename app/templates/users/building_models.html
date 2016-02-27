@@ -148,6 +148,7 @@
 
     function fetch_building_model(building_model_id)
     {
+    	console.log(building_model_id);
 
         $(".well a").removeClass("active");
 	    $('#building_model_'+building_model_id).addClass("active");
@@ -183,8 +184,9 @@
                     '{{ url_for('static', filename='models/building_models/') }}' + data.addition_information.directory + '/',
                     data.addition_information.original_filename,
                     {'id': data.id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                    scene);
-
+                    scene,
+                    function(object){console.log(object);});
+ 
                 var SCREEN_WIDTH = $('#building_model').innerWidth(), SCREEN_HEIGHT = $('#building_model').innerHeight();
                 camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
                 camera.updateProjectionMatrix();

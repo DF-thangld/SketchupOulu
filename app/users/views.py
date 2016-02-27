@@ -14,6 +14,7 @@ from app.users.models import User, UserSession, Group
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
 import app.utilities as utilities
+import config
 
 mod = Blueprint('users', __name__, url_prefix='/users')
 
@@ -571,6 +572,13 @@ def add_building_model():
 
         uploaded_file = upload_file(request.files['data_file'], 'static/models/building_models', file_type="model")
         data_file = uploaded_file['filename']
+        if uploaded_file['extension'] not in config.ALLOWED_FILE_TYPES:
+            errors.append('Unrecognized model file format')
+            try:
+                os.remove(os.path.join(app_dir, 'static/models/building_models', data_file))
+            except:
+                pass
+            return render_template("users/add_building_model.html", errors=errors), 400
         if os.stat(os.path.join(app_dir, 'static/models/building_models', data_file)).st_size >= 1024*1024*10:
             errors.append('File too big, max file size is 10MB')
             os.remove(os.path.join(app_dir, 'static/models/building_models', data_file))
@@ -642,7 +650,7 @@ def add_building_model():
                                     'directory': '',
                                     'camera_x': 30, 'camera_y': 250, 'camera_z': 350,
                                     "camera_lookat_x": 31, "camera_lookat_y": 222, "camera_lookat_z": 366}
-
+                
 
         building_model = BuildingModel(name, data_file, g.user, addition_information=addition_information)
         building_model.file_type = file_type

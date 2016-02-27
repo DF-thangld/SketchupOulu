@@ -293,21 +293,7 @@ function init_scene(information, current_scene, on_model_loaded)
     redraw_scenario_ground(current_scene);
 }
 
-function enlarge_scenario()
-{
-    // define new value
-    WORLD_SIZE += 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
-function shrink_scenario()
-{
-    // define new value
-    WORLD_SIZE -= 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
 function find_by_id(array, id)
 {
@@ -458,6 +444,36 @@ function load_model(file_type, directory, filename, addition_information, object
         }
         catch(err) {console.log(err.message);}
 
+    }
+    else if (file_type == 'jpg' || file_type == 'jpeg' || file_type == 'png')
+    {
+    	var loader = new THREE.TextureLoader();
+		loader.load(directory + filename + "." + file_type ,function(texture)
+		{
+			
+			var image_geometry = new THREE.PlaneBufferGeometry(texture.image.width, texture.image.height);
+			image_geometry.rotateX( - Math.PI / 2 );
+			var image_material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
+			var image_mesh = new THREE.Mesh( image_geometry, image_material );
+
+			var image_object = new THREE.Mesh( image_geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+			image_object.material= image_material;
+			
+			image_object.scale.x = image_object.scale.y = image_object.scale.z = addition_information.size;
+			image_object.position.x = addition_information.x;
+            image_object.position.y = addition_information.y;
+            image_object.position.z = addition_information.z;
+            image_object.rotation.x = addition_information.rotate_x;
+            image_object.rotation.y = addition_information.rotate_y;
+            image_object.rotation.z = addition_information.rotate_z;
+            image_object.name = addition_information.id;
+            object_scene.add( image_object );
+            loaded_objects[file_type + "|" + directory + "|" + filename] = image_object;
+            if ( onload !== undefined )
+                onload(image_object);
+		},
+        function(){},
+        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
     }
 
 }
