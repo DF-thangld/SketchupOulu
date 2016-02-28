@@ -405,10 +405,13 @@ function onDocumentMouseUp( event ) {
 			
 			//log action
 			if (selectedModel != null)
+			{
+				$('#btn_undo_action').removeClass('disabled');
 				actions.push({	'action': 'MOVE', 
 								'object_id': selectedModel.name, 
 								'old_value': temp_variable, 
 								'new_value': {'x': selectedModel.position.x, 'y': selectedModel.position.y, 'z': selectedModel.position.z}});
+			}
 			
 			isSelect = false;
 			selectedModel = null;
@@ -470,6 +473,7 @@ function onDocumentMouseDown( event )
 													"rotate_z": temp_object.rotation.z};
 					
 					// log the add model action
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'ADD_MODEL', 
 						'object_id': temp_object.name, 
 						'old_value': '', 
@@ -489,6 +493,7 @@ function onDocumentMouseDown( event )
 					}
 
 					// log the add model action
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'DELETE_MODEL', 
 						'object_id': obj.name, 
 						'old_value': {'scene_object': controlling_scene.getObjectByName(obj.name), 'object': sceneObjects[obj.name]}, 
@@ -517,6 +522,7 @@ function onDocumentMouseDown( event )
 					
 					controlling_scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
 					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'RESIZE_MODEL', 
 						'object_id': obj.name, 
 						'old_value': old_scale, 
@@ -538,6 +544,7 @@ function onDocumentMouseDown( event )
 					
 					controlling_scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
 					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'RESIZE_MODEL', 
 						'object_id': obj.name, 
 						'old_value': old_scale, 
@@ -563,7 +570,7 @@ function onDocumentMouseDown( event )
 					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
 					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
 					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
-					
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'ROTATE_MODEL', 
 						'object_id': obj.name, 
 						'old_value': old_value, 
@@ -591,7 +598,7 @@ function onDocumentMouseDown( event )
 					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
 					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
 					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
-					
+					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'ROTATE_MODEL', 
 						'object_id': obj.name, 
 						'old_value': old_value, 
@@ -615,7 +622,7 @@ function enlarge_scenario()
     WORLD_SIZE += 100;
     controlling_scene.world_size = WORLD_SIZE;
     redraw_scenario_ground(controlling_scene);
-    
+    $('#btn_undo_action').removeClass('disabled');
     actions.push({	'action': 'RESIZE_SCENE', 
 		'object_id': 'scene', 
 		'old_value': old_value, 
@@ -631,6 +638,7 @@ function shrink_scenario()
     WORLD_SIZE -= 100;
     controlling_scene.world_size = WORLD_SIZE;
     redraw_scenario_ground(controlling_scene);
+    $('#btn_undo_action').removeClass('disabled');
     actions.push({	'action': 'RESIZE_SCENE', 
 		'object_id': 'scene', 
 		'old_value': old_value, 
@@ -642,9 +650,9 @@ function shrink_scenario()
 function onWindowResize()
 {
 	
-	var windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
-	var windowWidth = document.getElementById("ModelWindow").offsetWidth;
-	var windowHeight = document.getElementById("ModelWindow").offsetHeight;
+	var windowRatio = document.getElementById(scenario_element).offsetWidth/document.getElementById(scenario_element).offsetHeight;
+	var windowWidth = document.getElementById(scenario_element).offsetWidth;
+	var windowHeight = document.getElementById(scenario_element).offsetHeight;
 	
 	//camera.aspect = window.innerWidth / window.innerHeight;
 	camera.aspect = windowRatio;

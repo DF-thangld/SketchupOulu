@@ -470,19 +470,26 @@ function before_submit()
 				</dt>
 				<dd>
                     <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
+                        <div><b>Model Control:</b></div>
+                        <div>
+                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
+                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
+                        </div>
                     	<div><b>Model Control:</b></div>
-                        <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
-                        <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
-                    	<div><b>Model Control:</b></div>
-                    	<div><button id = "button_0" onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
-                    	<div><button id = "button_2" onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
-                    	<div><button id = "button_3" onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
-                    	<div><button id = "button_4" onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
-                    	<div><button id = "button_5" onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
-                    	<div><button id = "button_6" onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
-                    	<div><button id = "button_8" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
-							<img id="preview" src="" height="35" alt="Image preview...">
+                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
+						<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
+                    	<div>
+                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
+                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
+                    	</div>
+                    	<div>
+                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
+                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
+                    	</div>
+                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+                    	<div>
+                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
+                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
                     	</div>
                     </div>
                    
