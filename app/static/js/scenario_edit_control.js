@@ -528,7 +528,7 @@ function onDocumentMouseDown( event )
 					
 					var old_scale = controlling_scene.getObjectByName(obj.name).scale.x;
 					
-					controlling_scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
+					controlling_scene.getObjectByName(obj.name).scale.multiplyScalar( 1.05 );
 					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
 					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'RESIZE_MODEL', 
@@ -550,7 +550,7 @@ function onDocumentMouseDown( event )
 					}
 					var old_scale = controlling_scene.getObjectByName(obj.name).scale.x;
 					
-					controlling_scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
+					controlling_scene.getObjectByName(obj.name).scale.divideScalar( 1.05 );
 					sceneObjects[obj.name].size = controlling_scene.getObjectByName(obj.name).scale.x;
 					$('#btn_undo_action').removeClass('disabled');
 					actions.push({	'action': 'RESIZE_MODEL', 
@@ -574,7 +574,7 @@ function onDocumentMouseDown( event )
 							'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
 							'z': controlling_scene.getObjectByName(obj.name).rotation.z};
 					
-					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
+					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/16);
 					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
 					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
 					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
@@ -602,7 +602,7 @@ function onDocumentMouseDown( event )
 							'y': controlling_scene.getObjectByName(obj.name).rotation.y, 
 							'z': controlling_scene.getObjectByName(obj.name).rotation.z};
 					
-					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
+					controlling_scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/16);
 					sceneObjects[obj.name].rotate_x = controlling_scene.getObjectByName(obj.name).rotation.x;
 					sceneObjects[obj.name].rotate_y = controlling_scene.getObjectByName(obj.name).rotation.y;
 					sceneObjects[obj.name].rotate_z = controlling_scene.getObjectByName(obj.name).rotation.z;
