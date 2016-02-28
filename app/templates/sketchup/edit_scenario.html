@@ -477,6 +477,7 @@ function init()
            <li class = "active"><a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a></li>
            <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">Scenarios</a></li>
            <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="bread_crum_scenario_name">{{ scenario.name }}</a></li>
+           <li class = "active"><a href="{{ url_for('sketchup.edit_scenario', id=scenario.id) }}">Edit</a></li>
         </ol>
 		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a></h2>
             <div style="float:left;">
