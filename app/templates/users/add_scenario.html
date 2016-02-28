@@ -294,120 +294,30 @@ function add_building_model(information)
 }
 
 
-
-function render() 
-{
-
-	// 2.1 move around the scene
-	
-	var cameraMove = false;// camera is moving, then need to calculate the metric
-	if (move_forward){
-		switch(current_view)
-		{
-			case 0: camera.position.z += MOVING_SPEED; break;
-			case 1: camera.position.x -= MOVING_SPEED; break;
-			case 2: camera.position.z -= MOVING_SPEED; break;
-			case 3: camera.position.x += MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_backward)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.z -= MOVING_SPEED; break;
-			case 1: camera.position.x += MOVING_SPEED; break;
-			case 2: camera.position.z += MOVING_SPEED; break;
-			case 3: camera.position.x -= MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_left)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x += MOVING_SPEED; break;
-			case 1: camera.position.z += MOVING_SPEED; break;
-			case 2: camera.position.x -= MOVING_SPEED; break;
-			case 3: camera.position.z -= MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_right)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x -= MOVING_SPEED; break;
-			case 1: camera.position.z -= MOVING_SPEED; break;
-			case 2: camera.position.x += MOVING_SPEED; break;
-			case 3: camera.position.z += MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_up)
-	{
-		camera.position.y += MOVING_SPEED;
-		cameraMove =true;
-	}
-	if (move_down)
-	{
-		camera.position.y -= MOVING_SPEED;
-		cameraMove =true;
-	}
-	
-	// 2.2 rotating
-	if (is_rotating)
-	{
-		current_view++;
-		if (current_view >= views.length)
-			current_view = 0;
-		
-		// remember current position
-		var current_x = camera.position.x;
-		var current_y = camera.position.y;
-		var current_z = camera.position.z;
-		
-		// go to pre-defined position
-		camera.position.x = views[current_view].x;
-		camera.position.y = views[current_view].y;
-		camera.position.z = views[current_view].z;
-		
-		camera.target = center_position;
-		camera.lookAt( camera.target );
-		
-		// only rotate one time per click
-		is_rotating = false;
-		cameraMove =true;
-	}
-
-	if(cameraMove){
-		//var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
-		var metric= Math.ceil( camera.position.y/10 );
-    	//console.debug( metric );
-    
-    	document.getElementById("metric").innerHTML=metric +"m";
-	}
-	
-	//mouse position
-	
-	
-	// random stuffs
-	
-	
-	// update the scene
-	renderer.render( scene, camera );
-    for (i=0; i < building_models.length; i++)
-    {
-        var building_model = building_models[i];
-        building_model['renderer'].render( building_model['scene'], building_model['camera'] );
-    }
-}
-
-
 function before_submit()
 {
     sceneObjects['size'] = WORLD_SIZE;
 	$('#addition_information').val(JSON.stringify(sceneObjects));
+}
+
+function do_switch_mode(mode)
+{
+   	
+   	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
+   	if (mode_index != mode)
+   	{
+    	for (var mode_key in buttons)
+			$('#' + buttons[mode_key]).removeClass('disabled');
+		$('#' + buttons[mode]).addClass('disabled');
+		switchMode(mode);
+	}
+	else
+	{
+		$('#' + buttons[mode]).removeClass('disabled');
+		switchMode('-1');
+	}
+	$('#buildWhere').removeClass('disabled');
+   	
 }
 
 {% endblock %}
