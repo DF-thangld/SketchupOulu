@@ -32,6 +32,13 @@ function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
 $( document ).ready(function()
 {
 	$('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_model = false;});
+	document.addEventListener( 'keydown', onDocumentKeyDown, false );
+	document.addEventListener( 'keyup', onDocumentKeyUp, false );
+	window.addEventListener( 'resize', onWindowResize, false );
+	// add mouse events to mode
+	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 });
 
 function animate() 
@@ -270,18 +277,19 @@ function redo_action(on_finish)
 		on_finish(action);
 }
 
-
-
-$( document ).ready(function()
+function full_screen()
 {
-	document.addEventListener( 'keydown', onDocumentKeyDown, false );
-	document.addEventListener( 'keyup', onDocumentKeyUp, false );
-	window.addEventListener( 'resize', onWindowResize, false );
-	// add mouse events to mode
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-});
+	if( THREEx.FullScreen.activated() )
+	{
+		THREEx.FullScreen.cancel();
+		is_fullscreen = false;
+	}
+	else
+	{
+		THREEx.FullScreen.request(document.getElementById(fullscreen_element));
+		is_fullscreen = true;
+	}
+}
 
 
 function onDocumentKeyDown(event)
@@ -304,14 +312,7 @@ function onDocumentKeyDown(event)
 		case 70 : // f
 			if ((mouse_on_model || is_fullscreen) && isControlDown)
 			{
-				if( THREEx.FullScreen.activated() )
-				{
-					THREEx.FullScreen.cancel();
-				}
-				else
-				{
-					THREEx.FullScreen.request(document.getElementById(fullscreen_element));
-				}
+				full_screen();
 			}
 			break;
 	}

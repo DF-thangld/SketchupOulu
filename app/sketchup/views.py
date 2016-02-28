@@ -36,6 +36,28 @@ def view_scenario():
     return render_template("sketchup/view_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
 
+@mod.route('/edit_scenario/')
+def edit_scenario():
+    scenario_id=request.args.get('id', '')
+    
+    if scenario_id == '':
+        return render_template('404.html'), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return render_template('404.html'), 404
+
+    if scenario.is_public == 0:
+        if g.user is None:
+            return render_template('404.html'), 404
+        elif not (g.user.is_admin() or scenario.owner == g.user):
+            return render_template('404.html'), 404
+
+    building_models = []
+    if g.user is not None and scenario.can_edit(g.user):
+        building_models = g.user.get_available_building_models(return_dict=True)
+
+    return render_template("sketchup/edit_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
 
 @mod.route('/get_scenario/')

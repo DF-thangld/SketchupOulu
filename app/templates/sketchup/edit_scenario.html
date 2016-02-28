@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 
 {% block custom_script_file %}
-<script src="{{ url_for('static', filename='js/scenario_view_control.js') }}"></script>
+<script src="{{ url_for('static', filename='js/scenario_edit_control.js') }}"></script>
 {% endblock %}
 
 {% block custom_css %}
+
 {% endblock %}
 {% block menu %}
 	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block onload_script %}
+{% set index = 0 %}
+{% for building_model in building_models %}
+init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
+{% set index = index + 1 %}
+{% endfor %}
 init();
 animate();
 get_comments('scenario', '{{ scenario.id }}', 1, 'scenario_comment_panel');
@@ -86,6 +92,89 @@ var windowRatio = 2;
 var windowWidth = 972;
 var windowHeight = 500;
 
+{% if can_edit %}
+
+
+
+
+function init_building_model(id, file_type, information, index)
+{
+    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+    information = JSON.parse(information);
+
+    // variables
+    var building_scene = new THREE.Scene();
+    building_scene.name = "scene_building_model_" + id;
+    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
+    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
+    building_scene.add(building_camera);
+
+    // RENDERER
+    var building_renderer;
+    if ( Detector.webgl )
+        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
+    else
+        building_renderer = new THREE.CanvasRenderer();
+    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    building_renderer.setClearColor( 0xffffff, 1 );
+    var building_container = document.getElementById( 'building_model_' +id );
+    building_container.appendChild( building_renderer.domElement );
+
+    //LIGHT
+    var ambientLight = new THREE.AmbientLight(0xffffff);
+    building_scene.add(ambientLight);
+
+    //object
+    load_model( file_type,
+                '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
+                information.original_filename,
+                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+                building_scene,
+                function(object)
+                {
+                    models[index] = object;
+                });
+
+    //move objects to global arrays
+    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
+    building_renderer.render( building_scene, building_camera );
+}
+
+
+function save_scenario_content()
+{
+	bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
+	{
+		bootbox.hideAll();
+		if (result)
+		{
+            sceneObjects['size'] = WORLD_SIZE;
+			$.ajax({
+				type: "POST",
+				url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
+				data: {'addition_information': JSON.stringify(sceneObjects)},
+				dataType: 'json',
+				success: function(data) {
+					show_alert('alert-success', 'Scenario saved!');
+				},
+				error: function(data)
+				{
+					$('#facebox #update_scenario_errors').html('');
+					for (i = 0; i < data.responseJSON.length; i++)
+						$('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+					$('#facebox #update_scenario_errors').fadeIn('fast');
+				}
+			});
+		}
+	});
+}
+
+
+{% endif %}
+
 function init()
 {
 	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
@@ -100,6 +189,15 @@ function init()
 	
 	//load model information
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+
+
+
+
+
+
+
+
 
 	//pre-defined objects
     init_scene(sceneObjects, scene, function(model){
@@ -136,6 +234,9 @@ function init()
 	);
 	
 	container.appendChild( renderer.domElement );
+	{% if not can_edit %}
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	{% endif %}
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	intersectObjects=[plane];
@@ -146,6 +247,11 @@ function init()
 	controlling_scene = scene;
 	controlling_camera = camera;
 }
+
+
+// change window size
+
+
 
 {% if g.user and g.user.is_admin %}
     function change_base_scenario_status()
@@ -207,6 +313,35 @@ function init()
                         show_alert('alert-danger', data.responseJSON[0]);
                     }
                 });
+            }
+        });
+    }
+
+    function update_scenario()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
+            data: {'scenario_name': $('#facebox #scenario_name').val(),
+                    'scenario_description': $('#facebox #scenario_description').val(),
+                    'is_public': $('#facebox #is_public').prop('checked')?'1':'0'},
+            dataType: 'json',
+            success: function(data) {
+                $('#edit_scenario #scenario_name').val($('#facebox #scenario_name').val());
+                $('#edit_scenario #scenario_description').val($('#facebox #scenario_description').val());
+                $('#edit_scenario #is_public').prop('checked', $('#facebox #is_public').prop('checked'));
+                $('#scenario_description_panel').html($('#facebox #scenario_description').val());
+                $('#bread_crum_scenario_name').html($('#facebox #scenario_name').val());
+                $('#title_scenario_name').html($('#facebox #scenario_name').val());
+                $.facebox.close();
+                show_alert('alert-success', 'Scenario saved!');
+            },
+            error: function(data)
+            {
+                $('#facebox #update_scenario_errors').html('');
+                for (i = 0; i < data.responseJSON.length; i++)
+                    $('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+                $('#facebox #update_scenario_errors').fadeIn('fast');
             }
         });
     }
@@ -281,6 +416,11 @@ function init()
 		  $('#suggest_content').autoHeight();
 		});
 	}
+	
+	function do_suggest_scenario()
+	{
+	
+	}
 {% endif %}
 
 {% if g.user %}
@@ -331,6 +471,8 @@ function init()
 			$('#' + buttons[mode]).removeClass('disabled');
 			switchMode('-1');
 		}
+		
+    	
     }
 
 {% endblock %}
@@ -345,7 +487,7 @@ function init()
            <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">Scenarios</a></li>
            <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="bread_crum_scenario_name">{{ scenario.name }}</a></li>
         </ol>
-		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a>{% if can_edit %} - <a href="{{ url_for('sketchup.edit_scenario', id=scenario.id) }}">Edit</a>{% endif %}</h2>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a></h2>
             <div style="float:left;">
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
@@ -399,6 +541,9 @@ function init()
                 {% if g.user %}
                 <button class="btn btn-default" onclick="clone_scenario();">Clone this scenario</button>
                 {% endif %}
+				{% if can_edit %}
+                <button class="btn btn-default" onclick="save_scenario_content();">Save scenario</button>
+				{% endif %}
 				{% if g.user and g.user.username == scenario.owner.username %}
                 <button class="btn btn-default" onclick="display_suggest_form();">Suggest scenario to admin</button>
 				{% endif %}
@@ -417,7 +562,74 @@ function init()
 			<dl class="form">
 				<dt class="input-label">
 					<div id="fullscreen_area">
+						{% if can_edit %}
+						<div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
+	                        <div><b>Model Control:</b></div>
+	                        <div>
+	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
+	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
+	                        </div>
+	                    	<div><b>Model Control:</b></div>
+	                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
+							<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
+	                    	<div>
+	                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
+	                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
+	                    	</div>
+	                    	<div>
+	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
+	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
+	                    	</div>
+	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+	                    	<div>
+	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
+	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
+	                    	</div>
+	                    </div>
+						<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
+						<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+							<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
+							<span id="metric">100m</span>
+						</div>
+	                    <div style="clear:both"></div>
+	                    <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
+	                        <!-- Wrapper for slides -->
+	                        <div class="carousel-inner" role="listbox">
+	                            {% set index = 0 %}
+	                            {% for building_model in building_models %}
+	                                {% if index%5 == 0 %}
+	                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
+	                                {% endif %}
+	                                    <div class="col-lg-2" style="margin-top:5px;background-color: #fff;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
+	                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
+	                                        {{ building_model.name }}
+	                                    </div>
+	                                {% set index = index + 1 %}
+	                                {% if index%5 == 0 %}
+	                                    <div style="clear:both"></div>
+	                                </div>
+	                                {% endif %}
+	                            {% endfor %}
+	                            {% if index%5 != 0 %}
+	                                <div style="clear:both"></div>
+	                            </div>
+	                            {% endif %}
+	
+	                        </div>
+	
+	                          <!-- Left and right controls -->
+	                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
+	                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	                            <span class="sr-only">Previous</span>
+	                          </a>
+	                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
+	                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	                            <span class="sr-only">Next</span>
+	                          </a>
+	                    </div>
+						{% else %}
 						<div style="width:100%;height:500px;border:1px solid black;" id="ModelWindow"></div>
+						{% endif %}
 					</div>
 				</dt>
 				<dd>

@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+{% block custom_css %}
+
+{% endblock %}
+{% block menu %}
+	{% include 'inside_menu.html' %}
+{% endblock %}
+
+{% block onload_script %}
+init();
+animate();
+get_comments('building_model', '{{ building_model.id }}', 1, 'building_model_comment_panel');
+{% endblock %}
+
+{% block js_script %}
+var container, scene, camera, renderer, controls, stats;
+var keyboard = new THREEx.KeyboardState();
+var clock = new THREE.Clock();
+
+window.addEventListener('resize', function(){
+    var SCREEN_WIDTH = $('#building_model_{{ building_model.id }}').innerWidth(), SCREEN_HEIGHT = $('#building_model_{{ building_model.id }}').innerHeight();
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+}, false);
+
+function init()
+{
+	// SCENE
+	scene = new THREE.Scene();
+	// CAMERA
+	var SCREEN_WIDTH = $('#building_model_{{ building_model.id }}').innerWidth(), SCREEN_HEIGHT = $('#building_model_{{ building_model.id }}').innerHeight();
+	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+
+    {% if building_model.addition_information.camera_x %}
+    camera.position.set({{ building_model.addition_information.camera_x }},{{ building_model.addition_information.camera_y }},{{ building_model.addition_information.camera_z }}*1.2);
+    {% else %}
+	camera.position.set(0,150,400);
+    {% endif %}
+    {% if building_model.addition_information.camera_lookat_x %}
+    camera.lookAt(new THREE.Vector3( {{ building_model.addition_information.camera_lookat_x }}, {{ building_model.addition_information.camera_lookat_y }}, {{ building_model.addition_information.camera_lookat_z }} ));
+    {% else %}
+	camera.lookAt(scene.position);
+    {% endif %}
+    scene.add(camera);
+
+	// RENDERER
+	if ( Detector.webgl )
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	else
+		renderer = new THREE.CanvasRenderer();
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    renderer.setClearColor( 0xffffff, 1 );
+	container = document.getElementById( 'building_model_{{ building_model.id }}' );
+	container.appendChild( renderer.domElement );
+	// EVENTS
+	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	// CONTROLS
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	// LIGHT
+	var light = new THREE.PointLight(0xffffff);
+	light.position.set(-100,200,100);
+	scene.add(light);
+	// FLOOR
+	/*var floorTexture = new THREE.ImageUtils.loadTexture( '{{ url_for('static', filename='images/checkerboard.jpg') }}' );
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+	floorTexture.repeat.set( 10, 10 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	floor.position.y = -0.5;
+	floor.rotation.x = Math.PI / 2;
+	scene.add(floor);*/
+    var size = 500, step = 50;
+
+    var geometry = new THREE.Geometry();
+
+    for ( var i = - size; i <= size; i += step ) {
+
+        geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+        geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+
+        geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+        geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+
+    }
+
+    var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
+
+    var line = new THREE.LineSegments( geometry, material );
+    scene.add( line );
+
+
+	////////////
+	// CUSTOM //
+	////////////
+
+	// Note: if imported model appears too dark,
+	//   add an ambient light in this file
+	//   and increase values in model's exported .js file
+	//    to e.g. "colorAmbient" : [0.75, 0.75, 0.75]
+
+    load_model( '{{ building_model.file_type }}',
+                '{{ url_for('static', filename='models/building_models/' + building_model.addition_information.directory) }}',
+                '{{ building_model.addition_information.original_filename }}',
+                {'id': '{{ building_model.id }}', 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+                scene,
+                function(object){console.log(object);});
+
+
+
+	// addModelToScene function is called back after model has loaded
+
+	var ambientLight = new THREE.AmbientLight(0xffffff);
+	scene.add(ambientLight);
+
+}
+
+function animate()
+{
+    requestAnimationFrame( animate );
+	render();
+	update();
+}
+
+function update()
+{
+	controls.update();
+}
+
+function render()
+{
+	renderer.render( scene, camera );
+}
+
+
+{% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
+
+    function save_thumbnail_position()
+    {
+        var vector = (new THREE.Vector3( 0, 0, 0 )).applyQuaternion( camera.quaternion ).add( camera.position );
+        var information = { 'camera_x': camera.position.x,
+                            'camera_y': camera.position.y,
+                            'camera_z': camera.position.z,
+                            'camera_lookat_x': vector.x,
+                            'camera_lookat_y': vector.y,
+                            'camera_lookat_z': vector.z};
+
+        bootbox.confirm("Are you sure you want to save this thumbnail?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+                    data: {'addition_information': JSON.stringify(information)},
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Thumbnail saved');
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+
+    }
+
+
+    function delete_building_model()
+    {
+        bootbox.confirm("Are you sure you want to delete this building model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.delete_building_model', building_model_id=building_model.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Building model deleted');
+                        window.location = '{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}';
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
+
+    function update_building_model()
+    {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+            data: {'building_model_name': $('#facebox #building_model_name').val()},
+            dataType: 'json',
+            success: function(data) {
+                $('#edit_building_model #building_model_name').val($('#facebox #building_model_name').val());
+                $('#bread_crum_building_model_name').html($('#facebox #building_model_name').val());
+                $('#title_building_model_name').html($('#facebox #building_model_name').val());
+                $.facebox.close();
+                show_alert('alert-success', 'Building model updated!');
+            },
+            error: function(data)
+            {
+                $('#facebox #update_building_model_errors').html('');
+                for (i = 0; i < data.responseJSON.length; i++)
+                    $('#facebox #update_building_model_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+                $('#facebox #update_building_model_errors').fadeIn('fast');
+            }
+        });
+    }
+{% endif %}
+
+{% if g.user %}
+    function clone_building_model()
+    {
+        bootbox.confirm("Are you sure you want to clone this building model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('sketchup.clone_building_model', building_model_id=building_model.id) }}",
+                    dataType: 'json',
+                    success: function(data) {
+                        show_alert('alert-success', 'Building model cloned');
+                        window.location = '{{ url_for('sketchup.view_building_model') }}?id=' + data.id;
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+
+    }
+{% endif %}
+{% if g.user and g.user.is_admin() %}
+    function change_base_model_status()
+    {
+        bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
+        {
+            bootbox.hideAll();
+            if (result)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+                    data: {'is_base_item': 1},
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.building_model.is_base_item == 0)
+                        {
+                            $('#base_model_button').removeClass('btn-danger');
+                            $('#base_model_button').addClass('btn-warning');
+                            $('#base_model_button').html('Promote to base model');
+                        }
+                        else
+                        {
+                            $('#base_model_button').removeClass('btn-warning');
+                            $('#base_model_button').addClass('btn-danger');
+                            $('#base_model_button').html('Demote to normal model');
+                        }
+                        show_alert('alert-success', 'Model status changed');
+
+                    },
+                    error: function(data)
+                    {
+                        show_alert('alert-danger', data.responseJSON[0]);
+                    }
+                });
+            }
+        });
+    }
+{% endif %}
+
+{% endblock %}
+
+{% block main_content %}
+<div class="row" style="margin-top: 20px;">
+
+	<div class="col-lg-10 col-centered">
+        <ol class = "breadcrumb">
+           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li class = "active"><a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a></li>
+           <li class = "active"><a href="{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}">Building models</a></li>
+           <li class = "active"><a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}" id="bread_crum_building_model_name">{{ building_model.name }}</a></li>
+        </ol>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}" id="title_building_model_name">{{ building_model.name }}</a></h2>
+            <div style="float:left;">
+                <img src="{{ url_for('static', filename='images/profile_pictures/'+building_model.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
+            </div>
+            <div style="float:left; margin-left:10px;">
+                <div>Created by <a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a> at {{ building_model.created_time }}</div>
+                {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
+                <div>
+                    <a href="javascript:void(0);" onclick="$.facebox($('#edit_building_model').html());">Edit</a> -
+                    <a href="javascript:void(0);" onclick="save_thumbnail_position();">Save thumbnail position</a> -
+                    <a href="javascript:void(0);" onclick="delete_building_model();">Delete building model</a>
+                </div>
+                <div id="edit_building_model" style="display:none">
+                    <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit building model</h1>
+                    <div style="color:red;display:none;" id="update_building_model_errors"></div>
+                    <dl class="form">
+                        <dt class="input-label">
+                            <label autocapitalize="off" autofocus="autofocus" for="name">Building model name</label>
+                        </dt>
+                        <dd>
+                            <input type="text" id="building_model_name" name="building_model_name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ building_model.name }}">
+                        </dd>
+                    </dl>
+                    <div style="float:right;">
+                        <button class="btn btn-primary" onclick="update_building_model();">Update</button>
+                        <button class="btn" onclick="$.facebox.close();">Cancel</button>
+                    </div>
+                    <div style="clear:both"></div>
+
+                </div>
+                {% endif %}
+                <div>
+                <a class="btn btn-info" href="{{ url_for('static', filename='models/building_models/' + building_model.data_file) }}" download>Download model file</a>
+                {% if g.user %}
+                <button class="btn btn-primary" onclick="clone_building_model();">Clone this building model</button>
+                {% endif %}
+                {% if g.user and g.user.is_admin() %}
+                    {% if building_model.is_base_item==0 %}
+                        <button class="btn btn-warning" onclick="change_base_model_status();" id="base_model_button">Promote to base model</button>
+                    {% elif building_model.is_base_item==1 %}
+                        <button class="btn btn-danger" onclick="change_base_model_status();" id="base_model_button">Demote to normal model</button>
+                    {% endif %}
+                {% endif %}
+                </div>
+            </div>
+
+            <div style="clear:both"></div>
+            <input type="hidden" name="addition_information" value="" id="addition_information"/>
+			<div style="margin: 0; padding: 0; display: inline">
+			</div>
+			<dl class="form">
+				<dt class="input-label">
+					<div style="width:100%;height:500px;border:1px solid black;" id="building_model_{{ building_model.id }}"></div>
+				</dt>
+				<dd>
+                    <div id="building_model_comment_panel"></div>
+				</dd>
+			</dl>
+	</div>
+</div>
+
+
+{% endblock %}
