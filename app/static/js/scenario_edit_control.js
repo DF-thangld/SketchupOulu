@@ -96,8 +96,9 @@ function switchMode(i)
 	}else if(mode_index !=1 && mode==1){
 		current_object.visible=true;
 	}
-	mode_index= mode ;
-	switch(mode_index){
+	if (mode != 8)
+		mode_index = mode;
+	switch(mode){
 		case 0:{
 			break;
 		}
@@ -128,15 +129,16 @@ function switchMode(i)
 			break;
 		}
 		case 8:{
-			
 			if(IsOnTop){
 				//change to build on ground mode
 				IsOnTop=false;
 				intersectObjects=[plane];
+				objects.splice( objects.indexOf( plane ), 1 );
 				document.getElementById("buildWhere").innerHTML="Build On Top";
 			}else{
 				//change to build on top mode
 				IsOnTop=true;
+				objects.push(plane);
 				intersectObjects=objects;
 				document.getElementById("buildWhere").innerHTML="Build On Ground";
 			}
@@ -399,7 +401,10 @@ function onDocumentMouseMove(event)
 	}
 }
 
-function onDocumentMouseUp( event ) {
+function onDocumentMouseUp( event ) 
+{
+	if (isShiftDown)
+		return;
 	switch(mode_index)
 	{
 		case 0:{//select  -- release selected object
@@ -422,6 +427,8 @@ function onDocumentMouseUp( event ) {
 }
 function onDocumentMouseDown( event )
 {
+	if (isShiftDown)
+		return;
 	//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
 	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 	var x = event.pageX - $('#ModelWindow').offset().left;
