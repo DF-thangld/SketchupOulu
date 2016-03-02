@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 from sqlalchemy import or_
 from werkzeug import check_password_hash, generate_password_hash, secure_filename
 
@@ -52,6 +52,22 @@ def user_list():
     current_page = page.page
 
     return json.dumps({'users': users, 'total_page': total_page, 'current_page': current_page})
+
+
+@mod.route('/login_as/<user_id>', methods=['GET'])
+@requires_admin
+def login_as(user_id):
+
+    if not user_id or user_id == 0:
+        return render_template("404.html"), 404
+
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return render_template("404.html"), 404
+    
+    session['user_id'] = user_id
+    return make_response(redirect(url_for('users.own_profile')))
+
 
 @mod.route('/get_user_info/', methods=['GET'])
 @requires_admin

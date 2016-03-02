@@ -133,6 +133,11 @@
             }
         });
     }
+    
+    function login_as()
+    {
+    	window.location = '{{ url_for('admin.login_as', user_id='') }}' + $('#user_id').val();
+    }
 
 
 
@@ -178,6 +183,9 @@
                 <div id="user_content">
                     <!-- Toolbar -->
                     <div class="btn-toolbar" id="toolbar">
+                    	<a id="save_button" type="button submit" class="btn btn-primary" onclick="login_as();">
+                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Login as
+                        </a>
                         <a id="save_button" type="button submit" class="btn btn-success" onclick="update_info();">
                             <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save
                         </a>

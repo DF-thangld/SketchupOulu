@@ -20,6 +20,7 @@
         $("#profile_menu li").removeClass("active");
         $(this).addClass("active");
 	});
+	canvas = document.getElementById( "scenario_canvas" );
     {% for building_model in building_models %}
     init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}');
     {% endfor %}
@@ -56,6 +57,8 @@
     var building_models = [];
     var scenarios = [];
     var manager = new THREE.LoadingManager();
+    var scenario_renderer = null;
+    var canvas;
 
     window.addEventListener('resize', function()
     {
@@ -96,17 +99,21 @@
         scene.add(camera);
 
         // RENDERER
-        var renderer;
-        if ( Detector.webgl )
-            renderer = new THREE.WebGLRenderer( {antialias:true} );
-        else
-            renderer = new THREE.CanvasRenderer();
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        renderer.setClearColor( 0xffffff, 1 );
+        
+        if (scenario_renderer == null)
+        {
+	        if ( Detector.webgl )
+	            scenario_renderer = new THREE.WebGLRenderer( { antialias: true } );
+	        else
+	            scenario_renderer = new THREE.CanvasRenderer();
+	    }
+        scenario_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        scenario_renderer.setClearColor( 0xffffff, 1 );
         container = document.getElementById( 'scenario_' +id );
-        container.appendChild( renderer.domElement );
+        container.appendChild( scenario_renderer.domElement.cloneNode(true) );
+        console.log(scenario_renderer.domElement);
 
-
+		scene.userData.element = document.getElementById( 'scenario_' +id );
 
         //LIGHT
         var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -145,11 +152,12 @@
         scene.add( line );
 
         //init_scene(information, scene);
-        var control = new THREE.OrbitControls( camera, renderer.domElement );
+        var control = new THREE.OrbitControls( camera, document.getElementById( 'scenario_' +id ) );
+        scene.userData.camera = camera;
 
         //move objects to global arrays
-        scenarios.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
-        renderer.render( scene, camera );
+        scenarios.push({"id": id, "renderer": scenario_renderer, 'camera': camera, 'scene': scene, 'control': control});
+        //renderer.render( scene, camera );
     }
 
 
@@ -187,7 +195,11 @@
                     '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
                     information.original_filename,
                     {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                    scene);
+                    scene,
+	                function(object)
+	                {
+	                    
+	                });
 
         var control = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -210,13 +222,47 @@
 
             building_model['control'].update();
         }
-        for (i=0; i < scenarios.length; i++)
-        {
-            var scenario = scenarios[i];
-            scenario['renderer'].render( scenario['scene'], scenario['camera'] );
+        
+        
+        scenario_renderer.setClearColor( 0xffffff );
+		scenario_renderer.setScissorTest( false );
+		scenario_renderer.clear();
 
-            scenario['control'].update();
-        }
+		scenario_renderer.setClearColor( 0xffffff );
+		scenario_renderer.setScissorTest( true );
+		
+		scenarios.forEach( function( scenario ) {
+
+			scenario_renderer.clear();
+			var scene = scenario['scene'];
+
+			// get the element that is a place holder for where we want to
+			// draw the scene
+			var element = scene.userData.element;
+
+			// get its position relative to the page's viewport
+			var rect = element.getBoundingClientRect();
+
+			// check if it's offscreen. If so skip it
+
+
+			// set the viewport
+			/*var width  = rect.right - rect.left;
+			var height = rect.bottom - rect.top;
+			var left   = rect.left;
+			var bottom = scenario_renderer.domElement.clientHeight - rect.bottom;*/
+
+			scenario_renderer.setViewport( left, bottom, width, height );
+			scenario_renderer.setScissor( left, bottom, width, height );
+
+			var camera = scene.userData.camera;
+
+			scenario_renderer.domElement = document.getElementById('scenario_' + scenario['id']).getElementsByTagName('canvas')[0];
+			scenario_renderer.render( scene, camera );
+
+		} );
+		
+	
     }
 
     function display_comments()
@@ -311,7 +357,7 @@
             },
             error: function(data)
             {
-                console.log(data);
+                
                 $('#change_password_error_content').html('');
                 for (i = 0; i < data.responseJSON.length; i++)
                     $('#change_password_error_content').append('<div>- ' + data.responseJSON[i] + '</div>');
@@ -441,5 +487,6 @@
         {% endif %}
 
     </div>
+    <canvas id="scenario_canvas"></canvas>
 </div>
 {% endblock %}

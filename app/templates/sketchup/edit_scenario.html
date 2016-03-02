@@ -97,51 +97,7 @@ var windowHeight = 500;
 
 
 
-function init_building_model(id, file_type, information, index)
-{
-    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
-    information = JSON.parse(information);
 
-    // variables
-    var building_scene = new THREE.Scene();
-    building_scene.name = "scene_building_model_" + id;
-    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
-    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
-    building_scene.add(building_camera);
-
-    // RENDERER
-    var building_renderer;
-    if ( Detector.webgl )
-        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
-    else
-        building_renderer = new THREE.CanvasRenderer();
-    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    building_renderer.setClearColor( 0xffffff, 1 );
-    var building_container = document.getElementById( 'building_model_' +id );
-    building_container.appendChild( building_renderer.domElement );
-
-    //LIGHT
-    var ambientLight = new THREE.AmbientLight(0xffffff);
-    building_scene.add(ambientLight);
-
-    //object
-    load_model( file_type,
-                '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
-                information.original_filename,
-                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                building_scene,
-                function(object)
-                {
-                    models[index] = object;
-                });
-
-    //move objects to global arrays
-    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
-    building_renderer.render( building_scene, building_camera );
-}
 
 
 function save_scenario_content()
@@ -449,8 +405,11 @@ function init()
     function do_switch_mode(mode)
     {
     	
-    	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
-    	if (mode_index != mode)
+    	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right'};
+    	
+    	if (mode == 8)
+	   		switchMode(mode);
+	   	else if (mode_index != mode)
     	{
 	    	for (var mode_key in buttons)
 				$('#' + buttons[mode_key]).removeClass('disabled');
@@ -462,8 +421,7 @@ function init()
 			$('#' + buttons[mode]).removeClass('disabled');
 			switchMode('-1');
 		}
-		$('#buildWhere').removeClass('disabled');
-    	
+		
     }
 
 {% endblock %}
@@ -572,7 +530,7 @@ function init()
 	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
 	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
 	                    	</div>
-	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Ground</label></div>
 	                    	<div>
 	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
 	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>

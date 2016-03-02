@@ -344,7 +344,7 @@ function load_model(file_type, directory, filename, addition_information, object
             }, 50);
             return;
         }
-		else if (loaded_objects[unique_id] == false)
+		else if (loaded_objects[unique_id] == '-1')
 			return;
         var new_object = loaded_objects[unique_id].clone();
 
@@ -366,11 +366,21 @@ function load_model(file_type, directory, filename, addition_information, object
     loaded_objects[file_type + "|" + directory + "|" + filename] = null;
     if (file_type == 'objmtl')
     {
-        var loader = new THREE.OBJMTLLoader(manager);
-        loader.load(directory + filename + ".obj",
-            directory + filename + ".mtl",
-            function (object) {
-                object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+    	
+    	var mtlLoader = new THREE.MTLLoader();
+		mtlLoader.setBaseUrl( directory );
+		mtlLoader.setPath( directory );
+		mtlLoader.load( filename + '.mtl', function( materials ) {
+
+			materials.preload();
+
+			var objLoader = new THREE.OBJLoader();
+			objLoader.setMaterials( materials );
+			objLoader.setPath( directory );
+			objLoader.load( filename + '.obj', function ( object ) {
+
+				
+				object.scale.x = object.scale.y = object.scale.z = addition_information.size;
                 object.position.x = addition_information.x;
                 object.position.y = addition_information.y;
                 object.position.z = addition_information.z;
@@ -384,8 +394,10 @@ function load_model(file_type, directory, filename, addition_information, object
                 object_scene.add(object);
                 if (onload !== undefined)
                     onload(object);
-            }, function(){},
-        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+
+			}, function(){}, function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';} );
+
+		});
     }
     else if (file_type == 'obj')
     {
@@ -413,7 +425,7 @@ function load_model(file_type, directory, filename, addition_information, object
                         onload(object);
                 },
                 function(){},
-                function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+                function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
         }
         catch(err) {console.log(err.message);}
     }
@@ -440,7 +452,7 @@ function load_model(file_type, directory, filename, addition_information, object
                     onload(dae);
             },
             function(){},
-            function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+            function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
         }
         catch(err) {console.log(err.message);}
 
@@ -473,7 +485,7 @@ function load_model(file_type, directory, filename, addition_information, object
                 onload(image_object);
 		},
         function(){},
-        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
     }
 
 }

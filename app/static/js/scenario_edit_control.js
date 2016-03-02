@@ -67,6 +67,54 @@ function render()
 	renderer.render( controlling_scene, controlling_camera );
 }
 
+function init_building_model(id, file_type, information, index)
+{
+    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+    information = JSON.parse(information);
+
+    // variables
+    var building_scene = new THREE.Scene();
+    building_scene.name = "scene_building_model_" + id;
+    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
+    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
+    building_scene.add(building_camera);
+
+    // RENDERER
+    var building_renderer;
+    if ( Detector.webgl )
+        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
+    else
+        building_renderer = new THREE.CanvasRenderer();
+    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    building_renderer.setClearColor( 0xffffff, 1 );
+    var building_container = document.getElementById( 'building_model_' +id );
+    building_container.appendChild( building_renderer.domElement );
+
+    //LIGHT
+    var ambientLight = new THREE.AmbientLight(0xffffff);
+    building_scene.add(ambientLight);
+
+    //object
+    load_model( file_type,
+                MODEL_PATH + information.directory + '/',
+                information.original_filename,
+                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+                building_scene,
+                function(object)
+                {
+                    models[index] = object;
+                    console.log(object);
+                    console.log(building_scene);
+                });
+
+    //move objects to global arrays
+    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
+    building_renderer.render( building_scene, building_camera );
+}
+
 function add_building_model(information)
 {
     if (current_object != null)
@@ -85,19 +133,25 @@ function add_building_model(information)
 					current_object = object;
 					object.addition_information = information;
 					switchMode(1);
+					
+					buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right'};
+					for (var mode_key in buttons)
+						$('#' + buttons[mode_key]).removeClass('disabled');
 				});
 }
 
 function switchMode(i)
 {
 	var mode = parseInt(i);
-	if(mode_index ==1 && mode!=1){// from 0 to other
-		current_object.visible=false;
-	}else if(mode_index !=1 && mode==1){
-		current_object.visible=true;
-	}
 	if (mode != 8)
+	{
+		if(mode_index ==1 && mode!=1)// from 0 to other
+			current_object.visible=false;
+		else if(mode_index !=1 && mode==1)
+			current_object.visible=true;
 		mode_index = mode;
+	}
+		
 	switch(mode){
 		case 0:{
 			break;
@@ -134,13 +188,13 @@ function switchMode(i)
 				IsOnTop=false;
 				intersectObjects=[plane];
 				objects.splice( objects.indexOf( plane ), 1 );
-				document.getElementById("buildWhere").innerHTML="Build On Top";
+				document.getElementById("buildWhere").innerHTML="Build On Ground";
 			}else{
 				//change to build on top mode
 				IsOnTop=true;
 				objects.push(plane);
 				intersectObjects=objects;
-				document.getElementById("buildWhere").innerHTML="Build On Ground";
+				document.getElementById("buildWhere").innerHTML="Build On Top";
 			}
 			break;
 		}
@@ -355,7 +409,7 @@ function onDocumentMouseMove(event)
 
 				raycaster.setFromCamera( mouse, camera );
 
-				var intersects = raycaster.intersectObjects( [plane], true );
+				var intersects = raycaster.intersectObjects( intersectObjects, true );
 				if ( intersects.length > 0 )
 				{
 
