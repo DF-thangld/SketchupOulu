@@ -27,11 +27,7 @@ var objects = [];
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 //constant
-var WORLD_SIZE = 1000; //side length of the square world
-var BLOCK_SIZE = 50;
-var MOVING_SPEED = 10;
-var DEFAULT_HEIGHT = 1000;
-var DEFAULT_DISTANCE = 100;
+
 
 // threejs variables
 var container;
@@ -42,11 +38,6 @@ var plane;
 var move_forward = false, move_backward = false, move_left = false, move_right = false, move_up = false, move_down = false, is_rotating = false;
 var rotate_angle = 0;
 var current_view = 0;
-var views = [{'x': 0, 'y':DEFAULT_HEIGHT, 'z': -1*WORLD_SIZE-DEFAULT_DISTANCE},
-			{'x': WORLD_SIZE+DEFAULT_DISTANCE, 'y':DEFAULT_HEIGHT, 'z': 0},
-			{'x': 0, 'y':DEFAULT_HEIGHT, 'z': WORLD_SIZE+DEFAULT_DISTANCE},
-			{'x': -1*WORLD_SIZE-DEFAULT_DISTANCE, 'y':DEFAULT_HEIGHT, 'z': 0}];
-var center_position = new THREE.Vector3( 0, 0, 0 );
 
 //
 var mouse_start_positions = [];
@@ -86,149 +77,6 @@ var windowWidth = 972;
 var windowHeight = 500;
 
 var stats;
-
-function init()
-{
-	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
-	windowWidth = document.getElementById("ModelWindow").offsetWidth;
-	windowHeight = document.getElementById("ModelWindow").offsetHeight;
-
-	scene = new THREE.Scene();
-    scene.name = "add_scenario_scene";
-	
-	isSelect = false;// no object has been selected
-	selectedModel = null;
-	
-	//load model information
-	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
-
-	//pre-defined objects
-    init_scene(sceneObjects, scene, function(model){
-		objects.push(model);
-	});
-
-	//document
-	//container = document.createElement( 'div' );
-	//document.body.appendChild( container );
-	
-	container = document.getElementById("ModelWindow");
-	//webgl
-	camera = new THREE.PerspectiveCamera( 45, windowRatio, 1, 10000 );
-	camera.position.set( views[0].x, views[0].y, views[0].z );
-	camera.target = center_position;
-	camera.lookAt( camera.target );
-
-	//light
-	var ambient = new THREE.AmbientLight( 0xffffff );
-	scene.add( ambient );
-
-    /*
-	//1. build the grid
-
-	var size = WORLD_SIZE/2, step = BLOCK_SIZE;
-
-	var geometry = new THREE.Geometry();
-
-	for ( var i = - size; i <= size; i += step ) {
-
-		geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-		geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-
-		geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-		geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-		
-	}
-	
-	var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
-
-	var line = new THREE.LineSegments( geometry, material );
-	IsOnTop=false;
-	scene.add( line );
-
-	//create the lowest base, unvisible, just used for detect where to place the models
-	geometry = new THREE.PlaneBufferGeometry( WORLD_SIZE, WORLD_SIZE );
-	geometry.rotateX( - Math.PI / 2 );
-
-	//plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
-	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( ) );
-	intersectObjects=[plane];
-	scene.add( plane );
-	
-	// add keyboard events to mode
-	document.addEventListener( 'keydown', onDocumentKeyDown, false );
-	document.addEventListener( 'keyup', onDocumentKeyUp, false );
-	window.addEventListener( 'resize', onWindowResize, false );
-	// add mouse events to mode
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-
-	// display the scene
-	if (window.WebGLRenderingContext)
-		renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
-	else
-		renderer = new THREE.CanvasRenderer(); //using the (slower) Canvas 2D Context API
-
-	renderer.setClearColor( 0xf0f0f0 ); //0xffffff
-	renderer.setPixelRatio( window.devicePixelRatio );
-	//renderer.setPixelRatio( document.getElementById("ModelWindow").offsetWidth/
-	//						document.getElementById("ModelWindow").offsetHeight );
-	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
-		 				document.getElementById("ModelWindow").offsetHeight
-	);
-	
-	container.appendChild( renderer.domElement );
-
-
-	//
-	stats = new Stats();
-	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.top = ' 500px';
-	container.appendChild( stats.domElement );
-	//
-
-	//render
-	renderer.render( scene, camera);
-    */
-    //1. build the grid
-
-	{% if can_edit %}
-    // insert model to objects
-
-	// add keyboard events to mode
-
-	{% else %}
-
-	{% endif %}
-
-	// display the scene
-	if (window.WebGLRenderingContext)
-		renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
-	else
-		renderer = new THREE.CanvasRenderer(); //using the (slower) Canvas 2D Context API
-
-	renderer.setClearColor( 0xf0f0f0 ); //0xffffff
-	renderer.setPixelRatio( window.devicePixelRatio );
-	//renderer.setPixelRatio( document.getElementById("ModelWindow").offsetWidth/
-	//						document.getElementById("ModelWindow").offsetHeight );
-	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
-		 				document.getElementById("ModelWindow").offsetHeight
-	);
-
-	container.appendChild( renderer.domElement );
-	{% if not can_edit %}
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	{% endif %}
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-	intersectObjects=[plane];
-	//render
-	renderer.render( scene, camera);
-	control = controls;
-	controlling_renderer = renderer;
-	controlling_scene = scene;
-	controlling_camera = camera;
-}
 
 
 function before_submit()
@@ -341,7 +189,7 @@ function do_switch_mode(mode)
                     	</div>
                     </div>
                    
-					<div style="width:80%;height:500px; float:right" id="ModelWindow"></div>
+					<div style="width:80%;height:500px; float:right;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;" id="ModelWindow"></div>
 					<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
 						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
 						<span id="metric">100m</span>
@@ -355,7 +203,7 @@ function do_switch_mode(mode)
                                 {% if index%5 == 0 %}
                                 <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
                                 {% endif %}
-                                    <div class="col-lg-2" style="margin-top:5px;background-color: #fff;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
+                                    <div class="col-lg-2" style="margin-top:5px;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
                                         <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
                                         {{ building_model.name }}
                                     </div>

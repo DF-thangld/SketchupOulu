@@ -1,5 +1,10 @@
 // constants
 var TRIM_SCREEN_VALUE = 7;
+var WORLD_SIZE = 1000; //side length of the square world
+var BLOCK_SIZE = 50;
+var MOVING_SPEED = 10;
+var DEFAULT_HEIGHT = 1000;
+var DEFAULT_DISTANCE = 100;
 
 // required variables
 var fullscreen_element = 'fullscreen_area';
@@ -7,7 +12,11 @@ var scenario_element = 'ModelWindow';
 var controlling_scene = null;
 var controlling_renderer = null;
 var controlling_camera = null;
+var controlling_control = null;
 var control = null;
+var building_renderer = null;
+var canvas = null;
+var renderer = null;
 
 
 // variables
@@ -21,12 +30,13 @@ var old_height = 0;
 var current_width = 0;
 var current_height = 0;
 var mouse_on_model = false;
+var building_model_scenes = [];
+var scenes = [];
 
 var isShiftDown = false;
 var isControlDown = false;
 
-function get_screen_width(){return window.innerWidth - TRIM_SCREEN_VALUE;}
-function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
+
 
 
 $( document ).ready(function()
@@ -44,7 +54,7 @@ $( document ).ready(function()
 function animate() 
 {
 	requestAnimationFrame( animate );
-	if (isShiftDown && (mouse_on_model || is_fullscreen))
+	/*if (isShiftDown && (mouse_on_model || is_fullscreen))
 	{
 		control.enabled = true;
 		control.update();
@@ -53,23 +63,139 @@ function animate()
 	}
 	else
 		control.enabled = false;
-	//console.log(isShiftDown, mouse_on_model, is_fullscreen);
+	//console.log(isShiftDown, mouse_on_model, is_fullscreen);*/
 	render();
+}
+
+function updateSize()
+{
+
+	var width = canvas.clientWidth;
+	var height = canvas.clientHeight;
+
+	if ( canvas.width !== width || canvas.height != height ) {
+
+		renderer.setSize( width, height, false );
+	}
 }
 
 function render() 
 {
-	for (i=0; i < building_models.length; i++)
+	
+	updateSize();
+	
+	renderer.setClearColor( 0xffffff );
+	renderer.setScissorTest( false );
+	renderer.clear();
+
+	renderer.setClearColor( 0xffffff    );
+	renderer.setScissorTest( true );
+	
+	if (isShiftDown)
+		controlling_scene.userData.control.enabled = true;
+	else
+		controlling_scene.userData.control.enabled = false;
+	for (i=0; i < scenes.length; i++)
     {
-        var building_model = building_models[i];
-        building_model['renderer'].render( building_model['scene'], building_model['camera'] );
+		var scene = scenes[i];
+
+		// get the element that is a place holder for where we want to
+		// draw the scene
+		var element = scene.userData.element;
+
+		// get its position relative to the page's viewport
+		var rect = element.getBoundingClientRect();
+
+		// check if it's offscreen. If so skip it
+		if ( rect.bottom < 0 || rect.top  > renderer.domElement.clientHeight ||
+			 rect.right  < 0 || rect.left > renderer.domElement.clientWidth ) {
+
+			continue;  // it's off screen
+
+		}
+
+		// set the viewport
+		var width  = rect.right - rect.left;
+		var height = rect.bottom - rect.top;
+		var left   = rect.left;
+		var bottom = renderer.domElement.clientHeight - rect.bottom;
+
+		renderer.setViewport( left, bottom, width, height );
+		renderer.setScissor( left, bottom, width, height );
+
+		var camera = scene.userData.camera;
+
+		renderer.render( scene, camera );
     }
-	renderer.render( controlling_scene, controlling_camera );
+	//controlling_renderer.render( controlling_scene, controlling_camera );
+}
+
+function init()
+{
+	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
+	windowWidth = document.getElementById("ModelWindow").offsetWidth;
+	windowHeight = document.getElementById("ModelWindow").offsetHeight;
+
+	scene = new THREE.Scene();
+    scene.name = "add_scenario_scene";
+	
+	isSelect = false;// no object has been selected
+	selectedModel = null;
+	
+	//load model information
+	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+	//pre-defined objects
+    init_scene(sceneObjects, scene, function(model){
+		objects.push(model);
+	});
+
+	//document
+	//container = document.createElement( 'div' );
+	//document.body.appendChild( container );
+	
+	container = document.getElementById("ModelWindow");
+	
+	//webgl
+	camera = new THREE.PerspectiveCamera( 45, windowRatio, 1, 10000 );
+	camera.position.set( 0, DEFAULT_HEIGHT, -1*WORLD_SIZE-DEFAULT_DISTANCE );
+	camera.target = new THREE.Vector3( 0, 0, 0 );
+	camera.lookAt( camera.target );
+
+	//light
+	var ambient = new THREE.AmbientLight( 0xffffff );
+	scene.add( ambient );
+
+	// display the scene
+	if (canvas == null)
+		canvas = document.getElementById("threejs_canvas");
+    if (renderer == null)
+    {
+        if ( Detector.webgl )
+        	renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );
+        else
+        	renderer = new THREE.CanvasRenderer({ canvas:canvas, antialias: true });
+    }
+	//renderer.setPixelRatio( document.getElementById("ModelWindow").offsetWidth/
+	//						document.getElementById("ModelWindow").offsetHeight );
+
+	intersectObjects=[plane];
+	scene.userData.element = document.getElementById("ModelWindow");
+	scene.userData.camera = camera;
+	scene.userData.control = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
+	//render
+	control = controls;
+	controlling_control = controls;
+	controlling_renderer = renderer;
+	controlling_scene = scene;
+	controlling_camera = camera;
+	scenes.push(scene);
 }
 
 function init_building_model(id, file_type, information, index)
 {
-    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+    //$('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+	$('#building_model_' + id).height($('#building_model_' + id).width()*3/4);
     information = JSON.parse(information);
 
     // variables
@@ -83,15 +209,15 @@ function init_building_model(id, file_type, information, index)
     building_scene.add(building_camera);
 
     // RENDERER
-    var building_renderer;
-    if ( Detector.webgl )
-        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
-    else
-        building_renderer = new THREE.CanvasRenderer();
-    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    building_renderer.setClearColor( 0xffffff, 1 );
-    var building_container = document.getElementById( 'building_model_' +id );
-    building_container.appendChild( building_renderer.domElement );
+    if (canvas == null)
+		canvas = document.getElementById("threejs_canvas");
+    if (renderer == null)
+    {
+        if ( Detector.webgl )
+        	renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );
+        else
+        	renderer = new THREE.CanvasRenderer({ canvas:canvas, antialias: true });
+    }
 
     //LIGHT
     var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -106,13 +232,12 @@ function init_building_model(id, file_type, information, index)
                 function(object)
                 {
                     models[index] = object;
-                    console.log(object);
-                    console.log(building_scene);
                 });
 
     //move objects to global arrays
-    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
-    building_renderer.render( building_scene, building_camera );
+    building_scene.userData.camera = building_camera;
+    building_scene.userData.element = document.getElementById( 'building_model_' + id);
+    scenes.push(building_scene);
 }
 
 function add_building_model(information)
@@ -333,19 +458,7 @@ function redo_action(on_finish)
 		on_finish(action);
 }
 
-function full_screen()
-{
-	if( THREEx.FullScreen.activated() )
-	{
-		THREEx.FullScreen.cancel();
-		is_fullscreen = false;
-	}
-	else
-	{
-		THREEx.FullScreen.request(document.getElementById(fullscreen_element));
-		is_fullscreen = true;
-	}
-}
+
 
 
 function onDocumentKeyDown(event)
@@ -712,19 +825,21 @@ function shrink_scenario()
 function onWindowResize()
 {
 	
-	var windowRatio = document.getElementById(scenario_element).offsetWidth/document.getElementById(scenario_element).offsetHeight;
-	var windowWidth = document.getElementById(scenario_element).offsetWidth;
-	var windowHeight = document.getElementById(scenario_element).offsetHeight;
-	
-	//camera.aspect = window.innerWidth / window.innerHeight;
-	camera.aspect = windowRatio;
-	camera.updateProjectionMatrix();
-
-	//renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	renderer.setSize( 	windowWidth,
-						windowHeight
-	);
+	for (i=0; i < scenes.length; i++)
+    {
+		var scene = scenes[i];
+		var element = scene.userData.element;
+		var camera = scene.userData.camera;
+		
+		var windowRatio = element.offsetWidth/element.offsetHeight;
+		var windowWidth = element.offsetWidth;
+		var windowHeight = element.offsetHeight;
+		
+		camera.aspect = windowRatio;
+		camera.updateProjectionMatrix();
+		
+    }
+	render();
 }
 
 // full screen region
@@ -736,15 +851,32 @@ if (document.addEventListener)
     document.addEventListener('MSFullscreenChange', exitHandler, false);
 }
 
+function full_screen()
+{
+	if( THREEx.FullScreen.activated() )
+	{
+		THREEx.FullScreen.cancel();
+		
+	}
+	else
+	{
+		old_width = $('#' + fullscreen_element).width();
+		old_height = $('#' + fullscreen_element).height();
+		THREEx.FullScreen.request(document.getElementById(fullscreen_element));
+	}
+}
+
+function get_screen_width(){return window.innerWidth - TRIM_SCREEN_VALUE;}
+function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
+
 function exitHandler()
 {
     if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)
     {
     	// change screen to fit fullscreen
-    	/*if (!is_fullscreen) // change state from normal to fullscreen
+    	if (!is_fullscreen) // change state from normal to fullscreen
     	{
-    		old_width = $('#' + fullscreen_element).width();
-    		old_height = $('#' + fullscreen_element).height();
+    		is_fullscreen = true;
     		$('#' + fullscreen_element).width(get_screen_width());
     		$('#' + fullscreen_element).height(get_screen_height());
     	}
@@ -752,9 +884,10 @@ function exitHandler()
     	{
     		$('#' + fullscreen_element).width(old_width);
     		$('#' + fullscreen_element).height(old_height);
+    		is_fullscreen = false;
     		console.log($('#' + fullscreen_element).width(), $('#' + fullscreen_element).height());
-    	}*/
+    	}
     	
-    	is_fullscreen = !is_fullscreen;
+    	
     }
 }
