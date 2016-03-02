@@ -5,10 +5,12 @@ from flask import g, session, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.users.models import User, UserSession
 from app import app, db
+import config
 
 @app.before_request
 def before_request():
     g.user = None
+    session['sketchup_version'] = config.VERSION
     if session.get('user_id'):
         user = User.query.filter_by(id=session.get('user_id')).first()
         g.user = user
