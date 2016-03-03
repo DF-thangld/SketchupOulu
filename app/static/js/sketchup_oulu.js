@@ -367,14 +367,14 @@ function load_model(file_type, directory, filename, addition_information, object
     if (file_type == 'objmtl')
     {
     	
-    	var mtlLoader = new THREE.MTLLoader();
+    	var mtlLoader = new THREE.MTLLoader(manager);
 		mtlLoader.setBaseUrl( directory );
 		mtlLoader.setPath( directory );
 		mtlLoader.load( filename + '.mtl', function( materials ) {
 
 			materials.preload();
 
-			var objLoader = new THREE.OBJLoader();
+			var objLoader = new THREE.OBJLoader(manager);
 			objLoader.setMaterials( materials );
 			objLoader.setPath( directory );
 			objLoader.load( filename + '.obj', function ( object ) {
@@ -459,7 +459,7 @@ function load_model(file_type, directory, filename, addition_information, object
     }
     else if (file_type == 'jpg' || file_type == 'jpeg' || file_type == 'png')
     {
-    	var loader = new THREE.TextureLoader();
+    	var loader = new THREE.TextureLoader(manager);
 		loader.load(directory + filename + "." + file_type ,function(texture)
 		{
 			

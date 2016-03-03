@@ -87,12 +87,11 @@ function before_submit()
 
 function do_switch_mode(mode)
 {
-   	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
-   	if (mode == 8)
-   		switchMode(mode);
-   	else if (mode_index != mode)
-   	{
-    	for (var mode_key in buttons)
+  	
+  	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
+  	if (mode_index != mode)
+  	{
+	   	for (var mode_key in buttons)
 			$('#' + buttons[mode_key]).removeClass('disabled');
 		$('#' + buttons[mode]).addClass('disabled');
 		switchMode(mode);
@@ -103,7 +102,7 @@ function do_switch_mode(mode)
 		switchMode('-1');
 	}
 	$('#buildWhere').removeClass('disabled');
-   	
+	  	
 }
 
 {% endblock %}
@@ -165,71 +164,74 @@ function do_switch_mode(mode)
                     Model
 				</dt>
 				<dd>
-                    <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-                        <div><b>Model Control:</b></div>
-                        <div>
-                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
-                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
-                        </div>
-                    	<div><b>Model Control:</b></div>
-                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
-						<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
-                    	<div>
-                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
-                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
-                    	</div>
-                    	<div>
-                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
-                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
-                    	</div>
-                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Ground</label></div>
-                    	<div>
-                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
-                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
-                    	</div>
-                    </div>
-                   
-					<div style="width:80%;height:500px; float:right;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;" id="ModelWindow"></div>
-					<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
-						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
-						<span id="metric">100m</span>
+					<div id="fullscreen_area" style="background-color: #fff;">
+	                    <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
+	                        <div><b>Model Control:</b></div>
+	                        <div>
+	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
+	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
+	                        </div>
+	                    	<div><b>Model Control:</b></div>
+	                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
+							<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
+	                    	<div>
+	                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
+	                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
+	                    	</div>
+	                    	<div>
+	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
+	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
+	                    	</div>
+	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Ground</label></div>
+	                    	<div>
+	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
+	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
+	                    	</div>
+	                    </div>
+	                   
+						<div style="width:80%;height:500px; float:right;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;" id="ModelWindow"></div>
+						<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
+							<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
+							<span id="metric">100m</span>
+						</div>
+	                    <div style="clear:both"></div>
+	                    
+	                    <div id="available_building_models" class="carousel slide" data-interval="0" style="background-color:#fff;margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
+		                        <!-- Wrapper for slides -->
+		                        <div class="carousel-inner" role="listbox">
+		                            {% set index = 0 %}
+		                            {% for building_model in building_models %}
+		                                {% if index%5 == 0 %}
+		                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
+		                                {% endif %}
+		                                    <div class="col-lg-2" style="margin-top:5px;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
+		                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
+		                                        {{ building_model.name }}
+		                                    </div>
+		                                {% set index = index + 1 %}
+		                                {% if index%5 == 0 %}
+		                                    <div style="clear:both"></div>
+		                                </div>
+		                                {% endif %}
+		                            {% endfor %}
+		                            {% if index%5 != 0 %}
+		                                <div style="clear:both"></div>
+		                            </div>
+		                            {% endif %}
+		
+		                        </div>
+		                          <!-- Left and right controls -->
+		                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
+		                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		                            <span class="sr-only">Previous</span>
+		                          </a>
+		                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
+		                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+		                            <span class="sr-only">Next</span>
+		                          </a>
+		                    </div>
+						</div>
 					</div>
-                    <div style="clear:both"></div>
-                    <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner" role="listbox">
-                            {% set index = 0 %}
-                            {% for building_model in building_models %}
-                                {% if index%5 == 0 %}
-                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
-                                {% endif %}
-                                    <div class="col-lg-2" style="margin-top:5px;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
-                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
-                                        {{ building_model.name }}
-                                    </div>
-                                {% set index = index + 1 %}
-                                {% if index%5 == 0 %}
-                                    <div style="clear:both"></div>
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                            {% if index%5 != 0 %}
-                                <div style="clear:both"></div>
-                            </div>
-                            {% endif %}
-
-                        </div>
-
-                          <!-- Left and right controls -->
-                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
-                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                          </a>
-                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                          </a>
-                    </div>
 				</dd>
 			</dl>
 			<div class="form-actions">

@@ -13655,3 +13655,24 @@ svg.octicon, svg.mega-octicon {
 {
 	cursor: pointer;
 }
+
+.jcarousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.jcarousel ul {
+    width: 20000em;
+    position: relative;
+
+    /* Optional, required in this case since it's a <ul> element */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jcarousel li {
+    /* Required only for block elements like <li>'s */
+    float: left;
+    width:100px;
+}
