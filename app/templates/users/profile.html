@@ -29,7 +29,7 @@
     {% endfor %}
 
 
-    for (i=0; i < building_models.length; i++)
+    /*for (i=0; i < building_models.length; i++)
     {
         var building_model = building_models[i];
         $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
@@ -49,7 +49,7 @@
         scenario['camera'].updateProjectionMatrix();
         scenario['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
     }
-    animate();
+    animate();*/
 {% endblock %}
 {% block js_script %}
     var WORLD_SIZE = 1000; //side length of the square world
@@ -62,31 +62,45 @@
     var scenes = [];
     var renderer = null;
     var canvas = null;
+    
+    
 
-    /*window.addEventListener('resize', function()
+    manager.onLoad = function()
     {
-        for (i=0; i < building_models.length; i++)
-        {
-            var building_model = building_models[i];
-            $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
-            var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
-
-            building_model['camera'].aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-            building_model['camera'].updateProjectionMatrix();
-            building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-        }
-
-        for (i=0; i < scenarios.length; i++)
-        {
-            var scenario = scenarios[i];
-            $('#scenario_' + scenario['id']).css('height', $('#scenario_' + scenario['id']).width()*3/4);
-            var SCREEN_WIDTH = $('#scenario_' + scenario['id']).innerWidth()-8, SCREEN_HEIGHT = $('#scenario_' + scenario['id']).innerHeight()-8;
-
-            scenario['camera'].aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-            scenario['camera'].updateProjectionMatrix();
-            scenario['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-        }
-    }, false);*/
+    	for (i=0; i < building_models.length; i++)
+    	{
+	        var building_model = building_models[i];
+	        var scene = building_model['scene'];
+	        var id = building_model['id'];
+	        var width = $('#building_model_' + id).width();
+	        var height = $('#building_model_' + id).width()*3/4;
+	        $('#building_model_' + id).height(height);
+	        
+			renderer.setClearColor( 0xffffff );
+	        renderer.setScissorTest( false );
+	        renderer.clear();
+	        renderer.render(scene, scene.userData.camera);
+	        var image_url = renderer.domElement.toDataURL( 'image/png' );
+	        $('#building_model_' + id).html('<center><img src="' + image_url + '" style="max-width:' + width + 'px; max-height:' + height + 'px;"/></center>');
+    	}
+    	
+    	for (i=0; i < scenarios.length; i++)
+    	{
+	        var scenario = scenarios[i];
+	        var scene = scenario['scene'];
+	        var id = scenario['id'];
+	        var width = $('#scenario_' + id).width();
+	        var height = $('#scenario_' + id).width()*3/4;
+	        $('#scenario_' + id).height(height);
+	        
+			renderer.setClearColor( 0xffffff );
+	        renderer.setScissorTest( false );
+	        renderer.clear();
+	        renderer.render(scene, scene.userData.camera);
+	        var image_url = renderer.domElement.toDataURL( 'image/png' );
+	        $('#scenario_' + id).html('<center><img src="' + image_url + '" style="max-width:' + width + 'px; max-height:' + height + 'px;"/></center>');
+    	}
+    }
 
     function init_scenario(id, information)
     {
@@ -107,9 +121,9 @@
         if (renderer == null)
         {
 	        if ( Detector.webgl )
-	            renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );
+	            renderer = new THREE.WebGLRenderer( { antialias: true } );
 	        else
-	            renderer = new THREE.CanvasRenderer({ canvas:canvas, antialias: true });
+	            renderer = new THREE.CanvasRenderer({ antialias: true });
 	    }
         //renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         //renderer.setClearColor( 0xffffff, 1 );
@@ -119,7 +133,7 @@
 
 		scene.userData.element = document.getElementById( 'scenario_' +id );
 		scene.userData.camera = camera;
-		scene.userData.controls = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
+		//scene.userData.controls = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
 
         //LIGHT
         var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -160,9 +174,8 @@
         
 
         //move objects to global arrays
-        //scenarios.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
+        scenarios.push({'id': id, 'scene': scene});
         scenes.push(scene);
-        //renderer.render( scene, camera );
     }
 
 
@@ -177,9 +190,9 @@
         if (renderer == null)
         {
 	        if ( Detector.webgl )
-	            renderer = new THREE.WebGLRenderer( { canvas:canvas, antialias: true } );
+	            renderer = new THREE.WebGLRenderer( { antialias: true } );
 	        else
-	            renderer = new THREE.CanvasRenderer({ canvas:canvas, antialias: true });
+	            renderer = new THREE.CanvasRenderer({ antialias: true });
 	    }
 
         // variables
@@ -193,7 +206,7 @@
 
 	    scene.userData.element = document.getElementById( 'building_model_' +id );
 		scene.userData.camera = camera;
-		scene.userData.controls = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
+		//scene.userData.controls = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
 
         //LIGHT
         var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -211,12 +224,11 @@
 	                });
 
         //move objects to global arrays
-        //building_models.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
+        building_models.push({'id': id, 'scene': scene});
         scenes.push(scene);
-        //renderer.render( scene, camera );
     }
 
-    function animate()
+    /*function animate()
     {
         requestAnimationFrame( animate );
         render();
@@ -279,7 +291,7 @@
 		}
 		
 	
-    }
+    }*/
 
     function display_comments()
     {
