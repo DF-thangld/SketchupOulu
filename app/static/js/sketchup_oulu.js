@@ -128,7 +128,7 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
                 comment_panel_html += '    <div class="commenterImage">';
                 comment_panel_html += '        <a href="' + base_url + 'users/' + comment.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + comment.owner.profile_picture + '"></a>';
                 comment_panel_html += '    </div>';
-                comment_panel_html += '    <div class="commentText"  style="display: block;">';
+                comment_panel_html += '    <div class="commentText"  style="display: block;float:left;">';
                 if (comment.description != '')
                 {
                 	comment_panel_html += '        <div class="commentText"  style="display: block;"><b>' + comment.description + '</b><div>';
@@ -137,10 +137,12 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
                 comment_panel_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + comment.owner.username + '/profile/">' + comment.owner.username + '</a> on ' + comment.created_time + '</span>';
                 if (comment.can_edit)
                 {
-                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + comment.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">Delete</a>)</span>';
+                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">Delete</a>)</span>';
                 }
                 comment_panel_html += '    </div>';
+                comment_panel_html += '    <div style="clear:both;"></div>';
                 comment_panel_html += '</li>';
+                comment_panel_html += '<div style="clear:both;"></div>';
             }
             comment_panel_html += '            </ul>';
             comment_panel_html += '        </div>';
@@ -179,7 +181,7 @@ function add_comment(comment_type, comment_id, comment_text, on_added)
             new_comment_html += '    <div class="commenterImage">';
             new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
             new_comment_html += '    </div>';
-            new_comment_html += '    <div class="commentText">';
+            new_comment_html += '    <div class="commentText" style="float:left;">';
             if (data.description != '')
             {
             	new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
@@ -188,7 +190,9 @@ function add_comment(comment_type, comment_id, comment_text, on_added)
             new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
             new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
             new_comment_html += '    </div>';
+            new_comment_html += '    <div style="clear:both;"></div>';
             new_comment_html += '</li>';
+            new_comment_html += '<div style="clear:both;"></div>';
 
             $('#comment_list_' + comment_id).prepend(new_comment_html);
             show_alert('alert-success', 'Comment added');

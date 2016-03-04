@@ -441,7 +441,18 @@ function onDocumentKeyDown(event)
 		case 39: move_right = true; break; // right
 		case 87: move_up = true; break; // w
 		case 83: move_down = true; break; // s
-		case 90: is_rotating = true; break; // z
+		case 89: 
+			if ((mouse_on_model || is_fullscreen) && isControlDown)
+			{
+				redo_action();
+			}
+			break; // z
+		case 90: 
+			if ((mouse_on_model || is_fullscreen) && isControlDown)
+			{
+				undo_action();
+			}
+			break; // z
 		case 70 : // f
 			if ((mouse_on_model || is_fullscreen) && isControlDown)
 			{
