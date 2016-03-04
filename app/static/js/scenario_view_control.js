@@ -20,8 +20,7 @@ var mouse_on_model = false;
 var isShiftDown = false;
 var isControlDown = false;
 
-function get_screen_width(){return window.innerWidth - TRIM_SCREEN_VALUE;}
-function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
+
 
 
 $( document ).ready(function()
@@ -47,6 +46,9 @@ function render()
 {
 	renderer.render( controlling_scene, controlling_camera );
 }
+
+function get_screen_width(){return window.innerWidth - TRIM_SCREEN_VALUE;}
+function get_screen_height(){return window.innerHeight - TRIM_SCREEN_VALUE;}
 
 function onWindowResize()
 {
