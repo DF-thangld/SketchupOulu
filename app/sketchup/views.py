@@ -4,7 +4,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from flask.ext.uploads import UploadSet, IMAGES
 from sqlalchemy.dialects import mysql
 
-from app import db, send_mail, upload_file
+from app import db, send_mail, upload_file, save_image, delete_file
 from app.users.decorators import requires_login
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
@@ -114,6 +114,15 @@ def update_scenario(scenario_id):
             scenario.addition_information = addition_information
         except:
             pass
+        
+    if 'scenario_preview' in request.form:
+        scenario_preview = request.form.get('scenario_preview', '')
+        if scenario_preview != '':
+            try:
+                save_image(scenario.id + '.png', 'static/images/scenario_previews', scenario_preview)
+                scenario.has_preview = 1
+            except:
+                pass
 
     if len(errors) > 0:
         return json.dumps(errors), 400
@@ -137,9 +146,10 @@ def delete_scenario(scenario_id):
 
     if g.user is None or (not g.user.is_admin() and scenario.owner != g.user):
         return json.dumps(['Scenario not found']), 404
-
+    
     db.session.delete(scenario)
     db.session.commit()
+    delete_file('static/images/scenario_previews', scenario.id + '.png')
 
     return json.dumps({
         'success': True
@@ -269,6 +279,16 @@ def update_building_model(building_model_id):
                 building_model.addition_information = json.dumps(original_addition_information)
             except:
                 return json.dumps(['Error in saving addition information, please contact an admin for more information']), 400
+    
+    if 'preview' in request.form:
+        preview = request.form.get('preview', '')
+        if preview != '':
+            try:
+                save_image(building_model.id + '.png', 'static/images/building_model_previews', preview)
+                building_model.has_preview = 1
+            except:
+                pass
+        
 
     db.session.commit()
     returned_building_model = {}

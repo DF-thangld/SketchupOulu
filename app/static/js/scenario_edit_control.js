@@ -78,7 +78,7 @@ function render()
         var building_model = building_models[i];
         building_model['renderer'].render( building_model['scene'], building_model['camera'] );
     }
-	renderer.render( controlling_scene, controlling_camera );
+	controlling_renderer.render( controlling_scene, controlling_camera );
 }
 
 function init()
@@ -142,41 +142,42 @@ function init()
 	controlling_camera = camera;
 }
 
-function init_building_model(id, file_type, information, index)
+function init_building_model(id, file_type, information, index, has_preview)
 {
-    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
-    information = JSON.parse(information);
-
-    // variables
-    var building_scene = new THREE.Scene();
-    building_scene.name = "scene_building_model_" + id;
-    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
-    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
-    building_scene.add(building_camera);
-    building_scene.userData.camera = building_camera;
-    building_scene.userData.building_id = id;
-    building_scenes.push(building_scene);
-    
-
-    // RENDERER
-    if (building_renderer == null)
-    {
-	    if ( Detector.webgl )
-	        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
-	    else
-	        building_renderer = new THREE.CanvasRenderer();
-	    building_renderer.setSize(115, 64);
-    }
-    
-    var building_container = document.getElementById( 'building_model_' +id );
-    building_container.appendChild( building_renderer.domElement );
-
-    //LIGHT
-    var ambientLight = new THREE.AmbientLight(0xffffff);
-    building_scene.add(ambientLight);
+	$('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
+	if (has_preview != 1)
+	{
+	    information = JSON.parse(information);
+	
+	    // variables
+	    var building_scene = new THREE.Scene();
+	    building_scene.name = "scene_building_model_" + id;
+	    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
+	    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 10000;
+	    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
+	    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
+	    building_scene.add(building_camera);
+	    building_scene.userData.camera = building_camera;
+	    building_scene.userData.building_id = id;
+	    building_scenes.push(building_scene);
+	    
+	    // RENDERER
+	    if (building_renderer == null)
+	    {
+		    if ( Detector.webgl )
+		        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
+		    else
+		        building_renderer = new THREE.CanvasRenderer();
+		    building_renderer.setSize(1000, 1000*3/4);
+	    }
+	    //var building_container = document.getElementById( 'building_model_' +id );
+	    //building_container.appendChild( building_renderer.domElement );
+	
+	    //LIGHT
+	    var ambientLight = new THREE.AmbientLight(0xffffff);
+	    building_scene.add(ambientLight);
+	}
 
     //object
     load_model( file_type,
@@ -196,6 +197,8 @@ function init_building_model(id, file_type, information, index)
 
 manager.onLoad = function()
 {
+	if (building_scenes.length > 0)
+		building_renderer.setSize( 1000, 1000*3/4 );
 	for (i=0; i < building_scenes.length; i++)
     {
 		var scene = building_scenes[i];
@@ -205,16 +208,26 @@ manager.onLoad = function()
         building_renderer.clear();
         building_renderer.render(scene, scene.userData.camera);
         var image_url = building_renderer.domElement.toDataURL( 'image/png' );
-        $('#building_model_' + id).html('<center><img src="' + image_url + '" style="max-width:113px; max-height:63px;"/></center>');
-        //building_models_screenshots.push(image_url);
+        $('#building_model_' + id).html('<img src="' + image_url + '" style="width:100%; height:100%"/>');
+        $.ajax({
+            type: "POST",
+            url: UPDATE_BUILDING_MODEL_URL + id,
+            data: {'preview': image_url},
+            dataType: 'json',
+            error: function(data)
+            {
+                show_alert('alert-danger', data.responseJSON[0]);
+            }
+        });
     }
+	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,document.getElementById("ModelWindow").offsetHeight);
+		
 }
 
 function add_building_model(information)
 {
     if (current_object != null)
     	controlling_scene.remove(current_object);
-    
     
     model_options = {'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0};
     
@@ -440,19 +453,67 @@ function onDocumentKeyDown(event)
 		case 37: move_left = true; break; // left
 		case 39: move_right = true; break; // right
 		case 87: move_up = true; break; // w
-		case 83: move_down = true; break; // s
-		case 89: 
+		
+		case 188: // <
+			if ((mouse_on_model || is_fullscreen) && isControlDown && isShiftDown)
+			{
+				if (mode_index == 0 && selectedModel != null)
+				{
+					var old_scale = controlling_scene.getObjectByName(selectedModel.name).scale.x;
+				
+					controlling_scene.getObjectByName(selectedModel.name).scale.multiplyScalar( 1.05 );
+					sceneObjects[selectedModel.name].size = controlling_scene.getObjectByName(selectedModel.name).scale.x;
+					$('#btn_undo_action').removeClass('disabled');
+					actions.push({	'action': 'RESIZE_MODEL', 
+						'object_id': selectedModel.name, 
+						'old_value': old_scale, 
+						'new_value': controlling_scene.getObjectByName(selectedModel.name).scale.x});
+				}
+			}
+			break;
+		case 190: // >
+			if ((mouse_on_model || is_fullscreen) && isControlDown && isShiftDown)
+			{
+				if (mode_index == 0 && selectedModel != null)
+				{
+					var old_scale = controlling_scene.getObjectByName(selectedModel.name).scale.x;
+				
+					controlling_scene.getObjectByName(selectedModel.name).scale.divideScalar( 1.05 );
+					sceneObjects[selectedModel.name].size = controlling_scene.getObjectByName(selectedModel.name).scale.x;
+					$('#btn_undo_action').removeClass('disabled');
+					actions.push({	'action': 'RESIZE_MODEL', 
+						'object_id': selectedModel.name, 
+						'old_value': old_scale, 
+						'new_value': controlling_scene.getObjectByName(selectedModel.name).scale.x});
+				}
+			}
+			break;
+		
+		case 189: // -
+			if ((mouse_on_model || is_fullscreen) && isControlDown && isShiftDown)
+				shrink_scenario();
+			break;
+		case 187: // +
+			if ((mouse_on_model || is_fullscreen) && isControlDown && isShiftDown)
+				enlarge_scenario();
+			break;
+		case 83: // s
+			move_down = true; 
+			if ((mouse_on_model || is_fullscreen) && isControlDown)
+				save_scenario_content();
+			break; 
+		case 89: // z
 			if ((mouse_on_model || is_fullscreen) && isControlDown)
 			{
 				redo_action();
 			}
-			break; // z
-		case 90: 
+			break; 
+		case 90: // y
 			if ((mouse_on_model || is_fullscreen) && isControlDown)
 			{
 				undo_action();
 			}
-			break; // z
+			break; 
 		case 70 : // f
 			if ((mouse_on_model || is_fullscreen) && isControlDown)
 			{

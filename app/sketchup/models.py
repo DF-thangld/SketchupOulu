@@ -19,6 +19,7 @@ class BuildingModel(db.Model):
     data_file = db.Column(db.String(80))
     addition_information = db.Column(db.String())
     description = db.Column(db.String())
+    has_preview = db.Column(db.SmallInteger, default=0)
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     comment_topic = db.relationship("CommentTopic")
 
@@ -69,6 +70,7 @@ class BuildingModel(db.Model):
                 'file_type': self.file_type,
                 'addition_information': json.loads(self.addition_information),
                 'description': self.description,
+                'has_preview': self.has_preview,
                 'is_base_item': self.is_base_item}
 
     def __repr__(self):
@@ -90,6 +92,7 @@ class Scenario(db.Model):
     description = db.Column(db.String())
     is_base_scenario = db.Column(db.SmallInteger, default=0, index=True)
     is_public = db.Column(db.SmallInteger, default=1, index=True)
+    has_preview = db.Column(db.SmallInteger, default=0)
     comment_topic_id = db.Column(db.Integer, db.ForeignKey('comment_topics.id'), index=True)
     comment_topic = db.relationship("CommentTopic")
 
@@ -156,6 +159,7 @@ class Scenario(db.Model):
                 'description': self.description,
                 'is_public': self.is_public,
                 'is_base_scenario': self.is_base_scenario,
+                'has_preview': self.has_preview,
                 'comments': comments}
 
     def __repr__(self):

@@ -12,3 +12,5 @@ python2.7
 *.pyc
 SketchupOulu.git.pyproj
 app/static/models/building_models
+app/static/images/building_model_previews
+app/static/images/scenario_previews

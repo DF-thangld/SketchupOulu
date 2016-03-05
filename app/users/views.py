@@ -4,11 +4,12 @@ import zipfile
 import os
 import shutil
 
+
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.babel import gettext
 
-from app import db, send_mail, upload_file, app_dir
+from app import db, send_mail, upload_file, app_dir, save_image
 from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPasswordForm
 from app.users.models import User, UserSession, Group
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
@@ -481,12 +482,18 @@ def add_scenario():
         name = request.form.get('name', '')
         is_public = request.form.get('is_public', 0)
         addition_information = request.form.get('addition_information', '')
+        scenario_preview = request.form.get('scenario_preview', '')
         if name.strip() == '':
             errors.append('Scenario name is required')
             return render_template("users/add_scenario.html", errors=errors, building_models=building_models), 400
 
         scenario = Scenario(name, g.user, addition_information=addition_information, is_public=is_public)
         scenario.description = request.form.get('description', '')
+        
+        # save preview to dir
+        save_image(scenario.id + '.png', 'static/images/scenario_previews', scenario_preview)
+        scenario.has_preview = 1
+        
         db.session.add(scenario)
         db.session.commit()
         return redirect(url_for('sketchup.view_scenario', id=scenario.id))

@@ -22,6 +22,10 @@ animate();
 {% endblock %}
 
 {% block js_script %}
+
+
+function save_scenario_content() {}
+
 var building_models = [];
 var objects = [];
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -81,8 +85,14 @@ var stats;
 
 function before_submit()
 {
+	if (current_object != null)
+    	controlling_scene.remove(current_object);
+	controlling_renderer.render( controlling_scene, controlling_camera );
+	
     sceneObjects['size'] = WORLD_SIZE;
 	$('#addition_information').val(JSON.stringify(sceneObjects));
+	
+	$('#scenario_preview').val(controlling_renderer.domElement.toDataURL( 'image/png' ));
 }
 
 function do_switch_mode(mode)
@@ -122,6 +132,7 @@ function do_switch_mode(mode)
 			class="setup-form js-form-signup-detail" onsubmit="before_submit();"
 			method="post">
             <input type="hidden" name="addition_information" value="" id="addition_information"/>
+            <input type="hidden" name="scenario_preview" value="" id="scenario_preview"/>
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
 

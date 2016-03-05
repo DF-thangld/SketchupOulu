@@ -11,3 +11,5 @@ var PROFILE_URL = '{{ url_for('static', filename='images/profile_pictures/', _ex
 var DELETE_COMMENT_URL = '{{ url_for('users.delete_comment', _external=True) }}';
 var MODEL_PATH = '{{ url_for('static', filename='models/building_models/', _external=True) }}';
 var BASE_URL = '{{ url_for('index') }}';
+var UPDATE_SCENARIO_URL = '{{ url_for('sketchup.update_scenario', scenario_id='') }}';
+var UPDATE_BUILDING_MODEL_URL = '{{ url_for('sketchup.update_building_model', building_model_id='') }}';

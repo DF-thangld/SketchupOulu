@@ -14,7 +14,7 @@
 {% block onload_script %}
 {% set index = 0 %}
 {% for building_model in building_models %}
-init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
+init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }}, {{building_model.has_preview}});
 {% set index = index + 1 %}
 {% endfor %}
 init();
@@ -89,30 +89,30 @@ var windowHeight = 500;
 
 function save_scenario_content()
 {
-	bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
-	{
-		bootbox.hideAll();
-		if (result)
+	sceneObjects['size'] = WORLD_SIZE;
+	if (current_object != null)
+    	controlling_scene.remove(current_object);
+    controlling_renderer.render( controlling_scene, controlling_camera );
+		
+	$('#scenario_preview').val();
+	$.ajax({
+		type: "POST",
+		url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
+		data: {'addition_information': JSON.stringify(sceneObjects), 'scenario_preview': controlling_renderer.domElement.toDataURL( 'image/png' )},
+		dataType: 'json',
+		success: function(data) {
+			show_alert('alert-success', 'Scenario saved!');
+		},
+		error: function(data)
 		{
-            sceneObjects['size'] = WORLD_SIZE;
-			$.ajax({
-				type: "POST",
-				url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
-				data: {'addition_information': JSON.stringify(sceneObjects)},
-				dataType: 'json',
-				success: function(data) {
-					show_alert('alert-success', 'Scenario saved!');
-				},
-				error: function(data)
-				{
-					$('#facebox #update_scenario_errors').html('');
-					for (i = 0; i < data.responseJSON.length; i++)
-						$('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
-					$('#facebox #update_scenario_errors').fadeIn('fast');
-				}
-			});
+			$('#facebox #update_scenario_errors').html('');
+			for (i = 0; i < data.responseJSON.length; i++)
+				$('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
+			$('#facebox #update_scenario_errors').fadeIn('fast');
 		}
 	});
+	controlling_scene.add(current_object);
+	controlling_renderer.render( controlling_scene, controlling_camera );
 }
 
 
@@ -477,7 +477,11 @@ function save_scenario_content()
 	                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
 	                                {% endif %}
 	                                    <div class="col-lg-2" style="margin-top:5px;background-color: #fff;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
-	                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 1px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
+	                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 1px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;">
+	                                        	{% if building_model.has_preview == 1 %}
+	                                        	<img src="{{url_for('static', filename='images/building_model_previews/' + building_model.id + '.png')}}" style="width:100%; height:100%" />
+	                                        	{% endif %}
+	                                        </div>
 	                                        {{ building_model.name }}
 	                                    </div>
 	                                {% set index = index + 1 %}

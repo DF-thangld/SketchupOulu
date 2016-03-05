@@ -2,6 +2,7 @@ import os
 import sys
 import datetime
 import logging
+from base64 import decodestring, b64decode
 
 from flask import Flask, render_template, g, session, request, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -72,6 +73,21 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
             'full_filename': full_filename,
             'filename_without_extension': filename_without_extension}
 
+def save_image(image_filename, image_dir, base64_content):
+    fh = open(os.path.join(app_dir, image_dir, image_filename), "wb")
+    
+    b64data = base64_content.split(',')[1] # [sic]
+    fh.write(b64decode(b64data))
+    
+    #fh.write(decodestring(base64_content))
+    fh.close()
+    
+def delete_file(dir, filename):
+    try:
+        os.remove(os.path.join(app_dir, dir, filename))
+        return True
+    except:
+        return False
 
 def send_mail(emails, title, content):
 
