@@ -56,16 +56,7 @@
                 </ul>
 			</li>
             {% endif %}
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=5) }}">Contact us</a>
-			</li>
-            <li class="header-nav-item">
-                {% if request.url.find('?') != -1 %}
-                <a href="{{ request.url }}&lang=fi"><img src="{{ url_for('static', filename='images/fi_flag.png') }}" style="width:30px;"/></a>
-                <a href="{{ request.url }}&lang=en"><img src="{{ url_for('static', filename='images/en_flag.png') }}" style="width:30px;"/></a>
-                {% else %}
-                <a href="{{ request.url }}?lang=fi"><img src="{{ url_for('static', filename='images/fi_flag.png') }}" style="width:30px;"/></a>
-                <a href="{{ request.url }}?lang=en"><img src="{{ url_for('static', filename='images/en_flag.png') }}" style="width:30px;"/></a>
-                {% endif %}
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=114) }}">About us</a>
 			</li>
 		</ul>
 	</div>

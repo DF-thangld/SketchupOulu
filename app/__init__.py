@@ -37,7 +37,7 @@ def check_locale():
             session['locale'] = locale
             return redirect(request.url.replace('lang=' + locale, ''))
         else:
-            session['locale'] = config.BABEL_DEFAULT_LOCALE
+            session['locale'] = config.DEFAULT_LOCALE
         
     elif 'locale' not in session:
         locale = request.accept_languages.best_match(config.LANGUAGES.keys())

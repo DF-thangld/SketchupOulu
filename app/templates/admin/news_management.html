@@ -140,7 +140,9 @@
                 {
                     // TODO: change user interface
                     // now just refresh the page to save time :))
-                    window.location='{{ url_for('admin.news_management') }}';
+                    //window.location='{{ url_for('admin.news_management') }}';
+                    $('#category_' + category_id).hide();
+                    show_alert('alert-success', 'Category deleted!');
                 },
                 error: function(errors)
                 {
@@ -167,7 +169,9 @@
                 {
                     // TODO: change user interface
                     // now just refresh the page to save time :))
-                    window.location='{{ url_for('admin.news_management') }}';
+                    //window.location='{{ url_for('admin.news_management') }}';
+                    $('#journal_' + journal_id).hide();
+                    show_alert('alert-success', 'Journal deleted!');
                 },
                 error: function(errors)
                 {
