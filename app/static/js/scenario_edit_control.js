@@ -36,6 +36,7 @@ var current_height = 0;
 var old_control_window_height = 500;
 var mouse_on_model = false;
 var building_renderer = null;
+var IsOnTop=false;
 
 var isShiftDown = false;
 var isControlDown = false;
@@ -53,6 +54,7 @@ $( document ).ready(function()
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+	change_build_place();
 });
 
 function animate() 
@@ -133,7 +135,9 @@ function init()
 	container.appendChild( renderer.domElement );
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-	intersectObjects=[plane];
+	//intersectObjects=[plane];
+	objects.push(plane);
+	intersectObjects = objects;
 	//render
 	renderer.render( scene, camera);
 	control = controls;
@@ -241,7 +245,31 @@ function add_building_model(information)
 					current_object = object;
 					object.addition_information = information;
 					switchMode(1);
+					buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right'};
+			    	for (var mode_key in buttons)
+						$('#' + buttons[mode_key]).removeClass('disabled');
 				});
+}
+
+function change_build_place()
+{
+	if(IsOnTop)
+	{
+		//change to build on ground mode
+		IsOnTop=false;
+		intersectObjects=[plane];
+		//objects.splice( objects.indexOf( plane ), 1 );
+		document.getElementById("buildWhere").innerHTML="Build On Ground";
+	}
+	else
+	{
+		//change to build on top mode
+		IsOnTop=true;
+		
+		intersectObjects=objects;
+		document.getElementById("buildWhere").innerHTML="Build On Top";
+	}
+
 }
 
 function switchMode(i)
@@ -252,8 +280,7 @@ function switchMode(i)
 	}else if(mode_index !=1 && mode==1){
 		current_object.visible=true;
 	}
-	if (mode != 8)
-		mode_index = mode;
+	mode_index = mode;
 	switch(mode){
 		case 0:{
 			break;
@@ -284,22 +311,7 @@ function switchMode(i)
 			}
 			break;
 		}
-		case 8:{
-			if(IsOnTop){
-				//change to build on ground mode
-				IsOnTop=false;
-				intersectObjects=[plane];
-				objects.splice( objects.indexOf( plane ), 1 );
-				document.getElementById("buildWhere").innerHTML="Build On Top";
-			}else{
-				//change to build on top mode
-				IsOnTop=true;
-				objects.push(plane);
-				intersectObjects=objects;
-				document.getElementById("buildWhere").innerHTML="Build On Ground";
-			}
-			break;
-		}
+		
 	}
 }
 

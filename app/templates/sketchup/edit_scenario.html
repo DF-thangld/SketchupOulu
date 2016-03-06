@@ -61,7 +61,7 @@ var isShiftDown = false;
 
 //whether intersect with plane or objects
 var intersectObjects=[];
-var IsOnTop=false;
+
 
 
 //all the vasiable objects in the scene
@@ -439,7 +439,7 @@ function save_scenario_content()
 					<div id="fullscreen_area" style="background-color: #fff;">
 						<div id="scenario_area">
 							<div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-		                        <div><b>Model Control:</b></div>
+		                        <div><b>Scenario Control:</b></div>
 		                        <div>
 		                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
 		                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
@@ -455,7 +455,7 @@ function save_scenario_content()
 		                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
 		                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
 		                    	</div>
-		                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+		                    	<div><label onclick="change_build_place()" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
 		                    	<div>
 		                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
 		                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>

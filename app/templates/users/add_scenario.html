@@ -14,7 +14,7 @@
 // threejs functions
 {% set index = 0 %}
 {% for building_model in building_models %}
-init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
+init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }}, {{building_model.has_preview}});
 {% set index = index + 1 %}
 {% endfor %}
 init();
@@ -52,7 +52,6 @@ var isShiftDown = false;
 
 //whether intersect with plane or objects
 var intersectObjects=[];
-var IsOnTop=false;
 
 
 //all the vasiable objects in the scene
@@ -177,7 +176,7 @@ function do_switch_mode(mode)
 				<dd>
 					<div id="fullscreen_area" style="background-color: #fff;">
 	                    <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-	                        <div><b>Model Control:</b></div>
+	                        <div><b>Scenario Control:</b></div>
 	                        <div>
 	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
 	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
@@ -193,7 +192,7 @@ function do_switch_mode(mode)
 	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
 	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
 	                    	</div>
-	                    	<div><label onclick="do_switch_mode('8')" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Ground</label></div>
+	                    	<div><label onclick="change_build_place()" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
 	                    	<div>
 	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
 	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
@@ -216,7 +215,11 @@ function do_switch_mode(mode)
 		                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
 		                                {% endif %}
 		                                    <div class="col-lg-2" style="margin-top:5px;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
-		                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
+		                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;">
+		                                        {% if building_model.has_preview == 1 %}
+	                                        	<img src="{{url_for('static', filename='images/building_model_previews/' + building_model.id + '.png')}}" style="width:100%; height:100%" />
+	                                        	{% endif %}
+		                                        </div>
 		                                        {{ building_model.name }}
 		                                    </div>
 		                                {% set index = index + 1 %}
