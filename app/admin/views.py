@@ -406,7 +406,10 @@ def delete_journal():
     if journal is None:
         return json.dumps(['Journal not found']), 404
 
+    for content in journal.journal_contents:
+        db.session.delete(content)
     db.session.delete(journal)
+
     db.session.commit()
     return json.dumps({'success': True}), 200
 

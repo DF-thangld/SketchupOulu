@@ -4,7 +4,7 @@ import datetime
 import logging
 from base64 import decodestring, b64decode
 
-from flask import Flask, render_template, g, session, request, redirect
+from flask import Flask, render_template, g, session, request, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.babel import Babel
 from smtplib import SMTP, SMTP_SSL
@@ -27,10 +27,12 @@ db = SQLAlchemy(app)
 
 @babel.localeselector
 def get_babel_locale():
-    return session['locale']
+    #TODO: change language back
+    return 'en' #session['locale']
 
 @app.before_request
 def check_locale():
+    #TODO: change language back
     if 'lang' in request.args:
         locale = request.args.get('lang')
         if locale in config.LANGUAGES:
@@ -38,10 +40,13 @@ def check_locale():
             return redirect(request.url.replace('lang=' + locale, ''))
         else:
             session['locale'] = config.DEFAULT_LOCALE
-        
     elif 'locale' not in session:
         locale = request.accept_languages.best_match(config.LANGUAGES.keys())
-        session['locale'] = locale
+        if locale is None:
+            locale = config.DEFAULT_LOCALE
+        session['locale'] = locale #locale
+    elif 'locale' in session and (session['locale'] is None or session['locale'] not in config.LANGUAGES.keys()):
+        session['locale'] = config.DEFAULT_LOCALE
 
 @app.before_request
 def good_url():
