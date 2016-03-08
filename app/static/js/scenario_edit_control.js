@@ -85,6 +85,7 @@ function render()
 
 function init()
 {
+
 	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
 	windowWidth = document.getElementById("ModelWindow").offsetWidth;
 	windowHeight = document.getElementById("ModelWindow").offsetHeight;
@@ -99,7 +100,12 @@ function init()
 	THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
 	//pre-defined objects
-    init_scene(sceneObjects, scene, function(model){
+	//alert("Hello! I am an alert box!!2929");
+    init_scene(sceneObjects, scene, function(model){//what is this? it seem it is used for load the group
+        //alert("Hello! I am an alert box!!22");
+        //var bbox = new THREE.Box3().setFromObject(model);
+		//model.scale.divideScalar(2);
+
 		objects.push(model);
 	});
 
@@ -185,14 +191,18 @@ function init_building_model(id, file_type, information, index, has_preview)
 
     //object
     load_model( file_type,
-    			MODEL_PATH + information.directory + '/',
-                information.original_filename,
-                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                building_scene,
-                function(object)
-                {
-                    models[index] = object;
-                });
+            MODEL_PATH + information.directory + '/',
+            information.original_filename,
+            {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
+            building_scene,
+            function(object)
+            {
+                //var bbox = new THREE.Box3().setFromObject(model);
+                //model.scale.divideScalar(2);
+                //model.scale.set( 1, 1, 1 );
+
+                models[index] = object;
+            });
 
     //move objects to global arrays
     //building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
@@ -242,7 +252,20 @@ function add_building_model(information)
 				controlling_scene,
 				function(object)
 				{
+
 					current_object = object;
+					//check size
+					var bbox = new THREE.Box3().setFromObject(current_object);
+
+					while( bbox.max.length() >= 300 )//200 is changable
+					{
+					    //alert(bbox.max.length());
+					    current_object.scale.divideScalar(1.05);
+					    bbox = new THREE.Box3().setFromObject(current_object);
+
+					}
+
+
 					object.addition_information = information;
 					switchMode(1);
 					buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right'};
