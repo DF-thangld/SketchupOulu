@@ -5,6 +5,7 @@ from flask.ext.babel import format_datetime
 from app import db
 from app import utilities
 import sqlalchemy
+from flask.ext.babel import gettext
 
 class BuildingModel(db.Model):
 
@@ -50,7 +51,7 @@ class BuildingModel(db.Model):
         self.addition_information = addition_information
         self.description = description
         self.created_time = datetime.datetime.now()
-        self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner, 'building_model')
+        self.comment_topic = CommentTopic(gettext('Comments for building model id ') + self.id, owner, gettext('building_model'))
 
     def to_dict(self, include_owner=False, include_comments=False):
         owner = None
@@ -74,7 +75,7 @@ class BuildingModel(db.Model):
                 'is_base_item': self.is_base_item}
 
     def __repr__(self):
-        return '<BuildingModel %r>' % (self.name)
+        return gettext('<BuildingModel %r>') % (self.name)
 
 class Scenario(db.Model):
 
@@ -105,7 +106,7 @@ class Scenario(db.Model):
         self.description = description
         self.is_public = is_public
         self.created_time = datetime.datetime.now()
-        self.comment_topic = CommentTopic('Comments for scenario id ' + self.id, owner, 'scenario')
+        self.comment_topic = CommentTopic(gettext('Comments for scenario id ') + self.id, owner, gettext('scenario'))
 
     def can_access(self, user):
         if user is None:
@@ -214,7 +215,7 @@ class CommentTopic(db.Model):
                 'comments': comments}
 
     def __repr__(self):
-        return '<CommentTopic %r>' % (self.title)
+        return gettext('<CommentTopic %r>') % (self.title)
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -253,4 +254,4 @@ class Comment(db.Model):
                 'content': self.content}
 
     def __repr__(self):
-        return '<Comment %r>' % (self.id)
+        return gettext('<Comment %r>') % (self.id)

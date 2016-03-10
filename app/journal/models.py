@@ -39,7 +39,7 @@ class JournalCategory(db.Model):
         return page_data.items
 
     def __repr__(self):
-        return '<JournalCategory %r>' % (self.name)
+        return gettext('<JournalCategory %r>') % (self.name)
 
 class Journal(db.Model):
 
@@ -50,7 +50,7 @@ class Journal(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('journal_categories.id'))
     category = db.relationship("JournalCategory")
     created_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    created_user = db.relationship("User", primaryjoin="Journal.created_user_id == User.id")
+    created_user = db.relationship("User", primaryjoin=gettext("Journal.created_user_id == User.id"))
     last_edited_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     last_edited_user = db.relationship("User", primaryjoin="Journal.last_edited_user_id == User.id")
     post_time = db.Column(db.DateTime)
@@ -67,7 +67,7 @@ class Journal(db.Model):
         self.is_activated = is_activated
         self.category = category
         self.post_time = datetime.datetime.now()
-        self.comment_topic = sketchup.CommentTopic('Comments for journal title ' + self.title, self.created_user, 'journal')
+        self.comment_topic = sketchup.CommentTopic(gettext('Comments for journal title ') + self.title, self.created_user, 'journal')
 
     def to_dict(self, include_category=False, include_created_user=False, include_last_edited_user=False):
         category = None
@@ -120,6 +120,6 @@ class JournalContent(db.Model):
                 'title': self.title}
 
     def __repr__(self):
-        return '<JournalContent %r for "%r">' % (self.locale, self.title)
+        return gettext('<JournalContent %r for "%r">') % (self.locale, self.title)
 
 db.Index('idx_journal_locale', JournalContent.journal_id, JournalContent.locale)

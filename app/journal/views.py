@@ -4,6 +4,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 
 from app import db, app
 from app.journal.models import JournalCategory, Journal
+from flask.ext.babel import gettext
 
 mod = Blueprint('journal', __name__, url_prefix='/journal')
 

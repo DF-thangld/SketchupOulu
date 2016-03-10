@@ -9,6 +9,7 @@ from app.users.decorators import requires_login
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
 import app.utilities as utilities
+from flask.ext.babel import gettext
 
 mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 
@@ -65,14 +66,14 @@ def get_scenario():
     errors = []
     scenario_id=request.args.get('id', '')
     if scenario_id == '':
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     scenario = Scenario.query.filter_by(id=scenario_id).first()
     if scenario is None:
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     if scenario.is_public == 0 and not (scenario.owner == g.user or g.user.is_admin()):
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     return json.dumps(scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
@@ -82,19 +83,19 @@ def get_scenario():
 def update_scenario(scenario_id):
     errors = []
     if scenario_id == '':
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     scenario = Scenario.query.filter_by(id=scenario_id).first()
     if scenario is None:
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     if not scenario.can_edit(g.user):
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     if 'scenario_name' in request.form:
         scenario_name = request.form.get('scenario_name', '')
         if scenario_name == '':
-            errors.append('Scenario name cannot be blank')
+            errors.append(gettext('Scenario name cannot be blank'))
         scenario.name = scenario_name
 
     if 'is_public' in request.form:
@@ -138,14 +139,14 @@ def update_scenario(scenario_id):
 def delete_scenario(scenario_id):
     errors = []
     if scenario_id == '':
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     scenario = Scenario.query.filter_by(id=scenario_id).first()
     if scenario is None:
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     if g.user is None or (not g.user.is_admin() and scenario.owner != g.user):
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
     
     db.session.delete(scenario)
     db.session.commit()
@@ -161,14 +162,14 @@ def delete_scenario(scenario_id):
 def clone_scenario(scenario_id):
     errors = []
     if scenario_id == '':
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     scenario = Scenario.query.filter_by(id=scenario_id).first()
     if scenario is None:
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     if not scenario.can_access(g.user):
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     new_scenario = Scenario('Cloned of ' + scenario.name, g.user, addition_information=scenario.addition_information, is_public=1)
 
@@ -183,11 +184,11 @@ def get_building_model():
     errors = []
     building_model_id = request.args.get('id', '')
     if building_model_id == '':
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     return json.dumps(building_model.to_dict(include_owner=True, include_comments=True))
 
@@ -216,16 +217,16 @@ def view_building_model():
 def delete_building_model(building_model_id):
     errors = []
     if building_model_id == '':
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
     if building_model.is_base_item == 1:
-        return json.dumps(['Cannot delete base item']), 400
+        return json.dumps([gettext('Cannot delete base item')]), 400
 
     if g.user is None or (not g.user.is_admin() and building_model.owner != g.user):
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     db.session.delete(building_model.comment_topic)
     db.session.delete(building_model)
@@ -241,14 +242,14 @@ def delete_building_model(building_model_id):
 def update_building_model(building_model_id):
     errors = []
     if building_model_id == '':
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     if not building_model.can_edit(g.user):
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     #only change name
     if 'building_model_name' in request.form:
@@ -256,7 +257,7 @@ def update_building_model(building_model_id):
         if building_model_name != '':
             building_model.name = building_model_name
         else:
-            return json.dumps(['Model name is required']), 400
+            return json.dumps([gettext('Model name is required')]), 400
 
     #change building status to building item
     if g.user.is_admin():
@@ -278,7 +279,7 @@ def update_building_model(building_model_id):
 
                 building_model.addition_information = json.dumps(original_addition_information)
             except:
-                return json.dumps(['Error in saving addition information, please contact an admin for more information']), 400
+                return json.dumps([gettext('Error in saving addition information, please contact an admin for more information')]), 400
     
     if 'preview' in request.form:
         preview = request.form.get('preview', '')
@@ -308,11 +309,11 @@ def update_building_model(building_model_id):
 def clone_building_model(building_model_id):
     errors = []
     if building_model_id == '':
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
-        return json.dumps(['Building model not found']), 404
+        return json.dumps([gettext('Building model not found')]), 404
 
     new_building_model = BuildingModel('Clone of ' + building_model.name, building_model.data_file, g.user, addition_information=building_model.addition_information)
     new_building_model.file_type = building_model.file_type
