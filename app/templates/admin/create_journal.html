@@ -44,9 +44,9 @@ function upload_image(file, editor, welEditable)
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">{{gettext(Home)}}</a></li>
-            <li><a href = "{{ url_for('index') }}">{{gettext(Admin+" "+tools)}}</a></li>
-            <li><a href = "{{ url_for('admin.news_management') }}">{{gettext(Journal+" "+Management)}}</a></li>
+           <li><a href = "{{ url_for('index') }}">{{gettext("Home")}}</a></li>
+            <li><a href = "{{ url_for('index') }}">{{gettext("Admin tools")}}</a></li>
+            <li><a href = "{{ url_for('admin.news_management') }}">{{gettext("Journal Management")}}</a></li>
            <li class = "active">{{Create+" "+Journal}}</li>
         </ol>
 		<h2 style="font-size: 45px;">{{Create+" "+Journal}}</h2>
@@ -71,7 +71,7 @@ function upload_image(file, editor, welEditable)
             {% if errors|length == 0 and form.is_submitted() %}
             <div id="js-flash-container" class="col-centered" style="color: #3c763d;;background-color: #5cb85c;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                      {{gettext(Journal+" "+created+"!")}}
+                      {{gettext("Journal created!")}}
                   </div>
             </div>
             {% endif %}
@@ -109,7 +109,7 @@ function upload_image(file, editor, welEditable)
             <div style="width:100%; border:1px solid black"></div>
             <dl class="form">
 				<dt class="input-label">
-					<label for="title_{{ language }}">{{gettext(Journal+" "+name+" "+"in")}} {{ languages[language] }}</label>
+					<label for="title_{{ language }}">{{gettext("Journal name in")}} {{ languages[language] }}</label>
 				</dt>
 				<dd>
                     <input autocapitalize="off" id="title_{{ language }}" name="title_{{ language }}" style="width:100%" type="text" value="{{ request.form.get('title_' + language, '') }}">
@@ -117,7 +117,7 @@ function upload_image(file, editor, welEditable)
 			</dl>
 			<dl class="form successed">
 				<dt class="input-label">
-					<label for="content_{{ language }}">{{gettext(Journal+" "+content+" "+"in")}} {{ languages[language] }}</label>
+					<label for="content_{{ language }}">{{gettext("Journal content in")}} {{ languages[language] }}</label>
 				</dt>
 				<dd>
                     <textarea id="content_{{ language }}" name="content_{{ language }}">{{ request.form.get('content_' + language, '') }}</textarea>
@@ -127,8 +127,8 @@ function upload_image(file, editor, welEditable)
             <div style="width:100%; border:1px solid black"></div>
 
 			<div class="form-actions" style="margin-top:10px;">
-                <button type="submit" class="btn btn-primary" id="create_button">{{gettext(Create+" "+Journal)}}</button>
-				<button type="reset" class="btn btn-warning" id="reset_button">{{gettext(Reset)}}</button>
+                <button type="submit" class="btn btn-primary" id="create_button">{{ gettext("Create  Journal") }}</button>
+				<button type="reset" class="btn btn-warning" id="reset_button">{{gettext("Reset")}}</button>
 			</div>
 
 		</form>

@@ -152,11 +152,11 @@
 	<div class="row" style="margin-top: 20px;">
         <div class="col-md-10 col-centered">
             <ol class = "breadcrumb">
-               <li><a href = "{{ url_for('index') }}">Home</a></li>
-               <li class = "active">Admin</li>
-               <li class = "active">User Management</li>
+               <li><a href = "{{ url_for('index') }}">}{{gettext("Home")}}</a></li>
+               <li class = "active">{{gettext("Admin")}}</li>
+               <li class = "active">{{gettext("User Management")}}</li>
             </ol>
-            <h2 style="font-size: 45px;">User Management</h2>
+            <h2 style="font-size: 45px;">{{gettext("User Management")}}</h2>
 
             <div class="col-md-4">
                 <div class="row">
@@ -184,22 +184,22 @@
                     <!-- Toolbar -->
                     <div class="btn-toolbar" id="toolbar">
                     	<a id="save_button" type="button submit" class="btn btn-primary" onclick="login_as();">
-                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Login as
+                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> {{gettext("Login as")}}
                         </a>
                         <a id="save_button" type="button submit" class="btn btn-success" onclick="update_info();">
-                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save
+                            <span id="banned_button_glyphicon" class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> {{gettext("Save")}}
                         </a>
                         <div class="btn-group">
                             <a type="button" id="ban_button" class="btn btn-warning" onclick="change_ban_state();">
-                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>Ban
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>{{gettext("Ban")}}
                             </a>
                         </div>
                     </div>
                     <br>
                     <!-- Tabs -->
                     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a href="#basic" data-toggle="tab" aria-expanded="true">Basic information</a></li>
-                        <li class=""><a href="#groups" data-toggle="tab" aria-expanded="false">Groups</a></li>
+                        <li class="active"><a href="#basic" data-toggle="tab" aria-expanded="true">{{gettext("Basic information")}}</a></li>
+                        <li class=""><a href="#groups" data-toggle="tab" aria-expanded="false">{{gettext("Groups")}}</a></li>
                     </ul>
                     <!-- Tab content -->
                     <input type="hidden" id="user_id" value=""/>
@@ -210,7 +210,7 @@
                         <div class="tab-pane active" id="basic" style="margin-top:15px;">
                             <div class="row" style="margin-bottom:15px;">
                                 <div class="form-group">
-                                    <label class="control-label col-xs-3" for="email">Email address</label>
+                                    <label class="control-label col-xs-3" for="email">{{gettext("Email address")}}</label>
                                     <div class="col-xs-9">
                                         <input class="form-control" id="email" name="email" placeholder="Email" readonly="" type="text" value="">
                                     </div>
@@ -218,7 +218,7 @@
                             </div>
                             <div class="row" style="margin-bottom:15px;">
                                 <div class="form-group">
-                                     <label class="control-label col-xs-3" for="username">Username</label>
+                                     <label class="control-label col-xs-3" for="username">{{gettext("Username")}}</label>
                                     <div class="col-xs-9">
                                         <input class="form-control" id="username" name="username" placeholder="Username" readonly="" type="text" value="">
                                     </div>
@@ -226,7 +226,7 @@
                             </div>
                             <div class="row" style="margin-bottom:15px;">
                                 <div class="form-group">
-                                     <label class="control-label col-xs-3" for="fullname">Fullname</label>
+                                     <label class="control-label col-xs-3" for="fullname">{{gettext("Fullname")}}</label>
                                     <div class="col-xs-9">
                                         <input class="form-control" id="fullname" name="fullname" placeholder="Full name" type="text" value="">
                                     </div>
@@ -234,7 +234,7 @@
                             </div>
                             <div class="row" style="margin-bottom:15px;">
                                 <div class="form-group">
-                                     <label class="control-label col-xs-3" for="address">Address</label>
+                                     <label class="control-label col-xs-3" for="address">{{gettext("Address")}}</label>
                                     <div class="col-xs-9">
                                         <input class="form-control" id="address" name="address" placeholder="Address" type="text" value="">
                                     </div>
@@ -242,7 +242,7 @@
                             </div>
                             <div class="row" style="margin-bottom:15px;">
                                 <div class="form-group">
-                                     <label class="control-label col-xs-3" for="phone_number">gettext(Phone Number)</label>
+                                     <label class="control-label col-xs-3" for="phone_number">{{gettext("Phone Number")}}</label>
                                     <div class="col-xs-9">
                                         <input class="form-control" id="phone_number" name="phone_number" placeholder="Phone Number" type="text" value="">
                                     </div>

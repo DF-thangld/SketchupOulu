@@ -99,7 +99,7 @@
             },
             error: function(errors)
             {
-                show_alert('alert-danger', 'Category not found!!!');
+                show_alert('alert-danger', {{ gettext('Category not found!!!') }});
             }
         });
     }
@@ -119,14 +119,14 @@
             },
             error: function(errors)
             {
-                show_alert('alert-danger', 'Category not found!!!');
+                show_alert('alert-danger', {{gettext('Category not found!!!')}});
             }
         });
     }
 
     function delete_category(category_id)
     {
-        bootbox.confirm("Are you sure you want to delete the category?", function(result)
+        bootbox.confirm({{ gettext("Are you sure you want to delete the category?") }}, function(result)
         {
             if (!result)
                 return;
@@ -142,7 +142,7 @@
                     // now just refresh the page to save time :))
                     //window.location='{{ url_for('admin.news_management') }}';
                     $('#category_' + category_id).hide();
-                    show_alert('alert-success', 'Category deleted!');
+                    show_alert('alert-success', {{ gettext('Category deleted!') }});
                 },
                 error: function(errors)
                 {
@@ -155,7 +155,7 @@
 
     function delete_journal(journal_id)
     {
-        bootbox.confirm("Are you sure you want to delete the journal?", function(result)
+        bootbox.confirm({{ gettext("Are you sure you want to delete the journal?") }}, function(result)
         {
             if (!result)
                 return;
@@ -171,7 +171,7 @@
                     // now just refresh the page to save time :))
                     //window.location='{{ url_for('admin.news_management') }}';
                     $('#journal_' + journal_id).hide();
-                    show_alert('alert-success', 'Journal deleted!');
+                    show_alert('alert-success', {{ gettext('Journal deleted!') }});
                 },
                 error: function(errors)
                 {
@@ -207,14 +207,14 @@
 <div class="container">
 	<div class="row" style="margin-top: 20px;">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">Home</a></li>
-            <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
-           <li class = "active">Journal Management</li>
+           <li><a href = "{{ url_for('index') }}">{{gettext(Home)}}</a></li>
+            <li><a href = "{{ url_for('index') }}">{{gettext("Admin tools")}}</a></li>
+           <li class = "active">{{ gettext("Journal Management") }}</li>
         </ol>
         <div class="col-centered">
-            <h2 style="font-size: 45px;">Journal Management</h2>
+            <h2 style="font-size: 45px;">{{gettext("Journal Management")}}</h2>
             <a type="button" class="btn btn-primary" href="#" onclick="display_create_news_category_form();">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New category
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> {{ gettext("New category")}}
             </a>
 
             <div id="create_category" class="modal fade" role="dialog">
@@ -223,7 +223,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Create category</h4>
+                            <h4 class="modal-title">{{gettext("Create category")}}</h4>
                         </div>
                         <div class="modal-body">
                             <form  accept-charset="UTF-8" action="{{ url_for('admin.create_journal_category') }}" autocomplete="off"
@@ -231,7 +231,7 @@
                             method="post">
                                 <div id="creating_category_error_panel" class="col-centered" style="display:none;color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                                       <div class="container">
-                                      There were problems creating the category:
+                                      {{gettext("There were problems creating the category:")}}
                                           <div id="creating_category_errors"></div>
                                       </div>
                                 </div>
@@ -253,8 +253,8 @@
                                     </dd>
                                 </dl>
                                 <div class="btn-toolbar">
-                                    <button type="submit" class='btn btn-success' onclick="create_category();return false;">Save</button>
-                                    <button type="button" class='btn' data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class='btn btn-success' onclick="create_category();return false;">{{gettext("Save")}}</button>
+                                    <button type="button" class='btn' data-dismiss="modal">{{gettext("Cancel")}}</button>
                                 </div>
                             </form>
                         </div>
@@ -269,7 +269,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Edit category</h4>
+                            <h4 class="modal-title">{{gettext("Edit category")}}</h4>
                         </div>
                         <div class="modal-body">
                             <form  accept-charset="UTF-8" action="{{ url_for('admin.edit_journal_category') }}" autocomplete="off"
@@ -277,7 +277,7 @@
                             method="post">
                                 <div id="edit_category_error_panel" class="col-centered" style="display:none;color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                                       <div class="container">
-                                      There were problems editing the category:
+                                      {{gettext("There were problems editing the category:")}}
                                           <div id="edit_category_errors"></div>
                                       </div>
                                 </div>
@@ -300,8 +300,8 @@
                                     </dd>
                                 </dl>
                                 <div class="btn-toolbar">
-                                    <button type="submit" class='btn btn-success' onclick="edit_category();return false;">Save</button>
-                                    <button type="button" class='btn' data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class='btn btn-success' onclick="edit_category();return false;">{{ gettext("Save") }}</button>
+                                    <button type="button" class='btn' data-dismiss="modal">{{ gettext("Cancel") }}</button>
                                 </div>
                             </form>
                         </div>
@@ -342,7 +342,7 @@
                                     {% endif %}
                                 </span>
                                 <a type="button" class="btn btn-danger" onclick="delete_category({{ category.id }});">
-                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> {{ gettext("Delete") }}
                                 </a>
                             </div>
                             <div class="clearfix"></div>
@@ -351,9 +351,9 @@
                             <table class="table table-hover machine_table table-striped" id="m_table_{{ category.id }}">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Title</th>
-                                        <th>Tools</th>
+                                        <th>{{ gettext("ID") }}</th>
+                                        <th>{{ gettext("Title") }}</th>
+                                        <th>{{ gettext("Tools") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="journals_in_category_{{ category.id }}">
@@ -365,21 +365,21 @@
                                                 <!-- Journal tools -->
                                                 <div>
                                                     <a type="button" class="btn btn-info" href="{{ url_for('admin.edit_journal', journal_id=journal.id) }}">
-                                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>{{ gettext("Edit") }}
                                                     </a>
                                                     <span id="activate_journal_button_{{ journal.id }}">
                                                         {% if journal.is_activated == 0 %}
                                                         <a type="button" class="btn btn-success" onclick="activate_deactivate_journal({{ journal.id }});">
-                                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Activate
+                                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ gettext("Activate") }}
                                                         </a>
                                                         {% else %}
                                                         <a type="button" class="btn btn-warning" onclick="activate_deactivate_journal({{ journal.id }});">
-                                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deactivate
+                                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {{ gettext("Deactivate") }}
                                                         </a>
                                                         {% endif %}
                                                     </span>
                                                     <a type="button" class="btn btn-danger" onclick="delete_journal({{ journal.id }});">
-                                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> {{ gettext("Delete") }}
                                                     </a>
                                                 </div>
                                             </td>
