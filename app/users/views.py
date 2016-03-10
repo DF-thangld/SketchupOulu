@@ -308,7 +308,7 @@ def get_comments():
         main_object = BuildingModel.query.filter_by(id=comment_id).first()
         can_add_comment = True
     if main_object is None:
-        return json.dumps(['Comment topic not found']), 404
+        return json.dumps([gettext('Comment topic not found')]), 404
 
     comments = main_object.comment_topic.get_latest_comments(page=page, return_dict=True)
     for comment in comments:

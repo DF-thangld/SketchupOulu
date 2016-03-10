@@ -43,7 +43,7 @@ class SketchupOuluUnitTest(TestCase):
             self.login('dreamingfighter@gmail.com', 'abc')
 
     # 1
-    def test_login_sucess(self):
+    def test_login_success(self):
         input_data = {
             "email": "zhoujunjie.10@gmail.com",
             "password": "Zjj19911031"
@@ -194,7 +194,7 @@ class SketchupOuluUnitTest(TestCase):
             self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
             self.client.post('admin/create_journal/', data=input_data)
 
-    # 13
+    # 13 test create journal with normal account
     def test_create_journal_normaluser(self):
         input_data = {
             "category_id" : "4",
@@ -207,8 +207,11 @@ class SketchupOuluUnitTest(TestCase):
             "content_en" : "bbbbbbbbb",
         }
         with app.app_context():
-            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('users/login/', data={'email': '412443823@qq.com', 'password': 'Zjj19911031'})
             self.client.post('admin/create_journal/', data=input_data)
+            journal = Journal.query.filter_by(content=input_data['content']).first()
+            # self.assertEqual(journal, None)
+
 
     # 14
     def test_create_journal_blanktitle_admin(self):
@@ -246,10 +249,23 @@ class SketchupOuluUnitTest(TestCase):
 
     # 16 create journal with same title with existed one
     def test_create_journal_sametitle(self):
+        input_data = {
+            "category_id" : "4",
+            "is_activate" : "y",
+            "title" : "play_normal",
+            "content" : "play games asdaas normal",
+            "title_fi" : "Mita Kuulu asdasd",
+            "content_fi" : "Hyva asdasd",
+            "title_en" : "aaaaaa weq",
+            "content_en" : "bbbbbbbbb asdxz",
+        }
+        with app.app_context():
+            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('admin/create_journal/', data=input_data)
+            journal = Journal.query.filter_by(title=input_data['title'], content=input_data['content']).first()
+            # self.assertEqual(journal, None)
 
-
-
-    # 16 update user info
+    # 17 update user info, doesn't work properly
     def test_update_userprofile_admin(self):
         input_data = {
             "user_id" : "13",
@@ -264,7 +280,7 @@ class SketchupOuluUnitTest(TestCase):
             self.assertNotEqual(user, None)
 
 
-    # 17 Admin update user group
+    # 18 Admin update user group, doesn't work properly
     def test_update_usergroup_admin(self):
         input_data = {
             "user_id" : "12",
@@ -273,14 +289,14 @@ class SketchupOuluUnitTest(TestCase):
         with app.app_context():
             self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
             self.client.post('admin/update_user_info/', data=input_data)
-            user = Group.query.filter_by(id=input_data['groups_value']).first()
-            # self.assertNotEqual(user, None)
+            user = Group.query.filter_by(id=input_data['user_id']).first()
+            self.assertNotEqual(user, None)
 
 
-    # 18 create scenario
+    # 19 create scenario
     def test_create_scenario(self):
         input_data = {
-            "addition_information" : {"model_THyGEE2bBwWgZdPWJy29D51CTrCNudaTauatGaZ6SHOTYVC7E9":{"id":"model_THyGEE2bBwWgZdPWJy29D51CTrCNudaTauatGaZ6SHOTYVC7E9","directory":"YgAgPaYMVdDElUwfa1ZtCjPjCKKjNREgD0amGtYJGlNqyB62AX","original_filename":"building_2","file_type":"objmtl","x":128.1677682103175,"y":0,"z":-311.52215855827365,"size":1,"rotate_x":0,"rotate_y":0,"rotate_z":0},"model_tWNuqfKnZZvrhkT6E2RDLWo2z9MpJnXPNJ0vTnEzDsrskmMvK4":{"id":"model_tWNuqfKnZZvrhkT6E2RDLWo2z9MpJnXPNJ0vTnEzDsrskmMvK4","directory":"YgAgPaYMVdDElUwfa1ZtCjPjCKKjNREgD0amGtYJGlNqyB62AX","original_filename":"building_2","file_type":"objmtl","x":2.518872265404621,"y":0,"z":-328.8096435312111,"size":1,"rotate_x":0,"rotate_y":0,"rotate_z":0},"model_TghWayJdUXJlzk0BwzpzzOKuiA1Wf7HgfLxgJWYguD52JkPDMV":{"id":"model_TghWayJdUXJlzk0BwzpzzOKuiA1Wf7HgfLxgJWYguD52JkPDMV","directory":"Ua9zdzQE1Foa70xc1fQ976vr2ac7EkiOt0rH6UZn79IHbyBOhI","original_filename":"male02","file_type":"objmtl","x":-181.51697001965312,"y":0,"z":-348.3533426561828,"size":1,"rotate_x":0,"rotate_y":0,"rotate_z":0},"size":700},
+            "addition_information"
             "name" : "blabalascenario",
             "description" : "this is a testing scenario",
             "is_public" : "1"
@@ -288,8 +304,56 @@ class SketchupOuluUnitTest(TestCase):
         with app.app_context():
             self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
             self.client.post('users/add_scenario/', data=input_data)
-            scenario = Scenario.query.filter_by(name=input_data['name']).first()
+            scenario = Scenario.query.filter_by(description=input_data['name']).first()
             self.assertNotEqual(scenario, None)
+
+    # 20 create scenario with blank title
+    def test_create_scenario_blanktitle(self):
+        input_data = {
+            "addition_information"
+            "description" : "this is a testing scenario for blank title",
+            "is_public" : "1"
+        }
+        with app.app_context():
+            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('users/add_scenario/', data=input_data)
+            scenario = Scenario.query.filter_by(description=input_data['name']).first()
+            self.assertEqual(scenario, None)
+
+
+    # 21 Ban a user, failed test case
+    def test_banuser(self):
+        input_data={
+            "user_id" : "13",
+            "banned" : "1"
+        }
+        with app.app_context():
+            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('admin/update_user_info/', data=input_data)
+
+
+    # 22 Unban a user
+    def test_unbanuser(self):
+        input_data={
+            "user_id" : "13",
+            "banned" : "0"
+        }
+        with app.app_context():
+            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('admin/update_user_info/', data=input_data)
+            self.client.post('users/login/', data={'email': 'zhoujunjie.10@gmail.com', 'password': 'Zjj19911031'})
+
+    # 23 test add comment on scenario
+    def test_addcomment_on_scenario(self):
+        input_data={
+            "comment_type":"scenario",
+            "object_id": "mf5L9uDLCOvsDnCEEHg0na197o1ZhPD7ct3TUQZLyKe2bBBisL",
+            "content" : "this is supposed to be good"
+        }
+        with app.app_context():
+            self.client.post('users/login/', data={'email': 'df.thangld@hotmail.com', 'password': 'abc'})
+            self.client.post('users/add_comment/', data=input_data)
+
 
 if __name__ == '__main__':
     unittest.main()
