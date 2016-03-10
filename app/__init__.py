@@ -2,8 +2,9 @@ import os
 import sys
 import datetime
 import logging
+from base64 import decodestring, b64decode
 
-from flask import Flask, render_template, g, session, request, redirect
+from flask import Flask, render_template, g, session, request, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.babel import Babel
 from smtplib import SMTP, SMTP_SSL
@@ -26,21 +27,26 @@ db = SQLAlchemy(app)
 
 @babel.localeselector
 def get_babel_locale():
-    return session['locale']
+    #TODO: change language back
+    return 'en' #session['locale']
 
 @app.before_request
 def check_locale():
+    #TODO: change language back
     if 'lang' in request.args:
         locale = request.args.get('lang')
         if locale in config.LANGUAGES:
             session['locale'] = locale
             return redirect(request.url.replace('lang=' + locale, ''))
         else:
-            session['locale'] = config.BABEL_DEFAULT_LOCALE
-        
+            session['locale'] = config.DEFAULT_LOCALE
     elif 'locale' not in session:
         locale = request.accept_languages.best_match(config.LANGUAGES.keys())
-        session['locale'] = locale
+        if locale is None:
+            locale = config.DEFAULT_LOCALE
+        session['locale'] = locale #locale
+    elif 'locale' in session and (session['locale'] is None or session['locale'] not in config.LANGUAGES.keys()):
+        session['locale'] = config.DEFAULT_LOCALE
 
 @app.before_request
 def good_url():
@@ -72,6 +78,21 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
             'full_filename': full_filename,
             'filename_without_extension': filename_without_extension}
 
+def save_image(image_filename, image_dir, base64_content):
+    fh = open(os.path.join(app_dir, image_dir, image_filename), "wb")
+    
+    b64data = base64_content.split(',')[1] # [sic]
+    fh.write(b64decode(b64data))
+    
+    #fh.write(decodestring(base64_content))
+    fh.close()
+    
+def delete_file(dir, filename):
+    try:
+        os.remove(os.path.join(app_dir, dir, filename))
+        return True
+    except:
+        return False
 
 def send_mail(emails, title, content):
 
@@ -125,14 +146,22 @@ if not app.config['DEBUG']:
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404
+    if request.endpoint != 'static':
+        return render_template('404.html'), 404
+    else:
+        return '', 404
 
 @app.route('/')
 def index():
     return render_template('homepage.html'), 200
 
+@app.route('/static/js/constants.js')
+def constants_js():
+    return render_template('constants.js'), 200
+
 @app.route('/404')
 def page_not_found():
+    print(request.url)
     return render_template('404.html'), 404
 
 from app.users.views import mod as usersModule

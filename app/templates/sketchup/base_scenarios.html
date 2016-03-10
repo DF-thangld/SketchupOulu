@@ -215,13 +215,13 @@ function render()
                 $('#scenario_name').html('<a href="{{ url_for('sketchup.view_scenario') }}?id=' + data.id + '">' + data.name + '</a>');
                 $('#profile_picture').attr('src', '{{ url_for('static', filename='images/profile_pictures') }}/' + data.owner.profile_picture);
                 $('#created_user').html(data.owner.username);
-                $('#created_time').html(Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss'));
+                $('#created_time').html(data.created_time);
                 $('#object_id').val(data.id);
                 if (data.last_edited_user != null)
                 {
                     $('#last_edited_panel').show(0);
                     $('#last_edited_user').html(data.last_edited_user.username);
-                    $('#last_edited_time').html(Date.parse(data.last_edited_time).toString('dd.MM.yyyy hh:mm:ss'));
+                    $('#last_edited_time').html(data.last_edited_time);
                 }
                 $('#comment_list').html('');
 

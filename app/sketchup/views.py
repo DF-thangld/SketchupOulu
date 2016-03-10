@@ -4,7 +4,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from flask.ext.uploads import UploadSet, IMAGES
 from sqlalchemy.dialects import mysql
 
-from app import db, send_mail, upload_file
+from app import db, send_mail, upload_file, save_image, delete_file
 from app.users.decorators import requires_login
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
@@ -15,6 +15,7 @@ mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 @mod.route('/view_scenario/')
 def view_scenario():
     scenario_id=request.args.get('id', '')
+    
     if scenario_id == '':
         return render_template('404.html'), 404
 
@@ -35,6 +36,28 @@ def view_scenario():
     return render_template("sketchup/view_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
 
+@mod.route('/edit_scenario/')
+def edit_scenario():
+    scenario_id=request.args.get('id', '')
+    
+    if scenario_id == '':
+        return render_template('404.html'), 404
+
+    scenario = Scenario.query.filter_by(id=scenario_id).first()
+    if scenario is None:
+        return render_template('404.html'), 404
+
+    if scenario.is_public == 0:
+        if g.user is None:
+            return render_template('404.html'), 404
+        elif not (g.user.is_admin() or scenario.owner == g.user):
+            return render_template('404.html'), 404
+
+    building_models = []
+    if g.user is not None and scenario.can_edit(g.user):
+        building_models = g.user.get_available_building_models(return_dict=True)
+
+    return render_template("sketchup/edit_scenario.html", can_edit=scenario.can_edit(g.user), building_models=building_models, scenario=scenario.to_dict(include_owner=True, include_last_edited_user=True, include_comments=True))
 
 
 @mod.route('/get_scenario/')
@@ -91,6 +114,15 @@ def update_scenario(scenario_id):
             scenario.addition_information = addition_information
         except:
             pass
+        
+    if 'scenario_preview' in request.form:
+        scenario_preview = request.form.get('scenario_preview', '')
+        if scenario_preview != '':
+            try:
+                save_image(scenario.id + '.png', 'static/images/scenario_previews', scenario_preview)
+                scenario.has_preview = 1
+            except:
+                pass
 
     if len(errors) > 0:
         return json.dumps(errors), 400
@@ -114,9 +146,10 @@ def delete_scenario(scenario_id):
 
     if g.user is None or (not g.user.is_admin() and scenario.owner != g.user):
         return json.dumps(['Scenario not found']), 404
-
+    
     db.session.delete(scenario)
     db.session.commit()
+    delete_file('static/images/scenario_previews', scenario.id + '.png')
 
     return json.dumps({
         'success': True
@@ -246,6 +279,16 @@ def update_building_model(building_model_id):
                 building_model.addition_information = json.dumps(original_addition_information)
             except:
                 return json.dumps(['Error in saving addition information, please contact an admin for more information']), 400
+    
+    if 'preview' in request.form:
+        preview = request.form.get('preview', '')
+        if preview != '':
+            try:
+                save_image(building_model.id + '.png', 'static/images/building_model_previews', preview)
+                building_model.has_preview = 1
+            except:
+                pass
+        
 
     db.session.commit()
     returned_building_model = {}

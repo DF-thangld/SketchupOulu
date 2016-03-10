@@ -144,25 +144,19 @@ function render()
                             'camera_lookat_x': vector.x,
                             'camera_lookat_y': vector.y,
                             'camera_lookat_z': vector.z};
+		renderer.render( scene, camera );
 
-        bootbox.confirm("Are you sure you want to save this thumbnail?", function(result)
-        {
-            bootbox.hideAll();
-            if (result)
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+            data: {'addition_information': JSON.stringify(information), 'preview': renderer.domElement.toDataURL( 'image/png' )},
+            dataType: 'json',
+            success: function(data) {
+                show_alert('alert-success', 'Thumbnail saved');
+            },
+            error: function(data)
             {
-                $.ajax({
-                    type: "POST",
-                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
-                    data: {'addition_information': JSON.stringify(information)},
-                    dataType: 'json',
-                    success: function(data) {
-                        show_alert('alert-success', 'Thumbnail saved');
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
+                show_alert('alert-danger', data.responseJSON[0]);
             }
         });
 

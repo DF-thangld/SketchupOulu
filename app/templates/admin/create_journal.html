@@ -9,14 +9,35 @@
 {% block onload_script %}
     {% for language in languages %}
     $('#content_{{ language }}').summernote({
-        height: 300
+        height: 300,
+        callbacks: {
+            onImageUpload: function(files, editor, welEditable) {
+                upload_image(files[0], editor, welEditable);
+            }
+        }
     });
     {% endfor %}
 
 {% endblock %}
 
 {% block js_script %}
+function upload_image(file, editor, welEditable)
+{
+    data = new FormData();
+    data.append("file", file);
+    $.ajax({
+        data: data,
+        type: "POST",
+        url: "{{ url_for('admin.upload_image') }}",
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(url) {
+            $('#content').summernote('editor.insertImage', url.trim());
+        }
+    });
 
+}
 {% endblock %}
 
 {% block main_content %}
@@ -25,6 +46,7 @@
         <ol class = "breadcrumb">
            <li><a href = "{{ url_for('index') }}">Home</a></li>
             <li><a href = "{{ url_for('index') }}">Admin tools</a></li>
+            <li><a href = "{{ url_for('admin.news_management') }}">Journal Management</a></li>
            <li class = "active">Create Journal</li>
         </ol>
 		<h2 style="font-size: 45px;">Create Journal</h2>

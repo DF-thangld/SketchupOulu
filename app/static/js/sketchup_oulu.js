@@ -128,7 +128,7 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
                 comment_panel_html += '    <div class="commenterImage">';
                 comment_panel_html += '        <a href="' + base_url + 'users/' + comment.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + comment.owner.profile_picture + '"></a>';
                 comment_panel_html += '    </div>';
-                comment_panel_html += '    <div class="commentText"  style="display: block;">';
+                comment_panel_html += '    <div class="commentText"  style="display: block;float:left;">';
                 if (comment.description != '')
                 {
                 	comment_panel_html += '        <div class="commentText"  style="display: block;"><b>' + comment.description + '</b><div>';
@@ -137,10 +137,12 @@ function get_comments(comment_type, comment_id, page, element_id, on_load)
                 comment_panel_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + comment.owner.username + '/profile/">' + comment.owner.username + '</a> on ' + comment.created_time + '</span>';
                 if (comment.can_edit)
                 {
-                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + comment.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">Delete</a>)</span>';
+                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">Delete</a>)</span>';
                 }
                 comment_panel_html += '    </div>';
+                comment_panel_html += '    <div style="clear:both;"></div>';
                 comment_panel_html += '</li>';
+                comment_panel_html += '<div style="clear:both;"></div>';
             }
             comment_panel_html += '            </ul>';
             comment_panel_html += '        </div>';
@@ -179,7 +181,7 @@ function add_comment(comment_type, comment_id, comment_text, on_added)
             new_comment_html += '    <div class="commenterImage">';
             new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
             new_comment_html += '    </div>';
-            new_comment_html += '    <div class="commentText">';
+            new_comment_html += '    <div class="commentText" style="float:left;">';
             if (data.description != '')
             {
             	new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
@@ -188,7 +190,9 @@ function add_comment(comment_type, comment_id, comment_text, on_added)
             new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
             new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
             new_comment_html += '    </div>';
+            new_comment_html += '    <div style="clear:both;"></div>';
             new_comment_html += '</li>';
+            new_comment_html += '<div style="clear:both;"></div>';
 
             $('#comment_list_' + comment_id).prepend(new_comment_html);
             show_alert('alert-success', 'Comment added');
@@ -293,21 +297,7 @@ function init_scene(information, current_scene, on_model_loaded)
     redraw_scenario_ground(current_scene);
 }
 
-function enlarge_scenario()
-{
-    // define new value
-    WORLD_SIZE += 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
-function shrink_scenario()
-{
-    // define new value
-    WORLD_SIZE -= 100;
-    scene.world_size = WORLD_SIZE;
-    redraw_scenario_ground(scene);
-}
 
 function find_by_id(array, id)
 {
@@ -358,7 +348,7 @@ function load_model(file_type, directory, filename, addition_information, object
             }, 50);
             return;
         }
-		else if (loaded_objects[unique_id] == false)
+		else if (loaded_objects[unique_id] == '-1')
 			return;
         var new_object = loaded_objects[unique_id].clone();
 
@@ -380,11 +370,21 @@ function load_model(file_type, directory, filename, addition_information, object
     loaded_objects[file_type + "|" + directory + "|" + filename] = null;
     if (file_type == 'objmtl')
     {
-        var loader = new THREE.OBJMTLLoader(manager);
-        loader.load(directory + filename + ".obj",
-            directory + filename + ".mtl",
-            function (object) {
-                object.scale.x = object.scale.y = object.scale.z = addition_information.size;
+    	
+    	var mtlLoader = new THREE.MTLLoader(manager);
+		mtlLoader.setBaseUrl( directory );
+		mtlLoader.setPath( directory );
+		mtlLoader.load( filename + '.mtl', function( materials ) {
+
+			materials.preload();
+
+			var objLoader = new THREE.OBJLoader(manager);
+			objLoader.setMaterials( materials );
+			objLoader.setPath( directory );
+			objLoader.load( filename + '.obj', function ( object ) {
+
+				
+				object.scale.x = object.scale.y = object.scale.z = addition_information.size;
                 object.position.x = addition_information.x;
                 object.position.y = addition_information.y;
                 object.position.z = addition_information.z;
@@ -398,8 +398,10 @@ function load_model(file_type, directory, filename, addition_information, object
                 object_scene.add(object);
                 if (onload !== undefined)
                     onload(object);
-            }, function(){},
-        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+
+			}, function(){}, function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';} );
+
+		});
     }
     else if (file_type == 'obj')
     {
@@ -427,7 +429,7 @@ function load_model(file_type, directory, filename, addition_information, object
                         onload(object);
                 },
                 function(){},
-                function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+                function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
         }
         catch(err) {console.log(err.message);}
     }
@@ -454,10 +456,40 @@ function load_model(file_type, directory, filename, addition_information, object
                     onload(dae);
             },
             function(){},
-            function(){loaded_objects[file_type + "|" + directory + "|" + filename] = false;});
+            function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
         }
         catch(err) {console.log(err.message);}
 
+    }
+    else if (file_type == 'jpg' || file_type == 'jpeg' || file_type == 'png')
+    {
+    	var loader = new THREE.TextureLoader(manager);
+		loader.load(directory + filename + "." + file_type ,function(texture)
+		{
+			
+			var image_geometry = new THREE.PlaneBufferGeometry(texture.image.width, texture.image.height);
+			image_geometry.rotateX( - Math.PI / 2 );
+			var image_material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
+			var image_mesh = new THREE.Mesh( image_geometry, image_material );
+
+			var image_object = new THREE.Mesh( image_geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+			image_object.material= image_material;
+			
+			image_object.scale.x = image_object.scale.y = image_object.scale.z = addition_information.size;
+			image_object.position.x = addition_information.x;
+            image_object.position.y = addition_information.y;
+            image_object.position.z = addition_information.z;
+            image_object.rotation.x = addition_information.rotate_x;
+            image_object.rotation.y = addition_information.rotate_y;
+            image_object.rotation.z = addition_information.rotate_z;
+            image_object.name = addition_information.id;
+            object_scene.add( image_object );
+            loaded_objects[file_type + "|" + directory + "|" + filename] = image_object;
+            if ( onload !== undefined )
+                onload(image_object);
+		},
+        function(){},
+        function(){loaded_objects[file_type + "|" + directory + "|" + filename] = '-1';});
     }
 
 }

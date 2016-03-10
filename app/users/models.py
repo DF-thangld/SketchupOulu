@@ -23,7 +23,7 @@ class User(db.Model):
     birthdate = db.Column(db.DateTime)
     profile_picture = db.Column(db.String(80), default='default_profile.png')
     join_date = db.Column(db.DateTime)
-    default_locale = db.Column(db.String(10), default='fi')
+    default_locale = db.Column(db.String(10), default='en')
 
     last_login = db.Column(db.DateTime)
     last_activity = db.Column(db.DateTime)

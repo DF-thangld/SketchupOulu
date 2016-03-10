@@ -20,35 +20,52 @@
         $("#profile_menu li").removeClass("active");
         $(this).addClass("active");
 	});
+	canvas = document.getElementById( "scenario_canvas" );
+	window.addEventListener( 'resize', onWindowResize, false );
+	onWindowResize();
+	
+	
+	
+	manager.onLoad = function()
+    {
+    	renderer.setSize( 1000, 1000*3/4 );
+    	for (i=0; i < building_models.length; i++)
+    	{
+	        var building_model = building_models[i];
+	        var scene = building_model['scene'];
+	        var id = building_model['id'];
+	        var width = $('#building_model_' + id).width();
+	        var height = $('#building_model_' + id).width()*3/4;
+	        $('#building_model_' + id).height(height);
+	        
+			renderer.setClearColor( 0xffffff );
+	        renderer.setScissorTest( false );
+	        renderer.clear();
+	        renderer.render(scene, scene.userData.camera);
+	        var image_url = renderer.domElement.toDataURL( 'image/png' );
+	        $('#building_model_' + id).html('<center><img src="' + image_url + '" style="width:100%; height:100%"/></center>');
+	        $.ajax({
+	            type: "POST",
+	            url: "{{ url_for('sketchup.update_building_model', building_model_id='') }}" + id,
+	            data: {'preview': image_url},
+	            dataType: 'json',
+	            error: function(data)
+	            {
+	                show_alert('alert-danger', data.responseJSON[0]);
+	            }
+	        });
+	        
+    	}
+    	onWindowResize();
+    }
     {% for building_model in building_models %}
-    init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}');
+    	{% if building_model.has_preview != 1 %}
+    	init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}');
+    	{% endif %}
     {% endfor %}
-    {% for scenario in scenarios %}
-    init_scenario('{{ scenario.id }}', '{{ scenario.addition_information|safe }}');
-    {% endfor %}
-
-
-    for (i=0; i < building_models.length; i++)
-    {
-        var building_model = building_models[i];
-        $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
-        var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
-
-        building_model['camera.aspect'] = SCREEN_WIDTH / SCREEN_HEIGHT;
-        building_model['camera'].updateProjectionMatrix();
-        building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-    }
-    for (i=0; i < scenarios.length; i++)
-    {
-        var scenario = scenarios[i];
-        $('#scenario_' + scenario['id']).css('height', $('#scenario_' + scenario['id']).width()*3/4);
-        var SCREEN_WIDTH = $('#scenario_' + scenario['id']).innerWidth()-8, SCREEN_HEIGHT = $('#scenario_' + scenario['id']).innerHeight()-8;
-
-        scenario['camera'].aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-        scenario['camera'].updateProjectionMatrix();
-        scenario['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-    }
-    animate();
+    
+    
+    
 {% endblock %}
 {% block js_script %}
     var WORLD_SIZE = 1000; //side length of the square world
@@ -56,107 +73,37 @@
     var building_models = [];
     var scenarios = [];
     var manager = new THREE.LoadingManager();
+    var scenario_renderer = null;
+    var canvas;
+    var scenes = [];
+    var renderer = null;
+    var canvas = null;
 
-    window.addEventListener('resize', function()
-    {
-        for (i=0; i < building_models.length; i++)
-        {
-            var building_model = building_models[i];
-            $('#building_model_' + building_model['id']).css('height', $('#building_model_' + building_model['id']).width()*3/4);
-            var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
-
-            building_model['camera'].aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-            building_model['camera'].updateProjectionMatrix();
-            building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-        }
-
-        for (i=0; i < scenarios.length; i++)
-        {
-            var scenario = scenarios[i];
-            $('#scenario_' + scenario['id']).css('height', $('#scenario_' + scenario['id']).width()*3/4);
-            var SCREEN_WIDTH = $('#scenario_' + scenario['id']).innerWidth()-8, SCREEN_HEIGHT = $('#scenario_' + scenario['id']).innerHeight()-8;
-
-            scenario['camera'].aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-            scenario['camera'].updateProjectionMatrix();
-            scenario['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-        }
-    }, false);
-
-    function init_scenario(id, information)
-    {
-        $('#scenario_' + id).css('height', $('#scenario_' + id).width()*3/4);
-        information = JSON.parse(information);
-
-        var scene = new THREE.Scene();
-        var SCREEN_WIDTH = $('#scenario_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#scenario_' + id).innerHeight()-8;
-        var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-        var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-        camera.position.set(0, 1000, 1000);
-        camera.lookAt(new THREE.Vector3( 0, 0, 0 ));
-        scene.add(camera);
-
-        // RENDERER
-        var renderer;
-        if ( Detector.webgl )
-            renderer = new THREE.WebGLRenderer( {antialias:true} );
-        else
-            renderer = new THREE.CanvasRenderer();
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        renderer.setClearColor( 0xffffff, 1 );
-        container = document.getElementById( 'scenario_' +id );
-        container.appendChild( renderer.domElement );
-
-
-
-        //LIGHT
-        var ambientLight = new THREE.AmbientLight(0xffffff);
-        scene.add(ambientLight);
-        var size = 1000;
-        //object
-        for (var model_id in information)
-        {
-            if (model_id.substring(0, 6) == 'model_')
-            {
-                var model = information[model_id];
-                load_model( model.file_type,
-                            '{{ url_for('static', filename='models/building_models/') }}' + model.directory + '/',
-                            model.original_filename,
-                            model,
-                            scene);
-            }
-            else if (model_id == 'size')
-            {
-                size = information['size'];
-            }
-        }
-
-        //GRID
-        var size = size/2, step = BLOCK_SIZE;
-        var geometry = new THREE.Geometry();
-        for ( var i = - size; i <= size; i += step ) {
-
-            geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-            geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-            geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-            geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-        }
-        var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, transparent: true } );
-        var line = new THREE.LineSegments( geometry, material );
-        scene.add( line );
-
-        //init_scene(information, scene);
-        var control = new THREE.OrbitControls( camera, renderer.domElement );
-
-        //move objects to global arrays
-        scenarios.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
-        renderer.render( scene, camera );
-    }
-
+	function onWindowResize()
+	{
+		{% for building_model in building_models %}
+		$('#building_model_{{ building_model.id }}').height($('#building_model_{{ building_model.id }}').width()*3/4);
+    	{% endfor %}
+    	{% for scenario in scenarios %}
+		$('#scenario_{{ scenario.id }}').height($('#scenario_{{ scenario.id }}').width()*3/4);
+    	{% endfor %}
+	}
 
     function init_building_model(id, file_type, information)
     {
         $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
         information = JSON.parse(information);
+        
+        // RENDERER
+        if (canvas == null)
+			canvas = document.getElementById("threejs_canvas");
+        if (renderer == null)
+        {
+	        if ( Detector.webgl )
+	            renderer = new THREE.WebGLRenderer( { antialias: true } );
+	        else
+	            renderer = new THREE.CanvasRenderer({ antialias: true });
+	    }
 
         // variables
         var scene = new THREE.Scene();
@@ -167,16 +114,9 @@
         camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
         scene.add(camera);
 
-        // RENDERER
-        var renderer;
-        if ( Detector.webgl )
-            renderer = new THREE.WebGLRenderer( {antialias:true} );
-        else
-            renderer = new THREE.CanvasRenderer();
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        renderer.setClearColor( 0xffffff, 1 );
-        container = document.getElementById( 'building_model_' +id );
-        container.appendChild( renderer.domElement );
+	    scene.userData.element = document.getElementById( 'building_model_' +id );
+		scene.userData.camera = camera;
+		//scene.userData.controls = new THREE.OrbitControls( scene.userData.camera, scene.userData.element );
 
         //LIGHT
         var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -187,36 +127,15 @@
                     '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
                     information.original_filename,
                     {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                    scene);
-
-        var control = new THREE.OrbitControls( camera, renderer.domElement );
+                    scene,
+	                function(object)
+	                {
+	                    
+	                });
 
         //move objects to global arrays
-        building_models.push({"id": id, "renderer": renderer, 'camera': camera, 'scene': scene, 'control': control});
-        renderer.render( scene, camera );
-    }
-
-    function animate()
-    {
-        requestAnimationFrame( animate );
-        render();
-    }
-    function render()
-    {
-        for (i=0; i < building_models.length; i++)
-        {
-            var building_model = building_models[i];
-            building_model['renderer'].render( building_model['scene'], building_model['camera'] );
-
-            building_model['control'].update();
-        }
-        for (i=0; i < scenarios.length; i++)
-        {
-            var scenario = scenarios[i];
-            scenario['renderer'].render( scenario['scene'], scenario['camera'] );
-
-            scenario['control'].update();
-        }
+        building_models.push({'id': id, 'scene': scene});
+        scenes.push(scene);
     }
 
     function display_comments()
@@ -225,7 +144,6 @@
         $("#profile_menu li").removeClass("active");
         $('#menu_comment').addClass('active');
 		get_comments('user', {{ user.id }}, 1, 'user_data_form', function(element){$('#user_data_form').show();});
-
     }
 
     function display_homepage()
@@ -234,17 +152,7 @@
         $("#profile_menu li").removeClass("active");
         $('#menu_homepage').addClass('active');
 
-        $('#homepage_panel').fadeIn('fast', function(){
-            for (i=0; i < building_models.length; i++)
-            {
-                var building_model = building_models[i];
-                var SCREEN_WIDTH = $('#building_model_' + building_model['id']).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + building_model['id']).innerHeight()-8;
-
-                building_model['camera.aspect'] = SCREEN_WIDTH / SCREEN_HEIGHT;
-                building_model['camera'].updateProjectionMatrix();
-                building_model['renderer'].setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-            }
-        });
+        $('#homepage_panel').fadeIn('fast', onWindowResize);
 
     }
     function get_user_scenarios()
@@ -311,7 +219,7 @@
             },
             error: function(data)
             {
-                console.log(data);
+                
                 $('#change_password_error_content').html('');
                 for (i = 0; i < data.responseJSON.length; i++)
                     $('#change_password_error_content').append('<div>- ' + data.responseJSON[i] + '</div>');
@@ -372,8 +280,10 @@
                     <div class="actionBox">
                         <ul class="commentList" id="scenario_list">
                         {% for scenario in scenarios %}
-                            <div class="col-md-6" style="margin-top:5px;float:left;background-color: #fff;">
-                                <div id="scenario_{{ scenario.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;"></div>
+                            <div class="col-md-6" style="margin-top:5px;float:left;">
+                                <div id="scenario_{{ scenario.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;">
+                                	<img style="width:100%; height:100%" src="{{url_for('static', filename='images/scenario_previews/' + scenario.id + '.png')}}" />
+                                </div>
                                 <a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}">{{ scenario.name }}</a>
                             </div>
                         {% endfor %}
@@ -389,8 +299,12 @@
                     </div>
                     <div class="actionBox">
                         {% for building_model in building_models %}
-                            <div class="col-md-4" style="margin-top:5px;float:left;background-color: #fff;">
-                                <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;"></div>
+                            <div class="col-md-4" style="margin-top:5px;float:left;">
+                                <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;">
+                                {% if building_model.has_preview == 1 %}
+                                <img src="{{url_for('static', filename='images/building_model_previews/' + building_model.id + '.png')}}" style="width:100%; height:100%" />
+                                {% endif %}
+                                </div>
                                 <a href="{{ url_for('sketchup.view_building_model', id=building_model.id) }}">{{ building_model.name }}</a>
                             </div>
                         {% endfor %}

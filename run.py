@@ -1,13 +1,16 @@
+# -*- coding: utf-8 -*-
 import datetime
 
 from flask import g, session, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from app.users.models import User, UserSession
 from app import app, db
+import config
 
 @app.before_request
 def before_request():
     g.user = None
+    session['sketchup_version'] = config.VERSION
     if session.get('user_id'):
         user = User.query.filter_by(id=session.get('user_id')).first()
         g.user = user
@@ -15,7 +18,7 @@ def before_request():
             g.user.default_locale = session['locale']
             db.session.commit()
         elif 'locale' not in session:
-            session['locale'] = g.user.default_locale 
+            session['locale'] = g.user.default_locale
     else:
         #check cookie for session
         session_id = request.cookies.get('session_id')
@@ -31,7 +34,7 @@ def before_request():
                 db.session.delete(user_session)
                 db.session.commit()
                 user = User.query.filter_by(id=user_id).first()
-                if user is not None and user_session.expired_time >= datetime.datetime.now():
+                if user is not None and user.banned != 1 and user_session.expired_time >= datetime.datetime.now():
                     new_user_session = UserSession(user.id)
                     db.session.add(new_user_session)
                     db.session.commit()

@@ -1,28 +1,27 @@
 {% extends "base.html" %}
-{% block custom_css %}
 
+{% block custom_script_file %}
+<script src="{{ url_for('static', filename='js/scenario_view_control.js') }}"></script>
+{% endblock %}
+
+{% block custom_css %}
 {% endblock %}
 {% block menu %}
 	{% include 'inside_menu.html' %}
 {% endblock %}
 
 {% block onload_script %}
-{% set index = 0 %}
-{% for building_model in building_models %}
-init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}', '{{ building_model.addition_information|tojson }}', {{ index }});
-{% set index = index + 1 %}
-{% endfor %}
 init();
 animate();
 get_comments('scenario', '{{ scenario.id }}', 1, 'scenario_comment_panel');
-$('#ModelWindow').hover(function(){mouse_on_model = true;},function(){mouse_on_model = false;});
+
 {% endblock %}
 
 {% block js_script %}
 //run before load
 
 var is_loading = true
-var mouse_on_model = false;
+
 
 var building_models = [];
 
@@ -87,430 +86,6 @@ var windowRatio = 2;
 var windowWidth = 972;
 var windowHeight = 500;
 
-{% if can_edit %}
-function add_building_model(information)
-{
-    if (current_object != null)
-        scene.remove(current_object);
-	load_model( information.file_type,
-				'{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
-				information.original_filename,
-				{'id': "model_" + generate_random_string(50), 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-				scene,
-				function(object)
-				{
-					current_object = object;
-					object.addition_information = information;
-					switchMode(1);
-				});
-}
-
-function init_building_model(id, file_type, information, index)
-{
-    $('#building_model_' + id).css('height', $('#building_model_' + id).width()*3/4);
-    information = JSON.parse(information);
-
-    // variables
-    var building_scene = new THREE.Scene();
-    building_scene.name = "scene_building_model_" + id;
-    var SCREEN_WIDTH = $('#building_model_' + id).innerWidth()-8, SCREEN_HEIGHT = $('#building_model_' + id).innerHeight()-8;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-    var building_camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-    building_camera.position.set(information.camera_x, information.camera_y, information.camera_z*1.5);
-    building_camera.lookAt(new THREE.Vector3( information.camera_lookat_x, information.camera_lookat_y, information.camera_lookat_z ));
-    building_scene.add(building_camera);
-
-    // RENDERER
-    var building_renderer;
-    if ( Detector.webgl )
-        building_renderer = new THREE.WebGLRenderer( {antialias:true} );
-    else
-        building_renderer = new THREE.CanvasRenderer();
-    building_renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    building_renderer.setClearColor( 0xffffff, 1 );
-    var building_container = document.getElementById( 'building_model_' +id );
-    building_container.appendChild( building_renderer.domElement );
-
-    //LIGHT
-    var ambientLight = new THREE.AmbientLight(0xffffff);
-    building_scene.add(ambientLight);
-
-    //object
-    load_model( file_type,
-                '{{ url_for('static', filename='models/building_models/') }}' + information.directory + '/',
-                information.original_filename,
-                {'id': id, 'x': 0, 'y': 0, 'z': 0, 'size': 1, 'rotate_x': 0, 'rotate_y': 0, 'rotate_z': 0},
-                building_scene,
-                function(object)
-                {
-                    models[index] = object;
-                });
-
-    //move objects to global arrays
-    building_models.push({"id": id, "renderer": building_renderer, 'camera': building_camera, 'scene': building_scene});
-    building_renderer.render( building_scene, building_camera );
-    
-    
-}
-
-function switchMode(i) 
-{
-	var mode = parseInt(i);
-	if(modeIndex ==1 && mode!=1){// from 0 to other
-		current_object.visible=false;
-	}else if(modeIndex !=1 && mode==1){
-		current_object.visible=true;
-	}
-	modeIndex= mode ;
-	switch(modeIndex){
-		case 0:{
-			break;
-		}
-		case 1:{
-			break;
-		}
-		case 7:{
-			var preview = document.getElementById( "preview" );
-			var file    = document.querySelector('input[type=file]').files[0]; //sames as here
-			var reader  = new FileReader();
-			reader.onloadend = function () {
-				preview.src = reader.result;
-				
-				var loader = new THREE.TextureLoader();
-				loader.load(reader.result,function(texture){
-					var geometry = new THREE.SphereGeometry( 200, 25, 200 );
-					var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
-					var mesh = new THREE.Mesh( geometry, material );
-					plane.material= material;
-				} );
-			}
-
-			if (file) {
-				reader.readAsDataURL(file); //reads the data as a URL
-			} else {
-				preview.src = "";
-			}
-			break;
-		}
-		case 8:{
-			
-			if(IsOnTop){
-				//change to build on ground mode
-				IsOnTop=false;
-				intersectObjects=[plane];
-				document.getElementById("buildWhere").innerHTML="Build On Top";
-			}else{
-				//change to build on top mode
-				IsOnTop=true;
-				intersectObjects=objects;
-				document.getElementById("buildWhere").innerHTML="Build On Ground";
-			}
-			break;
-		}
-	}
-}
-
-function onDocumentMouseMove(event){
-	//event.preventDefault();
-    console.log();
-	
-	var x = event.pageX - $('#ModelWindow').offset().left;
-	var y = event.pageY - $('#ModelWindow').offset().top;
-	var div_width =document.getElementById("ModelWindow").clientWidth;
-	var div_height=document.getElementById("ModelWindow").clientHeight;
-	
-	
-	switch(modeIndex){
-		case 0:{//select mode
-			if(isSelect == true){
-				mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-				raycaster.setFromCamera( mouse, camera );
-
-				var intersects = raycaster.intersectObjects( [plane], true );
-				if ( intersects.length > 0 )
-				{
-
-					selectedModel.position.x = intersects[0].point.x;
-					selectedModel.position.y = intersects[0].point.y;
-					selectedModel.position.z = intersects[0].point.z;
-					
-					//update modelInfos as well
-					var selected_model = sceneObjects[selectedModel.name];
-					selected_model.x = selectedModel.position.x;
-					selected_model.y = selectedModel.position.y;
-					selected_model.z = selectedModel.position.z;
-				}
-			
-			}
-			break;
-		
-		}
-		case 1:{//add mode
-			//http://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
-	
-		
-			mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-			raycaster.setFromCamera( mouse, camera );
-
-			//threejs raycast click detection not working on loaded 3dObject
-			//You need to pass the recursive flag like so:var intersects = raycaster.intersectObjects( objects, true );
-			//var intersects = raycaster.intersectObjects( objects, true );	
-			//var intersects = raycaster.intersectObjects( [plane], true );
-			var intersects = raycaster.intersectObjects( intersectObjects, true );
-			if ( intersects.length > 0 )
-			{
-
-				current_object.position.x = intersects[0].point.x;
-				current_object.position.y = intersects[0].point.y;
-				current_object.position.z = intersects[0].point.z;
-
-			}
-			break;
-		}
-		
-	}
-	
-
-}
-
-function onDocumentMouseUp( event ) {
-	switch(modeIndex){
-		case 0:{//select  -- release selected object
-			isSelect = false;
-			selectedModel = null;
-			break;
-		}
-	}
-}
-function onDocumentMouseDown( event )
-{
-
-	//event.preventDefault(); // this will stop dropdown list working, because all the click function will be prevented include click dropdownlist
-	//mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-	var x = event.pageX - $('#ModelWindow').offset().left;
-	var y = event.pageY - $('#ModelWindow').offset().top;
-	var div_width =document.getElementById("ModelWindow").clientWidth;
-	var div_height=document.getElementById("ModelWindow").clientHeight;
-	mouse.set( ( x / div_width ) * 2 - 1, - ( y / div_height ) * 2 + 1 );
-
-	raycaster.setFromCamera( mouse, camera );
-
-		switch(modeIndex){
-			case 0:{//select
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-
-					//operation
-					selectedModel = scene.getObjectByName(obj.name);
-					isSelect = true;
-				}
-				break;
-			}
-			case 1:{//add
-				var intersects = raycaster.intersectObjects( [plane], true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-
-					var temp_object=current_object.clone();
-					temp_object.name = "model_" + generate_random_string(50);
-
-					scene.add( temp_object );
-					objects.push(temp_object);
-					sceneObjects[temp_object.name]={'id': temp_object.name, 
-													'directory': current_object.addition_information.directory,
-													'original_filename': current_object.addition_information.original_filename,
-													'file_type': current_object.addition_information.file_type,
-													'x': temp_object.position.x,
-													"y": temp_object.position.y,   
-													"z": temp_object.position.z, 
-													"size": temp_object.scale.x,     
-													"rotate_x": temp_object.rotation.x,
-													"rotate_y": temp_object.rotation.y,
-													"rotate_z": temp_object.rotation.z};
-				}
-				break;
-			}
-			case 2:{//delete mode
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-
-					delete sceneObjects[obj.name];
-					scene.remove( scene.getObjectByName(obj.name) );
-					objects.splice( objects.indexOf( obj ), 1 );
-				}
-				
-				break;
-			}
-			case 3:{//Enlarge mode
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).scale.multiplyScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-					console.log(sceneObjects[obj.name]);
-				}
-				break;
-			}
-			case 4:{//reduce
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).scale.divideScalar( 1.2 );
-					sceneObjects[obj.name].size = scene.getObjectByName(obj.name).scale.x;
-					console.log(sceneObjects[obj.name]);
-				}
-				break;
-			}
-			case 5:{//rotate left
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
-				}
-				break;
-			}
-			case 6:{//rotate right
-				var intersects = raycaster.intersectObjects( objects, true );
-				if ( intersects.length > 0 ) {
-					var intersect = intersects[ 0 ];
-					var obj=intersect.object;
-					obj.name;
-					while( obj.parent != scene && obj.parent!=null ){
-						obj = obj.parent;
-						obj.name;
-					}
-					
-					scene.getObjectByName(obj.name).rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2/4);
-					sceneObjects[obj.name].rotate_x = scene.getObjectByName(obj.name).rotation.x;
-					sceneObjects[obj.name].rotate_y = scene.getObjectByName(obj.name).rotation.y;
-					sceneObjects[obj.name].rotate_z = scene.getObjectByName(obj.name).rotation.z;
-				}
-				break;
-			}
-
-		}
-		
-		render();
-	
-}
-
-function onDocumentKeyDown(event)
-{
-	if (mouse_on_model)
-	{
-		event.preventDefault();
-		switch ( event.keyCode ) {
-
-			case 16: isShiftDown = true; break; //shift, delete mode with click
-			case 38: move_forward = true; break; // up
-			case 40: move_backward = true; break; // down
-			case 37: move_left = true; break; // left
-			case 39: move_right = true; break; // right
-			case 87: move_up = true; break; // w
-			case 83: move_down = true; break; // s
-			//case 65: targetMoveLeft = true; break; // a
-			//case 68: targetMoveRight = true; break; // d
-			
-			case 90: is_rotating = true; break; // z
-
-			//case 78: chooseModel=1;//n choose next model
-			//case 77: chooseModel=-1;//m choose previous model
-
-		}
-	}
-}
-
-function onDocumentKeyUp(event)
-{
-	if (mouse_on_model)
-		event.preventDefault();
-	switch ( event.keyCode ) {
-
-		case 16: isShiftDown = false; break; //shift
-		case 38: move_forward = false; break; // up
-		case 40: move_backward = false; break; // down
-		case 37: move_left = false; break; // left
-		case 39: move_right = false; break; // right
-		case 87: move_up = false; break; // w
-		case 83: move_down = false; break; // s
-		//case 65: targetMoveLeft = false; break; // a
-		//case 68: targetMoveRight = false; break; // d
-		case 90: is_rotating = false; break; // z
-
-	}
-}
-
-function save_scenario_content()
-{
-	bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
-	{
-		bootbox.hideAll();
-		if (result)
-		{
-            sceneObjects['size'] = WORLD_SIZE;
-			$.ajax({
-				type: "POST",
-				url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
-				data: {'addition_information': JSON.stringify(sceneObjects)},
-				dataType: 'json',
-				success: function(data) {
-					show_alert('alert-success', 'Scenario saved!');
-				},
-				error: function(data)
-				{
-					$('#facebox #update_scenario_errors').html('');
-					for (i = 0; i < data.responseJSON.length; i++)
-						$('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
-					$('#facebox #update_scenario_errors').fadeIn('fast');
-				}
-			});
-		}
-	});
-}
-
-
-{% endif %}
-
 function init()
 {
 	windowRatio = document.getElementById("ModelWindow").offsetWidth/document.getElementById("ModelWindow").offsetHeight;
@@ -546,23 +121,6 @@ function init()
 	var ambient = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambient );
 
-	//1. build the grid
-	
-	{% if can_edit %}
-    // insert model to objects
-
-	// add keyboard events to mode
-	document.addEventListener( 'keydown', onDocumentKeyDown, false );
-	document.addEventListener( 'keyup', onDocumentKeyUp, false );
-	window.addEventListener( 'resize', onWindowResize, false );
-	// add mouse events to mode
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-	{% else %}
-	
-	{% endif %}
-
 	// display the scene
 	if (window.WebGLRenderingContext)
 		renderer = new THREE.WebGLRenderer( { antialias: true } );//using WebGL
@@ -578,146 +136,15 @@ function init()
 	);
 	
 	container.appendChild( renderer.domElement );
-	{% if not can_edit %}
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	{% endif %}
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	intersectObjects=[plane];
 	//render
 	renderer.render( scene, camera);
-}
-
-
-// change window size
-function onWindowResize()
-{
-
-	//camera.aspect = window.innerWidth / window.innerHeight;
-	camera.aspect = windowRatio;
-	camera.updateProjectionMatrix();
-
-	//renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	renderer.setSize( 	document.getElementById("ModelWindow").offsetWidth,
-		 				document.getElementById("ModelWindow").offsetHeight
-	);
-}
-
-function animate() {
-
-	requestAnimationFrame( animate );
-	{% if not can_edit %}
-	controls.update();
-	{% endif %}
-	controls.update();
-	render();
-
-}
-
-function render() 
-{
-	{% if can_edit %}
-	var cameraMove = false;// camera is moving, then need to calculate the metric
-	/*
-	if (move_forward)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.z += MOVING_SPEED; break;
-			case 1: camera.position.x -= MOVING_SPEED; break;
-			case 2: camera.position.z -= MOVING_SPEED; break;
-			case 3: camera.position.x += MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_backward)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.z -= MOVING_SPEED; break;
-			case 1: camera.position.x += MOVING_SPEED; break;
-			case 2: camera.position.z += MOVING_SPEED; break;
-			case 3: camera.position.x -= MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_left)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x += MOVING_SPEED; break;
-			case 1: camera.position.z += MOVING_SPEED; break;
-			case 2: camera.position.x -= MOVING_SPEED; break;
-			case 3: camera.position.z -= MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_right)
-	{
-		switch(current_view)
-		{
-			case 0: camera.position.x -= MOVING_SPEED; break;
-			case 1: camera.position.z -= MOVING_SPEED; break;
-			case 2: camera.position.x += MOVING_SPEED; break;
-			case 3: camera.position.z += MOVING_SPEED; break;
-		}
-		cameraMove =true;
-	}
-	if (move_up)
-	{
-		camera.position.y += MOVING_SPEED;
-		cameraMove =true;
-	}
-	if (move_down)
-	{
-		camera.position.y -= MOVING_SPEED;
-		cameraMove =true;
-	}*/
-	
-	// 2.2 rotating
-	if (is_rotating)
-	{
-		current_view++;
-		if (current_view >= views.length)
-			current_view = 0;
-		
-		// remember current position
-		var current_x = camera.position.x;
-		var current_y = camera.position.y;
-		var current_z = camera.position.z;
-		
-		// go to pre-defined position
-		camera.position.x = views[current_view].x;
-		camera.position.y = views[current_view].y;
-		camera.position.z = views[current_view].z;
-		
-		camera.target = center_position;
-		camera.lookAt( camera.target );
-		
-		// only rotate one time per click
-		is_rotating = false;
-		cameraMove =true;
-		
-	}
-	if(cameraMove){
-		//var metric= Math.ceil( camera.position.sub(new THREE.Vector3( 0, 0, 0 )).length()/100 );
-		var metric= Math.ceil( camera.position.y/10 );
-    	//console.debug( metric );
-    
-    	document.getElementById("metric").innerHTML=metric +"m";
-	}
-	
-	
-	for (i=0; i < building_models.length; i++)
-    {
-        var building_model = building_models[i];
-        building_model['renderer'].render( building_model['scene'], building_model['camera'] );
-    }
-	{% else %}
-	
-	{% endif %}
-	renderer.render( scene, camera );
+	control = controls;
+	controlling_renderer = renderer;
+	controlling_scene = scene;
+	controlling_camera = camera;
 }
 
 {% if g.user and g.user.is_admin %}
@@ -783,35 +210,6 @@ function render()
             }
         });
     }
-
-    function update_scenario()
-    {
-        $.ajax({
-            type: "POST",
-            url: "{{ url_for('sketchup.update_scenario', scenario_id=scenario.id) }}",
-            data: {'scenario_name': $('#facebox #scenario_name').val(),
-                    'scenario_description': $('#facebox #scenario_description').val(),
-                    'is_public': $('#facebox #is_public').prop('checked')?'1':'0'},
-            dataType: 'json',
-            success: function(data) {
-                $('#edit_scenario #scenario_name').val($('#facebox #scenario_name').val());
-                $('#edit_scenario #scenario_description').val($('#facebox #scenario_description').val());
-                $('#edit_scenario #is_public').prop('checked', $('#facebox #is_public').prop('checked'));
-                $('#scenario_description_panel').html($('#facebox #scenario_description').val());
-                $('#bread_crum_scenario_name').html($('#facebox #scenario_name').val());
-                $('#title_scenario_name').html($('#facebox #scenario_name').val());
-                $.facebox.close();
-                show_alert('alert-success', 'Scenario saved!');
-            },
-            error: function(data)
-            {
-                $('#facebox #update_scenario_errors').html('');
-                for (i = 0; i < data.responseJSON.length; i++)
-                    $('#facebox #update_scenario_errors').append('<div>- ' + data.responseJSON[i] + '</div>');
-                $('#facebox #update_scenario_errors').fadeIn('fast');
-            }
-        });
-    }
 {% endif %}
 
 {% if g.user and g.user.username == scenario.owner.username %}
@@ -853,7 +251,7 @@ function render()
 									new_comment_html += '    <div class="commenterImage">';
 									new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
 									new_comment_html += '    </div>';
-									new_comment_html += '    <div class="commentText">';
+									new_comment_html += '    <div class="commentText" style="float:left;">';
 									if (data.description != '')
 									{
 										new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
@@ -862,7 +260,9 @@ function render()
 									new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
 									new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">Edit</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
 									new_comment_html += '    </div>';
+									new_comment_html += '    <div style="clear:both;"></div>';
 									new_comment_html += '</li>';
+									new_comment_html += '<div style="clear:both;"></div>';
 
 									$('#comment_list_{{scenario.id}}').prepend(new_comment_html);
 									show_alert('alert-success', 'Suggestion sent');
@@ -882,11 +282,6 @@ function render()
         box.on("shown.bs.modal", function() {
 		  $('#suggest_content').autoHeight();
 		});
-	}
-	
-	function do_suggest_scenario()
-	{
-	
 	}
 {% endif %}
 
@@ -919,13 +314,25 @@ function render()
 
 
 {% endif %}
-
     var old_style = '';
-    function full_screen(container_id)
+    
+    
+    function do_switch_mode(mode)
     {
-        var SCREEN_WIDTH = $('#' + container_id).innerWidth(), SCREEN_HEIGHT = $('#' + container_id).innerHeight();
-        old_style = $('#' + container_id).attr('style');
-        $('#' + container_id).attr('style', 'position: absolute;width: 100%;min-height: 100%;left: 0;top: 0;');
+    	
+    	buttons = {'0': 'btn_move_model', '2': 'btn_delete_model', '3': 'btn_enlarge_model', '4': 'btn_shrink_model', '5': 'btn_rotate_left', '6': 'btn_rotate_right', '8': 'buildWhere'};
+    	if (mode_index != mode)
+    	{
+	    	for (var mode_key in buttons)
+				$('#' + buttons[mode_key]).removeClass('disabled');
+			$('#' + buttons[mode]).addClass('disabled');
+			switchMode(mode);
+		}
+		else
+		{
+			$('#' + buttons[mode]).removeClass('disabled');
+			switchMode('-1');
+		}
     }
 
 {% endblock %}
@@ -940,7 +347,7 @@ function render()
            <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">Scenarios</a></li>
            <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="bread_crum_scenario_name">{{ scenario.name }}</a></li>
         </ol>
-		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a></h2>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a>{% if can_edit %} - <a href="{{ url_for('sketchup.edit_scenario', id=scenario.id) }}">Edit</a>{% endif %}</h2>
             <div style="float:left;">
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
@@ -990,21 +397,18 @@ function render()
                 </div>
                 {% endif %}
                 <div>
-                <button class="btn btn-info" onclick="full_screen('ModelWindow');">Full screen</button>
+                <button class="btn btn-default" onclick="full_screen('ModelWindow');">Full screen</button>
                 {% if g.user %}
-                <button class="btn btn-primary" onclick="clone_scenario();">Clone this scenario</button>
-                    {% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
-                    <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
-                    {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
-                    <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
-                    {% endif %}
+                <button class="btn btn-default" onclick="clone_scenario();">Clone this scenario</button>
                 {% endif %}
-				{% if can_edit %}
-                <button class="btn btn-warning" onclick="save_scenario_content();">Save scenario</button>
-				{% endif %}
 				{% if g.user and g.user.username == scenario.owner.username %}
-                <button class="btn btn-warning" onclick="display_suggest_form();">Suggest scenario to admin</button>
+                <button class="btn btn-default" onclick="display_suggest_form();">Suggest scenario to admin</button>
 				{% endif %}
+				{% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
+                <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
+                {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
+                <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
+                {% endif %}
 				</div>
             </div>
             <div style="clear:both"></div>
@@ -1014,68 +418,9 @@ function render()
             <div id="scenario_description_panel" style="margin-top:10px;">{{ scenario.description }}</div>
 			<dl class="form">
 				<dt class="input-label">
-					{% if can_edit %}
-					<div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-                        <div><b>Model Control:</b></div>
-                        <div><button onclick="enlarge_scenario()" class="operation-button" type="button" >Enlarge scenario</button></div>
-                        <div><button onclick="shrink_scenario()" class="operation-button" type="button" >Shrink scenario</button></div>
-                    	<div><b>Model Control:</b></div>
-                    	<div><button onclick="switchMode('0')" class="operation-button" type="button" >Move Model</button></div>
-                    	<div><button onclick="switchMode('2')" class="operation-button" type="button" >Delete Model</button></div>
-                    	<div><button onclick="switchMode('3')" class="operation-button" type="button" >Enlarge Model</button></div>
-                    	<div><button onclick="switchMode('4')" class="operation-button" type="button" >Reduce Model</button></div>
-                    	<div><button onclick="switchMode('5')" class="operation-button" type="button" >Rotate Left</button></div>
-                    	<div><button onclick="switchMode('6')" class="operation-button" type="button" >Rotate Right</button></div>
-                    	<div><button id = "buildWhere" onclick="switchMode('8')" class="operation-button" type="button" >Build On Top</button></div>
-                    	<div><b>Set Backgroud:</b><input type="file" onchange="switchMode('7')">
-							<img id="preview" src="" height="35" alt="Image preview...">
-						</div>
-						
-                    </div>
-					<div style="width:80%;height:500px;border:1px solid black; float:right" id="ModelWindow"></div>
-					<div id="infoHeader" style="position: absolute; padding-top: 0.5em; width: 100%; text-align: center; font-size: 100%; color: #000000;">
-						<img id="metric_pic" src={{ url_for('static', filename='images/metric.png') }} alt="Metric" style="width:100px;height:20px">
-						<span id="metric">100m</span>
+					<div id="fullscreen_area">
+						<div style="width:100%;height:500px;border:1px solid black;" id="ModelWindow"></div>
 					</div>
-                    <div style="clear:both"></div>
-                    <div id="available_building_models" class="carousel slide" data-interval="0" style="margin-top:10px;width:100%;min-height:150px;border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;">
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner" role="listbox">
-                            {% set index = 0 %}
-                            {% for building_model in building_models %}
-                                {% if index%5 == 0 %}
-                                <div class="item{% if index==0 %} active{% endif %}" style="padding-left:7%;padding-right:7%">
-                                {% endif %}
-                                    <div class="col-lg-2" style="margin-top:5px;background-color: #fff;margin-left:25px;" onclick='add_building_model({"directory": "{{ building_model.addition_information.directory }}", "original_filename": "{{ building_model.addition_information.original_filename }}", "file_type": "{{ building_model.file_type }}"});'>
-                                        <div id="building_model_{{ building_model.id }}" style="border: 1px solid #ddd;border-radius: 4px;padding: 4px;line-height: 1.42857143;width:100%;cursor: pointer; cursor: hand;"></div>
-                                        {{ building_model.name }}
-                                    </div>
-                                {% set index = index + 1 %}
-                                {% if index%5 == 0 %}
-                                    <div style="clear:both"></div>
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                            {% if index%5 != 0 %}
-                                <div style="clear:both"></div>
-                            </div>
-                            {% endif %}
-
-                        </div>
-
-                          <!-- Left and right controls -->
-                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
-                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                          </a>
-                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                          </a>
-                    </div>
-					{% else %}
-					<div style="width:100%;height:500px;border:1px solid black;" id="ModelWindow"></div>
-					{% endif %}
 				</dt>
 				<dd>
 

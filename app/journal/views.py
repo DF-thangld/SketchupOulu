@@ -1,8 +1,8 @@
 import json
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
 
-from app import db
+from app import db, app
 from app.journal.models import JournalCategory, Journal
 
 mod = Blueprint('journal', __name__, url_prefix='/journal')
@@ -20,7 +20,8 @@ def view():
     if journal.is_activated == 0 and not g.user.is_admin:
         return render_template('404.html'), 404
 
-    journal_content = journal.get_journal_content(session.get('locale'))
+    journal_content = journal.get_journal_content(session['locale'])
+    print(journal_content.title)
     journal.title = journal_content.title
     journal.content = journal_content.content
 

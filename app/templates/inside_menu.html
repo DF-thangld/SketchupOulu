@@ -11,7 +11,7 @@
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ g.user.username }}
             </a>
 
-            <a class="btn" href="{{ url_for('users.logout') }}"
+            <a class="btn btn-info" href="{{ url_for('users.logout') }}"
 				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign out
             </a>
 		</div>
@@ -19,7 +19,7 @@
         <div class="header-actions" role="navigation">
 			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
 				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
-				up</a> <a class="btn" href="{{ url_for('users.login') }}"
+				up</a> <a class="btn btn-info" href="{{ url_for('users.login') }}"
 				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
 				in</a>
 		</div>
@@ -56,16 +56,7 @@
                 </ul>
 			</li>
             {% endif %}
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=5) }}">Contact us</a>
-			</li>
-            <li class="header-nav-item">
-                {% if request.url.find('?') != -1 %}
-                <a href="{{ request.url }}&lang=fi"><img src="{{ url_for('static', filename='images/fi_flag.png') }}" style="width:30px;"/></a>
-                <a href="{{ request.url }}&lang=en"><img src="{{ url_for('static', filename='images/en_flag.png') }}" style="width:30px;"/></a>
-                {% else %}
-                <a href="{{ request.url }}?lang=fi"><img src="{{ url_for('static', filename='images/fi_flag.png') }}" style="width:30px;"/></a>
-                <a href="{{ request.url }}?lang=en"><img src="{{ url_for('static', filename='images/en_flag.png') }}" style="width:30px;"/></a>
-                {% endif %}
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=114) }}">About us</a>
 			</li>
 		</ul>
 	</div>
