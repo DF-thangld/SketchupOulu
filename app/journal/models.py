@@ -5,6 +5,8 @@ from app.users.models import User
 import app.sketchup.models as sketchup
 import sqlalchemy
 import config
+from flask.ext.babel import gettext
+
 
 class JournalCategory(db.Model):
 

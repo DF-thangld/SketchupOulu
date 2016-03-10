@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from sqlalchemy import or_
 from werkzeug import check_password_hash, generate_password_hash, secure_filename
+from flask.ext.babel import gettext
+
 
 import json, os
 import datetime
@@ -59,11 +61,11 @@ def get_user_info():
 
     user_id = request.args.get('user_id', 0)
     if user_id == 0:
-        return json.dump({'error': 'User not found'}), 404
+        return json.dump(gettext({'error': 'User not found'})), 404
 
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return json.dump({'error': 'User not found'}), 404
+        return json.dump(gettext({'error': 'User not found'})), 404
 
     groups = []
     for group in user.groups:
@@ -86,11 +88,11 @@ def update_user_info():
 
     user_id = request.form.get('user_id', 0)
     if user_id == 0:
-        return json.dump({'error': 'User not found'}), 404
+        return json.dump(gettext({'error': 'User not found'})), 404
 
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return json.dump({'error': 'User not found'}), 404
+        return json.dump(gettext({'error': 'User not found'})), 404
 
     fullname = request.form.get('fullname', '')
     address = request.form.get('address', '')
@@ -107,7 +109,7 @@ def update_user_info():
     User.query.filter_by(id=user_id).update(update_data)
 
     #update groups
-    groups_string = request.form.get('groups_value', '')
+    groups_string = request.form.get(gettext('groups_value'), '')
     if groups_string != '':
         for i in range(0, len(user.groups)):
             user.groups.remove(user.groups[0])
@@ -238,7 +240,7 @@ def edit_journal_category():
     if edit_category_form.validate():
         category = JournalCategory.query.filter_by(id=edit_category_form.category_id.data).first()
         if category is None:
-            return json.dumps(['Category not found']), 404
+            return json.dumps([gettext('Category not found')]), 404
 
         category.name = edit_category_form.name.data
         category.description = edit_category_form.description.data
@@ -256,10 +258,10 @@ def edit_journal_category():
 def get_category_data():
     category_id = request.args.get('category_id', 0)
     if category_id == 0:
-        return json.dumps(['Category not found']), 404
+        return json.dumps([gettext('Category not found')]), 404
     category = JournalCategory.query.filter_by(id=category_id).first()
     if category_id is None:
-        return json.dumps(['Category not found']), 404
+        return json.dumps([gettext('Category not found')]), 404
 
     return json.dumps({'id': category.id, 'name': category.name, 'description': category.description}), 200
 
@@ -268,10 +270,10 @@ def get_category_data():
 def activate_deactivate_journal_category():
     category_id = request.args.get('category_id', 0)
     if category_id == 0:
-        return json.dumps(['Category not found']), 404
+        return json.dumps([gettext('Category not found')]), 404
     category = JournalCategory.query.filter_by(id=category_id).first()
     if category_id is None:
-        return json.dumps(['Category not found']), 404
+        return json.dumps([gettext('Category not found')]), 404
     if category.is_activated == 1:
         category.is_activated = 0
     else:
@@ -284,10 +286,10 @@ def activate_deactivate_journal_category():
 def delete_journal_category():
     category_id = request.args.get('category_id', 0)
     if category_id == 0:
-        return json.dumps(['Category not found']), 404
+        return json.dumps([gettext('Category not found')]), 404
     category = JournalCategory.query.filter_by(id=category_id).first()
     if len(category.get_journals()) > 0:
-        return json.dumps(['Delete child journals first']), 400
+        return json.dumps([gettext('Delete child journals first')]), 400
     db.session.delete(category)
     db.session.commit()
     return json.dumps({'success': True}), 200
@@ -365,7 +367,7 @@ def create_journal():
             journal_activated = 1
         category = JournalCategory.query.filter_by(id=create_journal_form.category_id.data).first()
         if category is None:
-            errors.append('Category is required')
+            errors.append(gettext('Category is required'))
             return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
 
         journal = Journal(create_journal_form.title.data, create_journal_form.content.data, g.user, category, journal_activated)
@@ -385,10 +387,10 @@ def create_journal():
 def delete_journal():
     journal_id = request.args.get('journal_id', 0)
     if journal_id == 0:
-        return json.dumps(['Journal not found']), 404
+        return json.dumps([gettext('Journal not found')]), 404
     journal = Journal.query.filter_by(id=journal_id).first()
     if journal is None:
-        return json.dumps(['Journal not found']), 404
+        return json.dumps([gettext('Journal not found')]), 404
 
     db.session.delete(journal)
     db.session.commit()
@@ -399,10 +401,10 @@ def delete_journal():
 def activate_deactivate_journal():
     journal_id = request.args.get('journal_id', 0)
     if journal_id == 0:
-        return json.dumps(['Journal not found']), 404
+        return json.dumps([gettext('Journal not found')]), 404
     journal = Journal.query.filter_by(id=journal_id).first()
     if journal is None:
-        return json.dumps(['Journal not found']), 404
+        return json.dumps([gettext('Journal not found')]), 404
 
     if journal.is_activated == 1:
         journal.is_activated = 0
@@ -494,11 +496,11 @@ def edit_journal():
 def change_base_scenario_status(scenario_id):
     errors = []
     if scenario_id == '':
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
 
     scenario = Scenario.query.filter_by(id=scenario_id).first()
     if scenario is None:
-        return json.dumps(['Scenario not found']), 404
+        return json.dumps([gettext('Scenario not found')]), 404
     if scenario.is_base_scenario == 1:
         scenario.is_base_scenario = 0
     else:
@@ -506,4 +508,4 @@ def change_base_scenario_status(scenario_id):
 
     db.session.commit()
 
-    return json.dumps({'new_status': scenario.is_base_scenario}), 200
+    return json.dumps({gettext('new_status'): scenario.is_base_scenario}), 200
