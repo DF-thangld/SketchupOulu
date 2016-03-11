@@ -145,7 +145,7 @@ function render()
                             'camera_lookat_y': vector.y,
                             'camera_lookat_z': vector.z};
 
-        bootbox.confirm("Are you sure you want to save this thumbnail?", function(result)
+        bootbox.confirm({{ gettext("Are you sure you want to save this thumbnail?") }}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -171,7 +171,7 @@ function render()
 
     function delete_building_model()
     {
-        bootbox.confirm("Are you sure you want to delete this building model?", function(result)
+        bootbox.confirm({{gettext("Are you sure you want to delete this building model?")}}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -222,7 +222,7 @@ function render()
 {% if g.user %}
     function clone_building_model()
     {
-        bootbox.confirm("Are you sure you want to clone this building model?", function(result)
+        bootbox.confirm({{gettext("Are you sure you want to clone this building model?")}}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -249,7 +249,7 @@ function render()
 {% if g.user and g.user.is_admin() %}
     function change_base_model_status()
     {
-        bootbox.confirm("Are you sure you want to change base status of this model?", function(result)
+        bootbox.confirm({{ gettext("Are you sure you want to change base status of this model?") }}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -272,7 +272,7 @@ function render()
                             $('#base_model_button').addClass('btn-danger');
                             $('#base_model_button').html('Demote to normal model');
                         }
-                        show_alert('alert-success', 'Model status changed');
+                        show_alert('alert-success', {{ gettext("Model status changed") }});
 
                     },
                     error: function(data)

@@ -32,7 +32,7 @@ function validate_data()
         var error_content = '';
         error_content += '<div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">';
         error_content += '      <div class="container">';
-        error_content += '      There were problems creating your scenario:';
+        error_content += {{gettext('      There were problems creating your scenario:')}};
         for (var i=0; i < errors.length; i++)
         {
             error_content += '              <div>- ' + errors[i] + '</div>';
@@ -52,11 +52,11 @@ function validate_data()
 
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li><a href = "{{ url_for('index') }}">{{gettext('Home')}}</a></li>
            <li class = "active"><a href="{{ url_for('users.profile', username=g.user.username) }}">{{ g.user.username }}</a></li>
-           <li class = "active">New building model</li>
+           <li class = "active">{{gettext('New building model')}}</li>
         </ol>
-		<h2 style="font-size: 45px;">New Building Model</h2>
+		<h2 style="font-size: 45px;">{{gettext('New Building Model')}}</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('users.add_building_model') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
@@ -65,7 +65,7 @@ function validate_data()
             {% if errors|length > 0 %}
             <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                  There were problems creating your scenario:
+                  gettext{{('There were problems creating your scenario')}}:
                       {% for error in errors %}
                           <div>- {{ error }}</div>
                       {% endfor %}
@@ -75,7 +75,7 @@ function validate_data()
             </div>
 			<dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="name">Model name*</label>
+					<label autocapitalize="off" autofocus="autofocus" for="name">{{gettext('Model name')}}*</label>
 				</dt>
 				<dd>
                     <input type="text" id="name" name="name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ request.form.get('name', '') }}">
@@ -84,9 +84,9 @@ function validate_data()
             <dl class="form">
 				<dt class="input-label">
 					<label autocapitalize="off" autofocus="autofocus" for="data_file">
-						Data file (max file size: 10MB)*<br/>
-						Accepted file types: DAE, OBJ, PNG, JPG<br/>
-						<a href="{{ url_for('journal.view', journal_id=115) }}" target="_blank">How to upload models</a>
+						{{gettext('Data file' )}}( {{  gettext('max file size') }}: 10MB)*<br/>
+						{{gettext('Accepted file types')}}: DAE, OBJ, PNG, JPG<br/>
+						<a href="{{ url_for('journal.view', journal_id=115) }}" target="_blank">{{gettext('How to upload models')}}</a>
 					</label>
 				</dt>
 				<dd>
@@ -95,8 +95,8 @@ function validate_data()
 			</dl>
 
 			<div class="form-actions">
-                <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
-				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>
+                <button type="submit" class="btn btn-warning" id="bttn_create">{{gettext('Create model')}}</button>
+				<button type="reset" class="btn btn-primary" id="bttn_reset">{{gettext('Back')}}</button>
 			</div>
 
 		</form>

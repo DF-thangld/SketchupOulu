@@ -188,7 +188,7 @@ function init()
 {% if can_edit %}
     function delete_scenario()
     {
-        bootbox.confirm("Are you sure you want to delete this scenario?", function(result)
+        bootbox.confirm({{gettext('Are you sure you want to delete this scenario?')}}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -216,12 +216,12 @@ function init()
 	function display_suggest_form()
 	{
 		var box = bootbox.dialog({
-                title: "Suggest scenario to admin",
+                title: {{gettext('Suggest scenario to admin')}},
                 message: '<div class="row">  ' +
                     '<div class="col-md-12"> ' +
                     '<dl class="form">' +
 					'	<dt class="input-label">' +
-					'		<label autocapitalize="off" for="title">Suggest content</label>' +
+					'		<label autocapitalize="off" for="title">{{gettext('Suggest content')}}</label>' +
 					'	</dt>' +
 					'	<dd>' +
 		            '       <textarea id="suggest_content" style="width: 100%; height: 94px; overflow-y: hidden; margin-top: 0px; margin-bottom: 15px;"></textarea>' +
@@ -236,7 +236,7 @@ function init()
 						{
                             if ($('#suggest_content').val().trim() == '')
 							{
-								window.alert('Message content is required');
+								window.alert( {{ gettext('Message content is required')}} );
 								return;
 							}
 
@@ -288,7 +288,7 @@ function init()
 {% if g.user %}
     function clone_scenario()
     {
-        bootbox.confirm("Are you sure you want to clone this scenario?", function(result)
+        bootbox.confirm({{gettext('Are you sure you want to clone this scenario?')}}, function(result)
         {
             bootbox.hideAll();
             if (result)
@@ -342,31 +342,31 @@ function init()
 
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li><a href = "{{ url_for('index') }}">{{gettext('Home')}}</a></li>
            <li class = "active"><a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a></li>
-           <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">Scenarios</a></li>
+           <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}">{{gettext('Scenarios')}}</a></li>
            <li class = "active"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="bread_crum_scenario_name">{{ scenario.name }}</a></li>
         </ol>
-		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a>{% if can_edit %} - <a href="{{ url_for('sketchup.edit_scenario', id=scenario.id) }}">Edit</a>{% endif %}</h2>
+		<h2 style="font-size: 45px;"><a href="{{ url_for('sketchup.view_scenario', id=scenario.id) }}" id="title_scenario_name">{{ scenario.name }}</a>{% if can_edit %} - <a href="{{ url_for('sketchup.edit_scenario', id=scenario.id) }}">{{gettext('Edit')}}</a>{% endif %}</h2>
             <div style="float:left;">
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
             <div style="float:left; margin-left:10px;">
-                <div>Created by <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> at {{ scenario.created_time }}</div>
+                <div>{{gettext('Created by')}} <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> {{gettext('at')}} {{ scenario.created_time }}</div>
                 {% if scenario.last_edited_user %}
-                <div>Last edited by <a href="{{ url_for('users.profile', username=scenario.last_edited_user.username) }}">{{ scenario.last_edited_user.username }}</a> at {{ scenario.last_edited_time }}</div>
+                <div>{{gettext('Last edited by')}} <a href="{{ url_for('users.profile', username=scenario.last_edited_user.username) }}">{{ scenario.last_edited_user.username }}</a> {{gettext('at')}} {{ scenario.last_edited_time }}</div>
                 {% endif %}
                 {% if scenario.is_public==0 %}
-                <div style="color:red">The scenario is deactivated</div>
+                <div style="color:red">{{gettext('The scenario is deactivated')}}</div>
                 {% endif %}
                 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
-                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());$('#facebox #scenario_description').autoHeight();">Edit settings</a> - <a href="javascript:void(0);" onclick="delete_scenario();">Delete scenario</a></div>
+                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());$('#facebox #scenario_description').autoHeight();">{{gettext('Edit settings')}}</a> - <a href="javascript:void(0);" onclick="delete_scenario();">{{gettext('Delete scenario')}}</a></div>
                 <div id="edit_scenario" style="display:none">
-                    <h1 style="width:100%; border-bottom: 1px solid #bbb;">Edit scenario</h1>
+                    <h1 style="width:100%; border-bottom: 1px solid #bbb;">{{gettext('Edit scenario')}}</h1>
                     <div style="color:red;display:none;" id="update_scenario_errors"></div>
                     <dl class="form">
                         <dt class="input-label">
-                            <label autocapitalize="off" autofocus="autofocus" for="scenario_name">Scenario name</label>
+                            <label autocapitalize="off" autofocus="autofocus" for="scenario_name">{{gettext('Scenario name')}}</label>
                         </dt>
                         <dd>
                             <input type="text" id="scenario_name" name="scenario_name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ scenario.name }}">
@@ -374,7 +374,7 @@ function init()
                     </dl>
                     <dl class="form">
                         <dt class="input-label">
-                            <label autocapitalize="off" for="is_public">Public</label> <input type="checkbox" id="is_public" name="is_public" value="1" {% if scenario.is_public==1 %}checked{% endif %}/>
+                            <label autocapitalize="off" for="is_public">{{gettext('Public')}}</label> <input type="checkbox" id="is_public" name="is_public" value="1" {% if scenario.is_public==1 %}checked{% endif %}/>
                         </dt>
                         <dd>
 
@@ -382,32 +382,32 @@ function init()
                     </dl>
                     <dl class="form">
                         <dt class="input-label">
-                            <label autocapitalize="off" autofocus="autofocus" for="scenario_description">Description</label>
+                            <label autocapitalize="off" autofocus="autofocus" for="scenario_description">{{gettext('Description')}}</label>
                         </dt>
                         <dd>
                             <textarea id="scenario_description" name="scenario_description" autocapitalize="off" autofocus="autofocus" style="width:100%;min-height:30px;height:100px;">{{ scenario.description }}</textarea>
                         </dd>
                     </dl>
                     <div style="float:right;">
-                        <button class="btn btn-primary" onclick="update_scenario();">Update</button>
-                        <button class="btn" onclick="$.facebox.close();">Cancel</button>
+                        <button class="btn btn-primary" onclick="update_scenario();">{{gettext('Update')}}</button>
+                        <button class="btn" onclick="$.facebox.close();">{{gettext('Cancel')}}</button>
                     </div>
                     <div style="clear:both"></div>
 
                 </div>
                 {% endif %}
                 <div>
-                <button class="btn btn-default" onclick="full_screen('ModelWindow');">Full screen</button>
+                <button class="btn btn-default" onclick="full_screen('ModelWindow');">{{gettext('Full screen')}}</button>
                 {% if g.user %}
-                <button class="btn btn-default" onclick="clone_scenario();">Clone this scenario</button>
+                <button class="btn btn-default" onclick="clone_scenario();">{{gettext('Clone this scenario')}}</button>
                 {% endif %}
 				{% if g.user and g.user.username == scenario.owner.username %}
-                <button class="btn btn-default" onclick="display_suggest_form();">Suggest scenario to admin</button>
+                <button class="btn btn-default" onclick="display_suggest_form();">{{gettext('Suggest scenario to admin')}}</button>
 				{% endif %}
 				{% if g.user and g.user.is_admin() and scenario.is_base_scenario==0 %}
-                <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">Promote to base scenario</button>
+                <button class="btn btn-warning" onclick="change_base_scenario_status();" id="base_scenario_button">{{gettext('Promote to base scenario')}}</button>
                 {% elif g.user and g.user.is_admin() and scenario.is_base_scenario==1 %}
-                <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">Demote to normal scenario</button>
+                <button class="btn btn-danger" onclick="change_base_scenario_status();" id="base_scenario_button">{{gettext('Demote to normal scenario')}}</button>
                 {% endif %}
 				</div>
             </div>
