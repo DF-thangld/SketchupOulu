@@ -8,20 +8,20 @@
 
 		<div class="header-actions" role="navigation">
 			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
-				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
-				up</a> <a class="btn" href="{{ url_for('users.login') }}"
-				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
-				in</a>
+				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">{{ gettext('Sign up') }}
+				</a> <a class="btn" href="{{ url_for('users.login') }}"
+				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">{{ gettext('Sign in') }}
+				</a>
 		</div>
 
 		<ul class="header-nav left" role="navigation">
 
 
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">Home</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">{{ gettext('Home') }}</a>
 			</li>
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">{{ gettext('Base scenarios') }}</a>
 			</li>
-			<li class="header-nav-item"><a class="header-nav-link" href="#">Contact us</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="#">{{ gettext('Contact us') }}</a>
 			</li>
 
 		</ul>

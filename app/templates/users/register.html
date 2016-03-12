@@ -14,7 +14,7 @@
 {% block main_content %}
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-7 col-centered">
-		<h2 style="font-size: 45px;">Join SketchupOulu</h2>
+		<h2 style="font-size: 45px;">{{ gettext('Join SketchupOulu') }}</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('users.register') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
@@ -23,12 +23,12 @@
 			{{ form.csrf_token }}
 			<div style="margin: 0; padding: 0; display: inline">
 			</div>
-			<h2 class="setup-form-title">Create your personal account</h2>
+			<h2 class="setup-form-title">{{ gettext('Create your personal account') }}</h2>
 
            {% if errors|length > 0 %}
             <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                  There were problems creating your account:
+                  {{ gettext('There were problems creating your account') }}:
                       {% for error in errors %}
                           <div>- {{ error }}</div>
                       {% endfor %}
@@ -76,15 +76,15 @@
 			</dl>
 
 			<p class="tos-info">
-				By clicking on "Create an account" below, you are agreeing to the <a
-					href="{{ url_for('journal.view', journal_id=8) }}" target="_blank">Terms of
-					Service</a> and the <a href="{{ url_for('journal.view', journal_id=9) }}"
-					target="_blank">Privacy Policy</a>.
+				{{ gettext('By clicking on "Create an account" below, you are agreeing to the') }} <a
+					href="{{ url_for('journal.view', journal_id=8) }}" target="_blank">{{ gettext('Terms of
+					Service') }}</a> {{ gettext('and the') }} <a href="{{ url_for('journal.view', journal_id=9) }}"
+					target="_blank">{{ gettext('Privacy Policy') }}</a>.
 			</p>
 
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary" id="signup_button"
-					data-disable-with="Creating account">Create an account</button>
+					data-disable-with="Creating account">{{ gettext('Create an account') }}</button>
 			</div>
 
 		</form>

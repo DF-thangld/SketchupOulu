@@ -20,7 +20,7 @@ init_building_model('{{ building_model.id }}', '{{ building_model.file_type }}',
 init();
 animate();
 {% endblock %}
-
+;
 {% block js_script %}
 
 
@@ -121,11 +121,11 @@ function do_switch_mode(mode)
 
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li><a href = "{{ url_for('index') }}">{{ gettext('Home') }}</a></li>
            <li class = "active"><a href="{{ url_for('users.profile', username=g.user.username) }}">{{ g.user.username }}</a></li>
-           <li class = "active">New Scenario</li>
+           <li class = "active">{{ gettext('New Scenario') }}</li>
         </ol>
-		<h2 style="font-size: 45px;">New Scenario</h2>
+		<h2 style="font-size: 45px;">{{ gettext('New Scenario') }}</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('users.add_scenario') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail" onsubmit="before_submit();"
@@ -138,7 +138,7 @@ function do_switch_mode(mode)
            {% if errors|length > 0 %}
             <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                  There were problems creating your scenario:
+                  {{ gettext('There were problems creating your scenario') }}:
                       {% for error in errors %}
                           <div>- {{ error }}</div>
                       {% endfor %}
@@ -147,7 +147,7 @@ function do_switch_mode(mode)
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="name">Scenario name</label>
+					<label autocapitalize="off" autofocus="autofocus" for="name">{{ gettext('Scenario name') }}</label>
 				</dt>
 				<dd>
                     <input type="text" id="name" name="name" autocapitalize="off" autofocus="autofocus" style="width:100%" value="{{ request.form.get('name', '') }}">
@@ -155,7 +155,7 @@ function do_switch_mode(mode)
 			</dl>
             <dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" autofocus="autofocus" for="description">Description</label>
+					<label autocapitalize="off" autofocus="autofocus" for="description">{{ gettext('Description') }}</label>
 				</dt>
 				<dd>
                     <textarea id="description" name="description" style="width:100%;min-height:30px;height:100px;">{{ request.form.get('description', '') }}</textarea>
@@ -163,7 +163,7 @@ function do_switch_mode(mode)
 			</dl>
 			<dl class="form">
 				<dt class="input-label">
-					<label autocapitalize="off" for="is_public">Public</label> <input type="checkbox" id="is_public" name="is_public" value="1" checked/>
+					<label autocapitalize="off" for="is_public">{{ gettext('Public') }}</label> <input type="checkbox" id="is_public" name="is_public" value="1" checked/>
 				</dt>
 				<dd>
 
@@ -171,32 +171,32 @@ function do_switch_mode(mode)
 			</dl>
 			<dl class="form successed">
 				<dt class="input-label">
-                    Model<br/>
-                    <a href="{{ url_for('journal.view', journal_id=117) }}" target="_blank">Guide on editing scenario</a>
+                    {{ gettext('Model') }}<br/>
+                    <a href="{{ url_for('journal.view', journal_id=117) }}" target="_blank">{{ gettext('Guide on editing scenario') }}</a>
 				</dt>
 				<dd>
 					<div id="fullscreen_area" style="background-color: #fff;">
 	                    <div style="width:20%;height:500px;border:1px solid black; float:left; text-align: center;" id="ControlWindow">
-	                        <div><b>Scenario Control:</b></div>
+	                        <div><b>{{ gettext('Scenario Control') }}:</b></div>
 	                        <div>
-	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Scenario</label>
-	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Scenario</label>
+	                        	<label onclick="shrink_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_shrink_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Shrink Scenario') }}</label>
+	                        	<label onclick="enlarge_scenario();$('#btn_undo_action').removeClass('disabled');" id="btn_enlarge_scenario" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Enlarge Scenario') }}</label>
 	                        </div>
-	                    	<div><b>Model Control:</b></div>
-	                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Move Model</label></div>
-							<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Delete Model</label></div>
+	                    	<div><b>{{ gettext('Model Control') }}:</b></div>
+	                    	<div><label onclick="do_switch_mode('0')" id="btn_move_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Move Model') }}</label></div>
+							<div><label onclick="do_switch_mode('2')" id="btn_delete_model" class="btn btn-default" style="width:70%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Delete Model') }}</label></div>
 	                    	<div>
-	                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Shrink Model</label>
-	                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Enlarge Model</label>
+	                    		<label onclick="do_switch_mode('4')" id="btn_shrink_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Shrink Model') }}</label>
+	                    		<label onclick="do_switch_mode('3')" id="btn_enlarge_model" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Enlarge Model') }}</label>
 	                    	</div>
 	                    	<div>
-	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Left</label>
-	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Rotate Right</label>
+	                    		<label onclick="do_switch_mode('5')" id="btn_rotate_left" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Rotate Left') }}</label>
+	                    		<label onclick="do_switch_mode('6')" id="btn_rotate_right" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Rotate Right') }}</label>
 	                    	</div>
-	                    	<div><label onclick="change_build_place()" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >Build On Top</label></div>
+	                    	<div><label onclick="change_build_place()" id="buildWhere" class="btn btn-default" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button"  >{{ gettext('Build On Top') }}</label></div>
 	                    	<div>
-	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Undo</label>
-	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >Redo <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
+	                    		<label id="btn_undo_action" onclick="undo_action()" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" ><span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> {{ gettext('Undo') }}</label>
+	                    		<label onclick="redo_action()" id="btn_redo_action" class="btn btn-default disabled" style="width:34%; padding:5px; white-space:normal;cursor:pointer;" type="button" >{{ gettext('Redo') }} <span id="banned_button_glyphicon" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></label>
 	                    	</div>
 	                    </div>
 	                   
@@ -238,11 +238,11 @@ function do_switch_mode(mode)
 		                          <!-- Left and right controls -->
 		                          <a class="left carousel-control" href="#available_building_models" role="button" data-slide="prev" style="width:5%;min-height:150px;">
 		                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-		                            <span class="sr-only">Previous</span>
+		                            <span class="sr-only">{{ gettext('Previous') }}</span>
 		                          </a>
 		                          <a class="right carousel-control" href="#available_building_models" role="button" data-slide="next" style="width:5%;min-height:130px;">
 		                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-		                            <span class="sr-only">Next</span>
+		                            <span class="sr-only">{{ gettext('Next') }}</span>
 		                          </a>
 		                    </div>
 						</div>
@@ -250,8 +250,8 @@ function do_switch_mode(mode)
 				</dd>
 			</dl>
 			<div class="form-actions">
-                <button type="submit" class="btn btn-warning" id="bttn_create">Create model</button>
-				<button type="reset" class="btn btn-primary" id="bttn_reset">Back</button>
+                <button type="submit" class="btn btn-warning" id="bttn_create">{{ gettext('Create model') }}</button>
+				<button type="reset" class="btn btn-primary" id="bttn_reset">{{ gettext('Back') }}</button>
 			</div>
 
 		</form>

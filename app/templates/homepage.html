@@ -10,7 +10,7 @@
     <meta name="author" content="">
     
 
-    <title>SketchupOulu - Design Your Dream City</title>
+    <title>SketchupOulu - {{ gettext('Design Your Dream City') }}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
 
     <!-- Bootstrap Core CSS -->
@@ -154,7 +154,7 @@
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed"
 					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span> <span
+					<span class="sr-only">{{ gettext('Toggle navigation') }}</span> <span
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
@@ -165,12 +165,12 @@
 			<div class="collapse navbar-collapse"
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a class="page-scroll" href="{{ url_for('journal.view', journal_id=114) }}">About us</a></li>
-					<li><a class="page-scroll" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a></li>
+					<li><a class="page-scroll" href="{{ url_for('journal.view', journal_id=114) }}">{{ gettext('About us') }}</a></li>
+					<li><a class="page-scroll" href="{{ url_for('sketchup.base_scenarios_page') }}">{{ gettext('Base scenarios') }}</a></li>
 					{% if session['user_id'] %}
-					<li><a href="{{  url_for('users.own_profile')}}">Profile</a></li>
+					<li><a href="{{  url_for('users.own_profile')}}">{{ gettext('Profile') }}</a></li>
 					{% else %}
-					<li><a href="{{ url_for('users.login') }}">Login</a></li>
+					<li><a href="{{ url_for('users.login') }}">{{ gettext('Login') }}</a></li>
 					{% endif %}
 				</ul>
 			</div>
@@ -181,10 +181,10 @@
     <header>
 		<div class="header-content">
 			<div class="header-content-inner">
-				<h1>SketchupOulu<br/>Design Your Dream City</h1>
+				<h1>SketchupOulu<br/>{{ gettext('Design Your Dream City') }}</h1>
 				<hr>
-				<p>Have ideas about renovation of Oulu city, or just want to have fun using your imagination to build a city? Good, you are at the right place!</p>
-				<a href="{{url_for('sketchup.base_scenarios_page')}}" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
+				<p>{{ gettext('Have ideas about renovation of Oulu city, or just want to have fun using your imagination to build a city? Good, you are at the right place!') }}</p>
+				<a href="{{url_for('sketchup.base_scenarios_page')}}" class="btn btn-primary btn-xl page-scroll">{{ gettext('Find Out More') }}</a>
 			</div>
 		</div>
 	</header>

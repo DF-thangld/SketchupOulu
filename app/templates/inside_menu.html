@@ -12,51 +12,50 @@
             </a>
 
             <a class="btn btn-info" href="{{ url_for('users.logout') }}"
-				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign out
+				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">{{ gettext('Sign out') }}
             </a>
 		</div>
         {% else %}
         <div class="header-actions" role="navigation">
 			<a class="btn btn-primary" href="{{ url_for('users.register') }}"
-				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign
-				up</a> <a class="btn btn-info" href="{{ url_for('users.login') }}"
-				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign
-				in</a>
+				data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">{{ gettext('Sign up') }}
+            </a> <a class="btn btn-info" href="{{ url_for('users.login') }}"
+				data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">{{ gettext('Sign in') }}</a>
 		</div>
         {% endif %}
 
 		<ul class="header-nav left" role="navigation">
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">Home</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('index') }}">{{ gettext('Home') }}</a>
 			</li>
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">Base scenarios</a></li>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('sketchup.base_scenarios_page') }}">{{ gettext('Base scenarios') }}</a></li>
             {% if g.user %}
             <li class="header-nav-item dropdown">
-                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">Profile</a>
+                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">{{ gettext('Profile') }}</a>
                 <ul class="dropdown-menu">
-                    <li><a href="{{ url_for('users.own_profile') }}">Profile</a></li>
-                    <li><a href="{{ url_for('users.user_building_models_page', username=g.user.username) }}">My models</a></li>
-                    <li><a href="{{ url_for('users.user_scenarios_page', username=g.user.username) }}">My scenario</a></li>
+                    <li><a href="{{ url_for('users.own_profile') }}">{{ gettext('Profile') }}</a></li>
+                    <li><a href="{{ url_for('users.user_building_models_page', username=g.user.username) }}">{{ gettext('My models') }}</a></li>
+                    <li><a href="{{ url_for('users.user_scenarios_page', username=g.user.username) }}">{{ gettext('My scenario') }}</a></li>
                 </ul>
 			</li>
             {% endif %}
             {% if g.user and g.user.is_admin() %}
             <li class="header-nav-item dropdown">
-                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">Admin</a>
+                <a class="header-nav-link dropdown-toggle" data-toggle="dropdown" href="#">{{ gettext('Admin') }}</a>
                 <ul class="dropdown-menu">
                     <li class="divider"></li>
-                    <li class="dropdown-header">Models</li>
-                    <li><a href="{{ url_for('index') }}">Scenarios</a></li>
-                    <li><a href="{{ url_for('index') }}">Suggestions</a></li>
-                    <li><a href="{{ url_for('index') }}">Building models</a></li>
+                    <li class="dropdown-header">{{ gettext('Models') }}</li>
+                    <li><a href="{{ url_for('index') }}">{{ gettext('Scenarios') }}</a></li>
+                    <li><a href="{{ url_for('index') }}">{{ gettext('Suggestions') }}</a></li>
+                    <li><a href="{{ url_for('index') }}">{{ gettext('Building models') }}</a></li>
                     <li class="divider"></li>
-                    <li class="dropdown-header">Users control</li>
-                    <li><a href="{{ url_for('admin.user_management') }}">User management</a></li>
-                    <li><a href="{{ url_for('admin.news_management') }}">Journal management</a></li>
-                    <li><a href="{{ url_for('admin.send_email') }}">Send email</a></li>
+                    <li class="dropdown-header">{{ gettext('Users control') }}</li>
+                    <li><a href="{{ url_for('admin.user_management') }}">{{ gettext('User management') }}</a></li>
+                    <li><a href="{{ url_for('admin.news_management') }}">{{ gettext('Journal management') }}</a></li>
+                    <li><a href="{{ url_for('admin.send_email') }}">{{ gettext('Send email') }}</a></li>
                 </ul>
 			</li>
             {% endif %}
-			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=114) }}">About us</a>
+			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=114) }}">{{ gettext('About us') }}</a>
 			</li>
 		</ul>
 	</div>

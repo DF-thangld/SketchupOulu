@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html>
  <head>
-  <title>3D-Modell-Test</title>
+  <title>3D-Model-Test</title>
   <script src="js/three.min.js" type="text/javascript"></script>
   <script src="js/Detector.js" type="text/javascript"></script>
   <script src="js/ColladaLoader.js" type="text/javascript"></script>
@@ -30,18 +30,18 @@
  <body>
   <div id="3dmodell"></div>
   <div id="info">
-   Control the animation using the keyboard:
+   {{ gettext('Control the animation using the keyboard') }}:
    <dl>
     <!-- <dt>space</dt> -->
     <!-- <dd>Pause/Rotate</dd> -->
-    <dt>Left / Right Arrow</dt>
-    <dd>Rotate object on the X axis</dd>
-    <dt>Up / Down Arrow</dt>
-    <dd>Rotate object on the Y axis</dd>
-    <dt>Page up / down</dt>
-    <dd>Rotate object on the Z axis</dd>
-    <dt>Home / End</dt>
-    <dd>Bigger / Smaller</dd>
+    <dt>{{ gettext('Left') }} / {{ gettext('Right Arrow') }}</dt>
+    <dd>{{ gettext('Rotate object on the X axis') }}</dd>
+    <dt>{{ gettext('Up') }} / {{ gettext('Down Arrow') }}</dt>
+    <dd>{{ gettext('Rotate object on the Y axis') }}</dd>
+    <dt>{{ gettext('Page up') }} / {{gettext('down')}}</dt>
+    <dd>{{ gettext('Rotate object on the Z axis') }}</dd>
+    <dt>{{ gettext('Home') }} / {{ gettext('End') }}</dt>
+    <dd>{{ gettext('Bigger') }} / {{ gettext('Smaller') }}</dd>
    </dl>
   </div>
  </body>
