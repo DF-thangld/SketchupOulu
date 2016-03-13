@@ -171,7 +171,7 @@ def clone_scenario(scenario_id):
     if not scenario.can_access(g.user):
         return json.dumps([gettext('Scenario not found')]), 404
 
-    new_scenario = Scenario('Cloned of ' + scenario.name, g.user, addition_information=scenario.addition_information, is_public=1)
+    new_scenario = Scenario(gettext('Cloned of %(scenario_name)', scenario_name=scenario.name), g.user, addition_information=scenario.addition_information, is_public=1)
 
     db.session.add(new_scenario)
     db.session.commit()

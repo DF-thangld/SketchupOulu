@@ -61,7 +61,7 @@ function upload_image(file, editor, welEditable)
            {% if errors|length > 0 %}
             <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
                   <div class="container">
-                  There were problems creating the journal:
+                  {{gettext('There were problems creating the journal')}}:
                       {% for error in errors %}
                           <div>- {{ error }}</div>
                       {% endfor %}

@@ -186,14 +186,14 @@ def reset_password():
             db.session.commit()
 
             # we use werzeug to validate user's password
-            email_content = 'We heard that you lost your password. Sorry about that!<br /><br />'
-            email_content += 'But don\'t worry! You can use the following link to reset your password:<br /><br />'
+            email_content = gettext('We heard that you lost your password. Sorry about that!') + '<br /><br />'
+            email_content += gettext('But don\'t worry! You can use the following link to reset your password') + ':<br /><br />'
             email_content += '<a href="' + url_for('users.reset_password', token=user.password_token, _external=True) + '">' + url_for('users.reset_password', token=user.password_token, _external=True) + '</a><br /><br />'
             #email_content += 'If you don\'t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
-            email_content += 'Thanks,<br />'
-            email_content += 'Sketchup Oulu team'
+            email_content += gettext('Thanks,') + '<br />'
+            email_content += gettext('SketchupOulu team')
 
-            send_mail([user.email], '[SketchupOulu] Reset your password', email_content)
+            send_mail([user.email], gettext('[SketchupOulu] Reset your password'), email_content)
             user.password_token = ''
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
@@ -288,7 +288,7 @@ def get_comments():
     page = request.args.get('page', '1')
 
     if comment_id == '' or comment_type not in ['user', 'scenario', 'building_model']:
-        return json.dumps(['Comment topic not found']), 404
+        return json.dumps([gettext('Comment topic not found')]), 404
     if page.isdigit():
         page = int(page)
         if page < 1:
@@ -332,7 +332,7 @@ def suggest_scenario(scenario_id):
     errors = []
     content = request.form.get('content', '')
     if content == '':
-        errors.append('Suggest content is required')
+        errors.append(gettext('Suggest content is required'))
         return json.dumps(errors), 400
     
     scenario = Scenario.query.get(scenario_id)
@@ -342,7 +342,7 @@ def suggest_scenario(scenario_id):
     comment_topic = scenario.comment_topic
     
     new_comment = Comment(g.user, comment_topic, content)
-    new_comment.description = 'Suggest for scenario'
+    new_comment.description = gettext('Suggest for scenario')
     db.session.add(new_comment)
     db.session.commit()
 
@@ -352,7 +352,7 @@ def suggest_scenario(scenario_id):
     admin_emails = []
     for admin in admins:
         admin_emails.append(admin.email)
-    send_mail(admin_emails, gettext('[SketchupOulu] New suggest for ' + scenario.name), render_template("users/suggest_scenario_email_content.html", suggest_content=content, scenario=scenario.to_dict(), user=g.user.username))
+    send_mail(admin_emails, '[SketchupOulu] New suggest for ' + scenario.name, render_template("users/suggest_scenario_email_content.html", suggest_content=content, scenario=scenario.to_dict(), user=g.user.username))
     return json.dumps(new_comment.to_dict(include_owner=True)), 200
 
 
@@ -364,10 +364,10 @@ def add_comment():
     object_id = request.form.get('object_id', '')
     content = request.form.get('content', '')
     if content == '':
-        errors.append('Comment content is required')
+        errors.append(gettext('Comment content is required'))
         return json.dumps(errors), 400
     if object_id == '':
-        errors.append('Comment object is required')
+        errors.append(gettext('Comment object is required'))
         return json.dumps(errors), 400
 
     comment_topic = None
@@ -377,7 +377,7 @@ def add_comment():
             errors.append('Scenario not found')
             return json.dumps(errors), 404
         if not scenario.can_access(g.user):
-            errors.append('You don\'t have permission to add comment here')
+            errors.append(gettext('You don\'t have permission to add comment here'))
             return json.dumps(errors), 401
         comment_topic = scenario.comment_topic
     elif comment_type == 'building_model':
@@ -393,7 +393,7 @@ def add_comment():
             return json.dumps(errors), 404
         comment_topic = user.comment_topic
     else:
-        errors.append('Comment type not found')
+        errors.append(gettext('Comment type not found'))
         return json.dumps(errors), 401
 
     new_comment = Comment(g.user, comment_topic, content)
@@ -408,12 +408,12 @@ def delete_comment():
     errors = []
     comment_id = request.form.get('comment_id', 0)
     if comment_id == 0:
-        errors.append('Comment not found')
+        errors.append(gettext('Comment not found'))
         return json.dumps(errors), 404
 
     comment = Comment.query.get(comment_id)
     if comment is None:
-        errors.append('Comment not found')
+        errors.append(gettext('Comment not found'))
         return json.dumps(errors), 404
 
     if comment.owner == g.user or g.user.is_admin() or comment.topic.owner == g.user:
@@ -421,7 +421,7 @@ def delete_comment():
         db.session.commit()
         return json.dumps({'success': True, 'comment_id': comment_id}), 200
     else:
-        errors.append('Unauthorized deletion')
+        errors.append(gettext('Unauthorized deletion'))
         return json.dumps(errors), 403
 
 
@@ -571,9 +571,9 @@ def add_building_model():
         name = request.form.get('name', '')
 
         if name.strip() == '':
-            errors.append('Scenario name is required')
+            errors.append(gettext('Scenario name is required'))
         if request.files['data_file'].filename == '':
-            errors.append('Model file is required')
+            errors.append(gettext('Model file is required'))
         if len(errors) > 0:
             return render_template("users/add_building_model.html", errors=errors), 400
 
@@ -637,7 +637,7 @@ def add_building_model():
                         file_type = extension
 
             if important_file_index < 0: # user uploaded unrecognized file
-                errors.append('Unrecognized model file format')
+                errors.append(gettext('Unrecognized model file format'))
                 os.remove(os.path.join(app_dir, 'static/models/building_models', data_file))
                 try:
                     shutil.rmtree(os.path.join(app_dir, 'static/models/building_models', uploaded_file['filename_without_extension'])) #delete unzipped folder

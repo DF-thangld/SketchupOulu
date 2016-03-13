@@ -34,7 +34,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="{{ url_for('users.own_profile') }}">{{ gettext('Profile') }}</a></li>
                     <li><a href="{{ url_for('users.user_building_models_page', username=g.user.username) }}">{{ gettext('My models') }}</a></li>
-                    <li><a href="{{ url_for('users.user_scenarios_page', username=g.user.username) }}">{{ gettext('My scenario') }}</a></li>
+                    <li><a href="{{ url_for('users.user_scenarios_page', username=g.user.username) }}">{{ gettext('My scenarios') }}</a></li>
                 </ul>
 			</li>
             {% endif %}

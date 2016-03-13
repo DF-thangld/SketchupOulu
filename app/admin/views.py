@@ -104,11 +104,11 @@ def update_user_info():
 
     user_id = request.form.get('user_id', 0)
     if user_id == 0:
-        return json.dump(gettext({'error': 'User not found'})), 404
+        return json.dump({'error': gettext('User not found')}), 404
 
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return json.dump(gettext({'error': 'User not found'})), 404
+        return json.dump({'error': gettext('User not found')}), 404
 
     fullname = request.form.get('fullname', '')
     address = request.form.get('address', '')
@@ -447,7 +447,7 @@ def edit_journal():
     edit_journal_form = EditJournalForm()
     errors = []
     edit_journal_form.category_id.choices = [(category.id, category.name) for category in JournalCategory.query.order_by('name')]
-    edit_journal_form.category_id.choices.insert(0, (0, '===== Category ====='))
+    edit_journal_form.category_id.choices.insert(0, (0, gettext('===== Category =====')))
 
     journal_content_objs = journal.journal_contents
     journal_contents = {}
@@ -481,7 +481,7 @@ def edit_journal():
         if edit_journal_form.validate():
             category = JournalCategory.query.filter_by(id=edit_journal_form.category_id.data).first()
             if category is None:
-                errors.append('Journal category not found')
+                errors.append(gettext('Journal category not found'))
                 return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 400
             journal.category = category
             journal.title = edit_journal_form.title.data
