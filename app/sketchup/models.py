@@ -75,7 +75,7 @@ class BuildingModel(db.Model):
                 'is_base_item': self.is_base_item}
 
     def __repr__(self):
-        return gettext('<BuildingModel %r>') % (self.name)
+        return '<BuildingModel %r>' % (self.name)
 
 class Scenario(db.Model):
 
@@ -215,7 +215,7 @@ class CommentTopic(db.Model):
                 'comments': comments}
 
     def __repr__(self):
-        return gettext('<CommentTopic %r>') % (self.title)
+        return '<CommentTopic %r>' % (self.title)
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -254,4 +254,4 @@ class Comment(db.Model):
                 'content': self.content}
 
     def __repr__(self):
-        return gettext('<Comment %r>') % (self.id)
+        return '<Comment %r>' % (self.id)

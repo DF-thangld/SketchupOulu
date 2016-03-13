@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-02-20 14:33+0200\n"
-"PO-Revision-Date: 2016-02-20 14:34+0200\n"
+"POT-Creation-Date: 2016-03-13 14:27+0200\n"
+"PO-Revision-Date: 2016-03-13 14:27+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
@@ -19,60 +19,569 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
 
-#: app/static/js/sketchup_oulu.js:139
-msgid "By <a href=\"users//profile/\"></a> on "
-msgstr "By <a href=\"users//profile/\"></a> kello on "
-
-#: app/static/js/sketchup_oulu.js:142
-msgid "Edit"
-msgstr "Muokata"
-
-#: app/static/js/sketchup_oulu.js:142
-msgid "Delete"
+#: app/admin/decorators.py:10
+msgid "You don't have privilege to view this page."
 msgstr ""
 
-#: app/templates/users/login.html:56
-msgid "Create an account"
-msgstr "Poistaa"
+#: app/admin/forms.py:10
+msgid "Users"
+msgstr ""
 
-#: app/users/views.py:54 app/users/views.py:60
+#: app/admin/forms.py:10
+msgid "Insert users to send email"
+msgstr ""
+
+#: app/admin/forms.py:11
+msgid "Title"
+msgstr ""
+
+#: app/admin/forms.py:11
+msgid "Email title is required"
+msgstr ""
+
+#: app/admin/forms.py:12
+msgid "Content"
+msgstr ""
+
+#: app/admin/forms.py:12
+msgid "Email content is required"
+msgstr ""
+
+#: app/admin/forms.py:16
+msgid "Name"
+msgstr ""
+
+#: app/admin/forms.py:16 app/admin/forms.py:21
+msgid "Category name is required"
+msgstr ""
+
+#: app/admin/forms.py:17 app/admin/forms.py:22
+#: app/templates/users/add_scenario.html:158
+msgid "Description"
+msgstr ""
+
+#: app/admin/forms.py:20
+msgid "Something went wrong..."
+msgstr ""
+
+#: app/admin/forms.py:25
+msgid "Name (for admin view only) - Required"
+msgstr ""
+
+#: app/admin/forms.py:25 app/admin/forms.py:31
+msgid "Journal name is required"
+msgstr ""
+
+#: app/admin/forms.py:26
+msgid "Description (for admin view only) - Required"
+msgstr ""
+
+#: app/admin/forms.py:26
+msgid "Journal description is required"
+msgstr ""
+
+#: app/admin/forms.py:27 app/admin/forms.py:33
+msgid "Is activated"
+msgstr ""
+
+#: app/admin/forms.py:28 app/admin/forms.py:34
+msgid "Category"
+msgstr ""
+
+#: app/admin/forms.py:28 app/admin/forms.py:34 app/admin/views.py:386
+msgid "Category is required"
+msgstr ""
+
+#: app/admin/forms.py:31
+msgid "Name (for admin view only)"
+msgstr ""
+
+#: app/admin/forms.py:32
+msgid "Description (for admin view only)"
+msgstr ""
+
+#: app/admin/views.py:80
+msgid "errorUser not found"
+msgstr ""
+
+#: app/admin/views.py:84 app/admin/views.py:107 app/admin/views.py:111
+msgid "User not found"
+msgstr ""
+
+#: app/admin/views.py:259 app/admin/views.py:277 app/admin/views.py:280
+#: app/admin/views.py:289 app/admin/views.py:292 app/admin/views.py:305
+msgid "Category not found"
+msgstr ""
+
+#: app/admin/views.py:308
+msgid "Delete child journals first"
+msgstr ""
+
+#: app/admin/views.py:406 app/admin/views.py:409 app/admin/views.py:423
+#: app/admin/views.py:426
+msgid "Journal not found"
+msgstr ""
+
+#: app/admin/views.py:450
+msgid "===== Category ====="
+msgstr ""
+
+#: app/admin/views.py:484
+msgid "Journal category not found"
+msgstr ""
+
+#: app/admin/views.py:518 app/admin/views.py:522 app/sketchup/views.py:69
+#: app/sketchup/views.py:73 app/sketchup/views.py:76 app/sketchup/views.py:86
+#: app/sketchup/views.py:90 app/sketchup/views.py:93 app/sketchup/views.py:142
+#: app/sketchup/views.py:146 app/sketchup/views.py:149
+#: app/sketchup/views.py:165 app/sketchup/views.py:169
+#: app/sketchup/views.py:172
+msgid "Scenario not found"
+msgstr ""
+
+#: app/journal/models.py:70
+msgid "Comments for journal title "
+msgstr ""
+
+#: app/sketchup/models.py:54
+msgid "building_model"
+msgstr ""
+
+#: app/sketchup/models.py:109
+msgid "scenario"
+msgstr ""
+
+#: app/sketchup/views.py:98
+msgid "Scenario name cannot be blank"
+msgstr ""
+
+#: app/sketchup/views.py:174
+msgid "Cloned of %(scenario_name)"
+msgstr ""
+
+#: app/sketchup/views.py:187 app/sketchup/views.py:191
+#: app/sketchup/views.py:220 app/sketchup/views.py:224
+#: app/sketchup/views.py:229 app/sketchup/views.py:245
+#: app/sketchup/views.py:249 app/sketchup/views.py:252
+#: app/sketchup/views.py:312 app/sketchup/views.py:316
+msgid "Building model not found"
+msgstr ""
+
+#: app/sketchup/views.py:226
+msgid "Cannot delete base item"
+msgstr ""
+
+#: app/sketchup/views.py:260
+msgid "Model name is required"
+msgstr ""
+
+#: app/sketchup/views.py:282
+msgid ""
+"Error in saving addition information, please contact an admin for more "
+"information"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:124
+#: app/templates/users/building_models.html:222
+#: app/templates/users/scenarios.html:340
+msgid "Home"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:126
+#: app/templates/users/add_scenario.html:128
+msgid "New Scenario"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:141
+msgid "There were problems creating your scenario"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:150
+msgid "Scenario name"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:166
+msgid "Public"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:174
+msgid "Model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:175
+msgid "Guide on editing scenario"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:180
+msgid "Scenario Control"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:182
+msgid "Shrink Scenario"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:183
+msgid "Enlarge Scenario"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:185
+msgid "Model Control"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:186
+msgid "Move Model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:187
+msgid "Delete Model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:189
+msgid "Shrink Model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:190
+msgid "Enlarge Model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:193
+msgid "Rotate Left"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:194
+msgid "Rotate Right"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:196
+msgid "Build On Top"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:198
+msgid "Undo"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:199
+msgid "Redo"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:241
+msgid "Previous"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:245
+msgid "Next"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:253
+msgid "Create model"
+msgstr ""
+
+#: app/templates/users/add_scenario.html:254
+msgid "Back"
+msgstr ""
+
+#: app/templates/users/building_models.html:224
+#: app/templates/users/profile.html:298
+msgid "Building models"
+msgstr ""
+
+#: app/templates/users/building_models.html:232
+msgid "Add building model"
+msgstr ""
+
+#: app/templates/users/building_models.html:258
+#: app/templates/users/scenarios.html:379
+msgid ""
+"Created by <span id=\"created_user\"></span> at <span "
+"id=\"created_time\"></span>"
+msgstr ""
+
+#: app/templates/users/login.html:21
+msgid "Sign in to System"
+msgstr ""
+
+#: app/templates/users/login.html:44
+msgid "Forgot password"
+msgstr ""
+
+#: app/templates/users/login.html:55
+msgid "New to System"
+msgstr ""
+
+#: app/templates/users/login.html:56 app/templates/users/register.html:85
+msgid "Create an account"
+msgstr ""
+
+#: app/templates/users/profile.html:245 app/templates/users/profile.html:254
+msgid "Profile"
+msgstr ""
+
+#: app/templates/users/profile.html:251
+msgid "Homepage"
+msgstr ""
+
+#: app/templates/users/profile.html:252
+msgid "Comments"
+msgstr ""
+
+#: app/templates/users/profile.html:255
+msgid "Change_password"
+msgstr ""
+
+#: app/templates/users/profile.html:257 app/templates/users/profile.html:278
+#: app/templates/users/scenarios.html:342
+msgid "Scenarios"
+msgstr ""
+
+#: app/templates/users/profile.html:258
+msgid "Models"
+msgstr ""
+
+#: app/templates/users/profile.html:271
+msgid "Joined on"
+msgstr ""
+
+#: app/templates/users/profile.html:321
+msgid "Old password is required"
+msgstr ""
+
+#: app/templates/users/profile.html:329
+msgid "Old password"
+msgstr ""
+
+#: app/templates/users/profile.html:335
+msgid "New password"
+msgstr ""
+
+#: app/templates/users/profile.html:341
+msgid "Confirm password"
+msgstr ""
+
+#: app/templates/users/profile.html:348
+msgid "Update"
+msgstr ""
+
+#: app/templates/users/register.html:17
+msgid "Join SketchupOulu"
+msgstr ""
+
+#: app/templates/users/register.html:26
+msgid "Create your personal account"
+msgstr ""
+
+#: app/templates/users/register.html:31
+msgid "There were problems creating your account"
+msgstr ""
+
+#: app/templates/users/register.html:79
+#, python-format
+msgid ""
+"By clicking on \"Create an account\" below, you are agreeing to the <a "
+"href=\"%%term_of_service_link%%\" target=\"_blank\">Terms of Service</a> "
+"and the <a href=\"%%privacy_policy_link%%\" target=\"_blank\">Privacy "
+"Policy</a>."
+msgstr ""
+
+#: app/templates/users/reset_password.html:21
+#: app/templates/users/reset_password_confirmed.html:21
+#: app/templates/users/reset_password_submited.html:21
+msgid "Reset your password"
+msgstr ""
+
+#: app/templates/users/reset_password_confirmed.html:25
+msgid "An email has been sent to your email address for your new password."
+msgstr ""
+
+#: app/templates/users/reset_password_confirmed.html:26
+#: app/templates/users/reset_password_submited.html:26
+msgid "Return to sign in"
+msgstr ""
+
+#: app/templates/users/reset_password_submited.html:25
+msgid "Don't worry, help is on the way"
+msgstr ""
+
+#: app/templates/users/scenarios.html:351
+msgid "Add scenario"
+msgstr ""
+
+#: app/templates/users/scenarios.html:380
+msgid "Last edited by"
+msgstr ""
+
+#: app/templates/users/scenarios.html:380
+msgid "at"
+msgstr ""
+
+#: app/templates/users/suggest_scenario_email_content.html:3
+msgid "Suggest content"
+msgstr ""
+
+#: app/templates/users/user_profile.html:6
+msgid "Profile picture"
+msgstr ""
+
+#: app/templates/users/user_profile.html:11
+msgid "Upload"
+msgstr ""
+
+#: app/users/forms.py:7
+msgid "Email"
+msgstr ""
+
+#: app/users/forms.py:7 app/users/forms.py:29
+msgid "Email is required"
+msgstr ""
+
+#: app/users/forms.py:7 app/users/forms.py:12 app/users/forms.py:22
+#: app/users/forms.py:29
+msgid "Invalid email address"
+msgstr ""
+
+#: app/users/forms.py:8 app/users/forms.py:13
+msgid "Password"
+msgstr ""
+
+#: app/users/forms.py:8
+msgid "Password field is required"
+msgstr ""
+
+#: app/users/forms.py:11 app/users/forms.py:21
+msgid "Username"
+msgstr ""
+
+#: app/users/forms.py:11 app/users/forms.py:21
+msgid "Username is required"
+msgstr ""
+
+#: app/users/forms.py:12 app/users/forms.py:22
+msgid "Email address"
+msgstr ""
+
+#: app/users/forms.py:14
+msgid "Repeat Password"
+msgstr ""
+
+#: app/users/forms.py:15
+msgid "You have to confirm your password"
+msgstr ""
+
+#: app/users/forms.py:16
+msgid "Passwords must match"
+msgstr ""
+
+#: app/users/forms.py:29
+msgid ""
+"Enter your email address and we will send you a link to reset your "
+"password"
+msgstr ""
+
+#: app/users/views.py:56 app/users/views.py:62
 msgid "Wrong email or password"
 msgstr ""
 
-#: app/users/views.py:63 app/users/views.py:180
+#: app/users/views.py:65 app/users/views.py:182
 msgid "The account was banned, please contact an admin for more information"
 msgstr ""
 
-#: app/users/views.py:105
+#: app/users/views.py:107
 msgid "Duplicate email address"
 msgstr ""
 
-#: app/users/views.py:107
+#: app/users/views.py:109
 msgid "Duplicate username"
 msgstr ""
 
-#: app/users/views.py:159
+#: app/users/views.py:161
 msgid "Finally, support has come to help you :)<br /><br />"
 msgstr ""
 
-#: app/users/views.py:160
+#: app/users/views.py:162
 #, python-format
 msgid "Your new password: <b>%(new_password)s</b><br /><br />"
 msgstr ""
 
-#: app/users/views.py:161
+#: app/users/views.py:163
 msgid "Thanks,<br />"
 msgstr ""
 
-#: app/users/views.py:162
+#: app/users/views.py:164
 msgid "Sketchup Oulu team"
 msgstr ""
 
-#: app/users/views.py:164
+#: app/users/views.py:166
 msgid "[SketchupOulu] Your new password"
 msgstr ""
 
-#: app/users/views.py:176
+#: app/users/views.py:178
 msgid "Account not found"
+msgstr ""
+
+#: app/users/views.py:189
+msgid "We heard that you lost your password. Sorry about that!"
+msgstr ""
+
+#: app/users/views.py:190
+msgid "But don't worry! You can use the following link to reset your password"
+msgstr ""
+
+#: app/users/views.py:193
+msgid "Thanks,"
+msgstr ""
+
+#: app/users/views.py:194
+msgid "SketchupOulu team"
+msgstr ""
+
+#: app/users/views.py:196
+msgid "[SketchupOulu] Reset your password"
+msgstr ""
+
+#: app/users/views.py:291 app/users/views.py:313
+msgid "Comment topic not found"
+msgstr ""
+
+#: app/users/views.py:335
+msgid "Suggest content is required"
+msgstr ""
+
+#: app/users/views.py:345
+msgid "Suggest for scenario"
+msgstr ""
+
+#: app/users/views.py:367
+msgid "Comment content is required"
+msgstr ""
+
+#: app/users/views.py:370
+msgid "Comment object is required"
+msgstr ""
+
+#: app/users/views.py:380
+msgid "You don't have permission to add comment here"
+msgstr ""
+
+#: app/users/views.py:396
+msgid "Comment type not found"
+msgstr ""
+
+#: app/users/views.py:411 app/users/views.py:416
+msgid "Comment not found"
+msgstr ""
+
+#: app/users/views.py:424
+msgid "Unauthorized deletion"
+msgstr ""
+
+#: app/users/views.py:574
+msgid "Scenario name is required"
+msgstr ""
+
+#: app/users/views.py:576
+msgid "Model file is required"
+msgstr ""
+
+#: app/users/views.py:640
+msgid "Unrecognized model file format"
 msgstr ""
 

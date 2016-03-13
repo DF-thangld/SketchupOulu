@@ -76,10 +76,8 @@
 			</dl>
 
 			<p class="tos-info">
-				{{ gettext('By clicking on "Create an account" below, you are agreeing to the') }} <a
-					href="{{ url_for('journal.view', journal_id=8) }}" target="_blank">{{ gettext('Terms of
-					Service') }}</a> {{ gettext('and the') }} <a href="{{ url_for('journal.view', journal_id=9) }}"
-					target="_blank">{{ gettext('Privacy Policy') }}</a>.
+				{{gettext('By clicking on "Create an account" below, you are agreeing to the <a href="%%term_of_service_link%%" target="_blank">Terms of Service</a> and the <a href="%%privacy_policy_link%%" target="_blank">Privacy Policy</a>.').replace('%term_of_service_link%', url_for('journal.view', journal_id=8)).replace('%privacy_policy_link%', url_for('journal.view', journal_id=9))}}
+				
 			</p>
 
 			<div class="form-actions">

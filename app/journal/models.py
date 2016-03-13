@@ -39,7 +39,7 @@ class JournalCategory(db.Model):
         return page_data.items
 
     def __repr__(self):
-        return gettext('<JournalCategory %r>') % (self.name)
+        return '<JournalCategory %r>' % (self.name)
 
 class Journal(db.Model):
 
@@ -50,7 +50,7 @@ class Journal(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('journal_categories.id'))
     category = db.relationship("JournalCategory")
     created_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    created_user = db.relationship("User", primaryjoin=gettext("Journal.created_user_id == User.id"))
+    created_user = db.relationship("User", primaryjoin="Journal.created_user_id == User.id")
     last_edited_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     last_edited_user = db.relationship("User", primaryjoin="Journal.last_edited_user_id == User.id")
     post_time = db.Column(db.DateTime)
@@ -120,6 +120,6 @@ class JournalContent(db.Model):
                 'title': self.title}
 
     def __repr__(self):
-        return gettext('<JournalContent %r for "%r">') % (self.locale, self.title)
+        return '<JournalContent %r for "%r">' % (self.locale, self.title)
 
 db.Index('idx_journal_locale', JournalContent.journal_id, JournalContent.locale)

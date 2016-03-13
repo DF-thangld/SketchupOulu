@@ -32,7 +32,7 @@ function validate_data()
         var error_content = '';
         error_content += '<div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">';
         error_content += '      <div class="container">';
-        error_content += '{{gettext('      There were problems creating your scenario:')}}';
+        error_content += '			{{gettext('There were problems creating your scenario:')}}';
         for (var i=0; i < errors.length; i++)
         {
             error_content += '              <div>- ' + errors[i] + '</div>';
@@ -84,7 +84,7 @@ function validate_data()
             <dl class="form">
 				<dt class="input-label">
 					<label autocapitalize="off" autofocus="autofocus" for="data_file">
-						{{gettext('Data file' )}}( {{  gettext('max file size') }}: 10MB)*<br/>
+						{{gettext('Data file (max file size: 10MB)')*<br/>
 						{{gettext('Accepted file types')}}: DAE, OBJ, PNG, JPG<br/>
 						<a href="{{ url_for('journal.view', journal_id=115) }}" target="_blank">{{gettext('How to upload models')}}</a>
 					</label>

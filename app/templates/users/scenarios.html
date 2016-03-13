@@ -375,7 +375,8 @@ function render()
                     <img id="profile_picture" src="{{ url_for('static', filename='images/profile_pictures/default_profile.png') }}" style="width:60px;"/>
                 </div>
                 <div style="float:left; margin-left:10px;">
-                    <div>{{ gettext('Created by') }} <span id="created_user"></span> {{ gettext('at') }} <span id="created_time"></span></div>
+                
+                    <div>{{ gettext('Created by <span id="created_user"></span> at <span id="created_time"></span>') }}</div>
                     <div id="last_edited_panel" style="display:none">{{ gettext('Last edited by') }} <span id="last_edited_user"></span> {{ gettext('at') }} <span id="last_edited_time"></span></div>
                 </div>
                 <div style="clear:both;margin-bottom:10px;"></div>

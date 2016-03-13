@@ -81,7 +81,7 @@ def get_user_info():
 
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return json.dump(gettext({'error': 'User not found'})), 404
+        return json.dump({'error': gettext('User not found')}), 404
 
     groups = []
     for group in user.groups:
@@ -125,7 +125,7 @@ def update_user_info():
     User.query.filter_by(id=user_id).update(update_data)
 
     #update groups
-    groups_string = request.form.get(gettext('groups_value'), '')
+    groups_string = request.form.get('groups_value', '')
     if groups_string != '':
         for i in range(0, len(user.groups)):
             user.groups.remove(user.groups[0])
@@ -527,4 +527,4 @@ def change_base_scenario_status(scenario_id):
 
     db.session.commit()
 
-    return json.dumps({gettext('new_status'): scenario.is_base_scenario}), 200
+    return json.dumps({'new_status': scenario.is_base_scenario}), 200
