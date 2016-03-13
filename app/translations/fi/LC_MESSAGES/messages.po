@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-13 14:27+0200\n"
-"PO-Revision-Date: 2016-03-13 14:27+0200\n"
+"POT-Creation-Date: 2016-03-13 16:52+0200\n"
+"PO-Revision-Date: 2016-03-13 16:52+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Insert users to send email"
 msgstr ""
 
-#: app/admin/forms.py:11
+#: app/admin/forms.py:11 app/templates/admin/news_management.html:355
 msgid "Title"
 msgstr ""
 
@@ -56,6 +56,8 @@ msgid "Category name is required"
 msgstr ""
 
 #: app/admin/forms.py:17 app/admin/forms.py:22
+#: app/templates/sketchup/edit_scenario.html:400
+#: app/templates/sketchup/view_scenario.html:385
 #: app/templates/users/add_scenario.html:158
 msgid "Description"
 msgstr ""
@@ -181,10 +183,693 @@ msgid ""
 "information"
 msgstr ""
 
+#: app/templates/404.html:20
+msgid "404 - Page not found"
+msgstr ""
+
+#: app/templates/404.html:21
+msgid ""
+"If you think you have arrived here by our mistake, please <a "
+"href=\"mailto:df.thangld@hotmail.com\">contact us</a>"
+msgstr ""
+
+#: app/templates/404.html:22
+msgid ""
+"Or you can go <a href=\"javascript:window.history.back();\">back</a> to "
+"previous page"
+msgstr ""
+
+#: app/templates/base.html:13 app/templates/homepage.html:13
+#: app/templates/homepage.html:184
+msgid "Design Your Dream City"
+msgstr ""
+
+#: app/templates/guest_menu.html:11 app/templates/inside_menu.html:21
+msgid "Sign up"
+msgstr ""
+
+#: app/templates/guest_menu.html:13 app/templates/inside_menu.html:23
+msgid "Sign in"
+msgstr ""
+
+#: app/templates/guest_menu.html:20 app/templates/inside_menu.html:28
+#: app/templates/user_menu.html:20 app/templates/admin/create_journal.html:47
+#: app/templates/admin/edit_journal.html:47
+#: app/templates/admin/user_management.html:155
+#: app/templates/sketchup/base_scenarios.html:263
+#: app/templates/sketchup/view_building_model.html:289
+#: app/templates/sketchup/view_scenario.html:345
 #: app/templates/users/add_scenario.html:124
 #: app/templates/users/building_models.html:222
 #: app/templates/users/scenarios.html:340
 msgid "Home"
+msgstr ""
+
+#: app/templates/guest_menu.html:22 app/templates/homepage.html:169
+#: app/templates/inside_menu.html:30 app/templates/user_menu.html:22
+#: app/templates/sketchup/base_scenarios.html:264
+#: app/templates/sketchup/base_scenarios.html:266
+msgid "Base scenarios"
+msgstr ""
+
+#: app/templates/guest_menu.html:24 app/templates/user_menu.html:48
+msgid "Contact us"
+msgstr ""
+
+#: app/templates/homepage.html:157
+msgid "Toggle navigation"
+msgstr ""
+
+#: app/templates/homepage.html:168 app/templates/inside_menu.html:58
+msgid "About us"
+msgstr ""
+
+#: app/templates/homepage.html:171 app/templates/inside_menu.html:33
+#: app/templates/inside_menu.html:35 app/templates/user_menu.html:24
+#: app/templates/user_menu.html:26 app/templates/users/profile.html:245
+#: app/templates/users/profile.html:254
+msgid "Profile"
+msgstr ""
+
+#: app/templates/homepage.html:173
+msgid "Login"
+msgstr ""
+
+#: app/templates/homepage.html:186
+msgid ""
+"Have ideas about renovation of Oulu city, or just want to have fun using "
+"your imagination to build a city? Good, you are at the right place!"
+msgstr ""
+
+#: app/templates/homepage.html:187
+msgid "Find Out More"
+msgstr ""
+
+#: app/templates/inside_menu.html:15 app/templates/user_menu.html:15
+msgid "Sign out"
+msgstr ""
+
+#: app/templates/inside_menu.html:36 app/templates/user_menu.html:27
+msgid "My models"
+msgstr ""
+
+#: app/templates/inside_menu.html:37
+msgid "My scenarios"
+msgstr ""
+
+#: app/templates/inside_menu.html:43 app/templates/user_menu.html:33
+#: app/templates/admin/user_management.html:156
+msgid "Admin"
+msgstr ""
+
+#: app/templates/inside_menu.html:46 app/templates/user_menu.html:36
+#: app/templates/users/profile.html:258
+msgid "Models"
+msgstr ""
+
+#: app/templates/inside_menu.html:47 app/templates/user_menu.html:37
+#: app/templates/sketchup/edit_scenario.html:361
+#: app/templates/sketchup/view_scenario.html:347
+#: app/templates/users/profile.html:257 app/templates/users/profile.html:278
+#: app/templates/users/scenarios.html:342
+msgid "Scenarios"
+msgstr ""
+
+#: app/templates/inside_menu.html:48 app/templates/user_menu.html:38
+msgid "Suggestions"
+msgstr ""
+
+#: app/templates/inside_menu.html:49 app/templates/user_menu.html:39
+#: app/templates/sketchup/view_building_model.html:291
+#: app/templates/users/building_models.html:224
+#: app/templates/users/profile.html:298
+msgid "Building models"
+msgstr ""
+
+#: app/templates/inside_menu.html:51 app/templates/user_menu.html:41
+msgid "Users control"
+msgstr ""
+
+#: app/templates/inside_menu.html:52 app/templates/user_menu.html:42
+msgid "User management"
+msgstr ""
+
+#: app/templates/inside_menu.html:53 app/templates/user_menu.html:43
+msgid "Journal management"
+msgstr ""
+
+#: app/templates/inside_menu.html:54 app/templates/user_menu.html:44
+#: app/templates/admin/send_email.html:57
+#: app/templates/admin/send_email.html:59
+msgid "Send email"
+msgstr ""
+
+#: app/templates/user_menu.html:28
+msgid "My scenario"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:48
+#: app/templates/admin/edit_journal.html:48
+#: app/templates/admin/news_management.html:211
+msgid "Admin tools"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:49
+#: app/templates/admin/edit_journal.html:49
+#: app/templates/admin/news_management.html:212
+#: app/templates/admin/news_management.html:215
+msgid "Journal Management"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:64
+msgid "There were problems creating the journal"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:74
+msgid "Journal created!"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:112
+#: app/templates/admin/edit_journal.html:111
+msgid "Journal name in"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:120
+#: app/templates/admin/edit_journal.html:119
+msgid "Journal content in"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:130
+msgid "Create  Journal"
+msgstr ""
+
+#: app/templates/admin/create_journal.html:131
+#: app/templates/admin/edit_journal.html:130
+msgid "Reset"
+msgstr ""
+
+#: app/templates/admin/edit_journal.html:50
+#: app/templates/admin/edit_journal.html:129
+msgid "Edit Journal"
+msgstr ""
+
+#: app/templates/admin/edit_journal.html:52
+msgid "View journal"
+msgstr ""
+
+#: app/templates/admin/edit_journal.html:63
+msgid "There were problems creating the journal:"
+msgstr ""
+
+#: app/templates/admin/edit_journal.html:73
+msgid "Journal edited!"
+msgstr ""
+
+#: app/templates/admin/news_management.html:102
+#: app/templates/admin/news_management.html:122
+msgid "Category not found!!!"
+msgstr ""
+
+#: app/templates/admin/news_management.html:129
+msgid "Are you sure you want to delete the category?"
+msgstr ""
+
+#: app/templates/admin/news_management.html:145
+msgid "Category deleted!"
+msgstr ""
+
+#: app/templates/admin/news_management.html:158
+msgid "Are you sure you want to delete the journal?"
+msgstr ""
+
+#: app/templates/admin/news_management.html:174
+msgid "Journal deleted!"
+msgstr ""
+
+#: app/templates/admin/news_management.html:217
+msgid "New category"
+msgstr ""
+
+#: app/templates/admin/news_management.html:226
+msgid "Create category"
+msgstr ""
+
+#: app/templates/admin/news_management.html:234
+msgid "There were problems creating the category:"
+msgstr ""
+
+#: app/templates/admin/news_management.html:256
+#: app/templates/admin/news_management.html:303
+#: app/templates/admin/user_management.html:190
+msgid "Save"
+msgstr ""
+
+#: app/templates/admin/news_management.html:257
+#: app/templates/admin/news_management.html:304
+#: app/templates/sketchup/edit_scenario.html:408
+#: app/templates/sketchup/view_building_model.html:319
+#: app/templates/sketchup/view_scenario.html:393
+msgid "Cancel"
+msgstr ""
+
+#: app/templates/admin/news_management.html:272
+msgid "Edit category"
+msgstr ""
+
+#: app/templates/admin/news_management.html:280
+msgid "There were problems editing the category:"
+msgstr ""
+
+#: app/templates/admin/news_management.html:345
+#: app/templates/admin/news_management.html:382
+#: app/templates/sketchup/edit_scenario.html:268
+msgid "Delete"
+msgstr ""
+
+#: app/templates/admin/news_management.html:354
+msgid "ID"
+msgstr ""
+
+#: app/templates/admin/news_management.html:356
+msgid "Tools"
+msgstr ""
+
+#: app/templates/admin/news_management.html:368
+#: app/templates/sketchup/edit_scenario.html:268
+#: app/templates/sketchup/edit_scenario.html:363
+#: app/templates/sketchup/view_building_model.html:302
+#: app/templates/sketchup/view_scenario.html:350
+msgid "Edit"
+msgstr ""
+
+#: app/templates/admin/news_management.html:373
+msgid "Activate"
+msgstr ""
+
+#: app/templates/admin/news_management.html:377
+msgid "Deactivate"
+msgstr ""
+
+#: app/templates/admin/send_email.html:72
+msgid "There were problems sending your email:"
+msgstr ""
+
+#: app/templates/admin/send_email.html:83
+msgid "Email sent successfully!"
+msgstr ""
+
+#: app/templates/admin/send_email.html:85
+msgid "Email sent to"
+msgstr ""
+
+#: app/templates/admin/send_email.html:85
+msgid "to test"
+msgstr ""
+
+#: app/templates/admin/send_email.html:117
+msgid "Send"
+msgstr ""
+
+#: app/templates/admin/send_email.html:118
+msgid "Test"
+msgstr ""
+
+#: app/templates/admin/user_management.html:157
+#: app/templates/admin/user_management.html:159
+msgid "User Management"
+msgstr ""
+
+#: app/templates/admin/user_management.html:187
+msgid "Login as"
+msgstr ""
+
+#: app/templates/admin/user_management.html:194
+msgid "Ban"
+msgstr ""
+
+#: app/templates/admin/user_management.html:201
+msgid "Basic information"
+msgstr ""
+
+#: app/templates/admin/user_management.html:202
+msgid "Groups"
+msgstr ""
+
+#: app/templates/admin/user_management.html:213 app/users/forms.py:12
+#: app/users/forms.py:22
+msgid "Email address"
+msgstr ""
+
+#: app/templates/admin/user_management.html:221 app/users/forms.py:11
+#: app/users/forms.py:21
+msgid "Username"
+msgstr ""
+
+#: app/templates/admin/user_management.html:229
+msgid "Fullname"
+msgstr ""
+
+#: app/templates/admin/user_management.html:237
+msgid "Address"
+msgstr ""
+
+#: app/templates/admin/user_management.html:245
+msgid "Phone Number"
+msgstr ""
+
+#: app/templates/comments/macros.html:4
+msgid "Comment Box"
+msgstr ""
+
+#: app/templates/comments/macros.html:9
+msgid "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+msgstr ""
+
+#: app/templates/comments/macros.html:18 app/templates/comments/macros.html:36
+msgid "Hello this is a test comment."
+msgstr ""
+
+#: app/templates/comments/macros.html:18 app/templates/comments/macros.html:36
+msgid "on March 5th, 2014"
+msgstr ""
+
+#: app/templates/comments/macros.html:27
+msgid ""
+"Hello this is a test comment and this comment is particularly very long "
+"and it goes on and on and on."
+msgstr ""
+
+#: app/templates/comments/macros.html:46
+msgid "Add"
+msgstr ""
+
+#: app/templates/journal/view.html:14
+msgid "This journal is deactivated"
+msgstr ""
+
+#: app/templates/journal/view.html:23
+#: app/templates/sketchup/base_scenarios.html:296
+#: app/templates/sketchup/edit_scenario.html:372
+#: app/templates/sketchup/view_scenario.html:357
+#: app/templates/users/scenarios.html:380
+msgid "Last edited by"
+msgstr ""
+
+#: app/templates/journal/view.html:23
+#: app/templates/sketchup/base_scenarios.html:296
+#: app/templates/sketchup/edit_scenario.html:370
+#: app/templates/sketchup/edit_scenario.html:372
+#: app/templates/sketchup/view_building_model.html:299
+#: app/templates/sketchup/view_scenario.html:355
+#: app/templates/sketchup/view_scenario.html:357
+#: app/templates/users/scenarios.html:380
+msgid "at"
+msgstr ""
+
+#: app/templates/journal/view.html:26
+msgid "Edit journal"
+msgstr ""
+
+#: app/templates/sketchup/base_scenarios.html:194
+msgid "There is no base scenario at the moment"
+msgstr ""
+
+#: app/templates/sketchup/base_scenarios.html:295
+#: app/templates/users/building_models.html:258
+#: app/templates/users/scenarios.html:379
+msgid ""
+"Created by <span id=\"created_user\"></span> at <span "
+"id=\"created_time\"></span>"
+msgstr ""
+
+#: app/templates/sketchup/base_scenarios.html:305
+msgid "100m"
+msgstr ""
+
+#: app/templates/sketchup/edit_building_model.html:148
+msgid "Are you sure you want to save this thumbnail?"
+msgstr ""
+
+#: app/templates/sketchup/edit_building_model.html:174
+#: app/templates/sketchup/view_building_model.html:168
+msgid "Are you sure you want to delete this building model?"
+msgstr ""
+
+#: app/templates/sketchup/edit_building_model.html:225
+#: app/templates/sketchup/view_building_model.html:219
+msgid "Are you sure you want to clone this building model?"
+msgstr ""
+
+#: app/templates/sketchup/edit_building_model.html:252
+#: app/templates/sketchup/view_building_model.html:246
+msgid "Are you sure you want to change base status of this model?"
+msgstr ""
+
+#: app/templates/sketchup/edit_building_model.html:275
+msgid "Model status changed"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:131
+#: app/templates/sketchup/view_scenario.html:153
+msgid "Are you sure you want to change base status of this scenario?"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:169
+#: app/templates/sketchup/view_scenario.html:191
+msgid "Are you sure you want to delete this scenario?"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:209
+msgid "Scenario saved!"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:226
+#: app/templates/sketchup/edit_scenario.html:423
+#: app/templates/sketchup/view_scenario.html:219
+#: app/templates/sketchup/view_scenario.html:405
+msgid "Suggest scenario to admin"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:246
+#: app/templates/sketchup/view_scenario.html:239
+msgid "Message content is required"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:264
+msgid "data.description"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:266
+msgid "data.content"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:267
+msgid "By"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:275
+msgid "Suggestion sent"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:303
+#: app/templates/sketchup/view_scenario.html:291
+msgid "Are you sure you want to clone this scenario?"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:313
+msgid "Scenario cloned"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:370
+#: app/templates/sketchup/view_building_model.html:299
+#: app/templates/sketchup/view_scenario.html:355
+msgid "Created by"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:375
+#: app/templates/sketchup/view_scenario.html:360
+msgid "The scenario is deactivated"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:378
+#: app/templates/sketchup/view_scenario.html:363
+msgid "Delete scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:380
+#: app/templates/sketchup/view_scenario.html:365
+msgid "Edit scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:384
+#: app/templates/sketchup/view_scenario.html:369
+#: app/templates/users/add_scenario.html:150
+msgid "Scenario name"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:392
+#: app/templates/sketchup/view_scenario.html:377
+#: app/templates/users/add_scenario.html:166
+msgid "Public"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:403
+msgid "scenario.description"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:407
+#: app/templates/sketchup/view_building_model.html:318
+#: app/templates/sketchup/view_scenario.html:392
+#: app/templates/users/profile.html:348
+msgid "Update"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:415
+#: app/templates/sketchup/view_scenario.html:400
+msgid "Full screen"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:417
+#: app/templates/sketchup/view_scenario.html:402
+msgid "Clone this scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:420
+msgid "Save scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:426
+#: app/templates/sketchup/view_scenario.html:408
+msgid "Promote to base scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:428
+#: app/templates/sketchup/view_scenario.html:410
+msgid "Demote to normal scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:437
+#: app/templates/users/add_scenario.html:175
+msgid "Guide on editing scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:443
+#: app/templates/users/add_scenario.html:180
+msgid "Scenario Control"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:445
+#: app/templates/users/add_scenario.html:182
+msgid "Shrink Scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:446
+#: app/templates/users/add_scenario.html:183
+msgid "Enlarge Scenario"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:448
+#: app/templates/users/add_scenario.html:185
+msgid "Model Control"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:449
+#: app/templates/users/add_scenario.html:186
+msgid "Move Model"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:450
+#: app/templates/users/add_scenario.html:187
+msgid "Delete Model"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:452
+#: app/templates/users/add_scenario.html:189
+msgid "Shrink Model"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:453
+#: app/templates/users/add_scenario.html:190
+msgid "Enlarge Model"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:456
+#: app/templates/users/add_scenario.html:193
+msgid "Rotate Left"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:457
+#: app/templates/users/add_scenario.html:194
+msgid "Rotate Right"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:459
+#: app/templates/users/add_scenario.html:196
+msgid "Build On Top"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:461
+#: app/templates/users/add_scenario.html:198
+msgid "Undo"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:462
+#: app/templates/users/add_scenario.html:199
+msgid "Redo"
+msgstr ""
+
+#: app/templates/sketchup/edit_scenario.html:504
+#: app/templates/users/add_scenario.html:241
+msgid "Previous"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:155
+msgid "Thumbnail saved"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:178
+msgid "Building model deleted"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:229
+msgid "Building model cloned"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:303
+msgid "Save thumbnail position"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:304
+msgid "Delete building model"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:307
+msgid "Edit building model"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:311
+msgid "Building model name"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:328
+msgid "Clone this building model"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:332
+msgid "Promote to base model"
+msgstr ""
+
+#: app/templates/sketchup/view_building_model.html:334
+msgid "Demote to normal model"
+msgstr ""
+
+#: app/templates/sketchup/view_scenario.html:224
+#: app/templates/users/suggest_scenario_email_content.html:3
+msgid "Suggest content"
+msgstr ""
+
+#: app/templates/sketchup/view_scenario.html:363
+msgid "Edit settings"
 msgstr ""
 
 #: app/templates/users/add_scenario.html:126
@@ -196,76 +881,8 @@ msgstr ""
 msgid "There were problems creating your scenario"
 msgstr ""
 
-#: app/templates/users/add_scenario.html:150
-msgid "Scenario name"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:166
-msgid "Public"
-msgstr ""
-
 #: app/templates/users/add_scenario.html:174
 msgid "Model"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:175
-msgid "Guide on editing scenario"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:180
-msgid "Scenario Control"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:182
-msgid "Shrink Scenario"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:183
-msgid "Enlarge Scenario"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:185
-msgid "Model Control"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:186
-msgid "Move Model"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:187
-msgid "Delete Model"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:189
-msgid "Shrink Model"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:190
-msgid "Enlarge Model"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:193
-msgid "Rotate Left"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:194
-msgid "Rotate Right"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:196
-msgid "Build On Top"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:198
-msgid "Undo"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:199
-msgid "Redo"
-msgstr ""
-
-#: app/templates/users/add_scenario.html:241
-msgid "Previous"
 msgstr ""
 
 #: app/templates/users/add_scenario.html:245
@@ -280,40 +897,24 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: app/templates/users/building_models.html:224
-#: app/templates/users/profile.html:298
-msgid "Building models"
-msgstr ""
-
 #: app/templates/users/building_models.html:232
 msgid "Add building model"
-msgstr ""
-
-#: app/templates/users/building_models.html:258
-#: app/templates/users/scenarios.html:379
-msgid ""
-"Created by <span id=\"created_user\"></span> at <span "
-"id=\"created_time\"></span>"
 msgstr ""
 
 #: app/templates/users/login.html:21
 msgid "Sign in to System"
 msgstr ""
 
-#: app/templates/users/login.html:44
+#: app/templates/users/login.html:41
 msgid "Forgot password"
 msgstr ""
 
-#: app/templates/users/login.html:55
+#: app/templates/users/login.html:52
 msgid "New to System"
 msgstr ""
 
-#: app/templates/users/login.html:56 app/templates/users/register.html:85
+#: app/templates/users/login.html:53 app/templates/users/register.html:85
 msgid "Create an account"
-msgstr ""
-
-#: app/templates/users/profile.html:245 app/templates/users/profile.html:254
-msgid "Profile"
 msgstr ""
 
 #: app/templates/users/profile.html:251
@@ -326,15 +927,6 @@ msgstr ""
 
 #: app/templates/users/profile.html:255
 msgid "Change_password"
-msgstr ""
-
-#: app/templates/users/profile.html:257 app/templates/users/profile.html:278
-#: app/templates/users/scenarios.html:342
-msgid "Scenarios"
-msgstr ""
-
-#: app/templates/users/profile.html:258
-msgid "Models"
 msgstr ""
 
 #: app/templates/users/profile.html:271
@@ -355,10 +947,6 @@ msgstr ""
 
 #: app/templates/users/profile.html:341
 msgid "Confirm password"
-msgstr ""
-
-#: app/templates/users/profile.html:348
-msgid "Update"
 msgstr ""
 
 #: app/templates/users/register.html:17
@@ -382,6 +970,24 @@ msgid ""
 "Policy</a>."
 msgstr ""
 
+#: app/templates/users/register_finish.html:21
+msgid "Just one more step..."
+msgstr ""
+
+#: app/templates/users/register_finish.html:25
+#, python-format
+msgid ""
+"Thank you for your registration. An email has been sent to your email "
+"address %(email)s, follow the link in that email to activate your "
+"account."
+msgstr ""
+
+#: app/templates/users/register_finish.html:26
+#: app/templates/users/reset_password_confirmed.html:26
+#: app/templates/users/reset_password_submited.html:26
+msgid "Return to sign in"
+msgstr ""
+
 #: app/templates/users/reset_password.html:21
 #: app/templates/users/reset_password_confirmed.html:21
 #: app/templates/users/reset_password_submited.html:21
@@ -392,11 +998,6 @@ msgstr ""
 msgid "An email has been sent to your email address for your new password."
 msgstr ""
 
-#: app/templates/users/reset_password_confirmed.html:26
-#: app/templates/users/reset_password_submited.html:26
-msgid "Return to sign in"
-msgstr ""
-
 #: app/templates/users/reset_password_submited.html:25
 msgid "Don't worry, help is on the way"
 msgstr ""
@@ -405,24 +1006,20 @@ msgstr ""
 msgid "Add scenario"
 msgstr ""
 
-#: app/templates/users/scenarios.html:380
-msgid "Last edited by"
-msgstr ""
-
-#: app/templates/users/scenarios.html:380
-msgid "at"
-msgstr ""
-
-#: app/templates/users/suggest_scenario_email_content.html:3
-msgid "Suggest content"
-msgstr ""
-
 #: app/templates/users/user_profile.html:6
 msgid "Profile picture"
 msgstr ""
 
 #: app/templates/users/user_profile.html:11
 msgid "Upload"
+msgstr ""
+
+#: app/templates/users/verify_account.html:25
+msgid "Your account has been activated"
+msgstr ""
+
+#: app/templates/users/verify_account.html:29
+msgid "Go to your account"
 msgstr ""
 
 #: app/users/forms.py:7
@@ -447,15 +1044,7 @@ msgid "Password field is required"
 msgstr ""
 
 #: app/users/forms.py:11 app/users/forms.py:21
-msgid "Username"
-msgstr ""
-
-#: app/users/forms.py:11 app/users/forms.py:21
 msgid "Username is required"
-msgstr ""
-
-#: app/users/forms.py:12 app/users/forms.py:22
-msgid "Email address"
 msgstr ""
 
 #: app/users/forms.py:14
@@ -476,112 +1065,78 @@ msgid ""
 "password"
 msgstr ""
 
-#: app/users/views.py:56 app/users/views.py:62
+#: app/users/views.py:92 app/users/views.py:98
 msgid "Wrong email or password"
 msgstr ""
 
-#: app/users/views.py:65 app/users/views.py:182
+#: app/users/views.py:101 app/users/views.py:209
 msgid "The account was banned, please contact an admin for more information"
 msgstr ""
 
-#: app/users/views.py:107
+#: app/users/views.py:104
+#, python-format
+msgid ""
+"The account is not activated, please check your email for verification. "
+"<a href=\"%(resend_activation_email)s\">Resend activation email</a>"
+msgstr ""
+
+#: app/users/views.py:146
 msgid "Duplicate email address"
 msgstr ""
 
-#: app/users/views.py:109
+#: app/users/views.py:148
 msgid "Duplicate username"
 msgstr ""
 
-#: app/users/views.py:161
-msgid "Finally, support has come to help you :)<br /><br />"
-msgstr ""
-
-#: app/users/views.py:162
-#, python-format
-msgid "Your new password: <b>%(new_password)s</b><br /><br />"
-msgstr ""
-
-#: app/users/views.py:163
-msgid "Thanks,<br />"
-msgstr ""
-
-#: app/users/views.py:164
-msgid "Sketchup Oulu team"
-msgstr ""
-
-#: app/users/views.py:166
-msgid "[SketchupOulu] Your new password"
-msgstr ""
-
-#: app/users/views.py:178
+#: app/users/views.py:205
 msgid "Account not found"
 msgstr ""
 
-#: app/users/views.py:189
-msgid "We heard that you lost your password. Sorry about that!"
-msgstr ""
-
-#: app/users/views.py:190
-msgid "But don't worry! You can use the following link to reset your password"
-msgstr ""
-
-#: app/users/views.py:193
-msgid "Thanks,"
-msgstr ""
-
-#: app/users/views.py:194
-msgid "SketchupOulu team"
-msgstr ""
-
-#: app/users/views.py:196
-msgid "[SketchupOulu] Reset your password"
-msgstr ""
-
-#: app/users/views.py:291 app/users/views.py:313
+#: app/users/views.py:311 app/users/views.py:333
 msgid "Comment topic not found"
 msgstr ""
 
-#: app/users/views.py:335
+#: app/users/views.py:355
 msgid "Suggest content is required"
 msgstr ""
 
-#: app/users/views.py:345
+#: app/users/views.py:365
 msgid "Suggest for scenario"
 msgstr ""
 
-#: app/users/views.py:367
+#: app/users/views.py:387
 msgid "Comment content is required"
 msgstr ""
 
-#: app/users/views.py:370
+#: app/users/views.py:390
 msgid "Comment object is required"
 msgstr ""
 
-#: app/users/views.py:380
+#: app/users/views.py:400
 msgid "You don't have permission to add comment here"
 msgstr ""
 
-#: app/users/views.py:396
+#: app/users/views.py:416
 msgid "Comment type not found"
 msgstr ""
 
-#: app/users/views.py:411 app/users/views.py:416
+#: app/users/views.py:431 app/users/views.py:436
 msgid "Comment not found"
 msgstr ""
 
-#: app/users/views.py:424
+#: app/users/views.py:444
 msgid "Unauthorized deletion"
 msgstr ""
 
-#: app/users/views.py:574
+#: app/users/views.py:594
 msgid "Scenario name is required"
 msgstr ""
 
-#: app/users/views.py:576
+#: app/users/views.py:596
 msgid "Model file is required"
 msgstr ""
 
-#: app/users/views.py:640
+#: app/users/views.py:660
 msgid "Unrecognized model file format"
 msgstr ""
 

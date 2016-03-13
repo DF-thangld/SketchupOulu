@@ -98,8 +98,8 @@
     
 
     <!-- custom files -->
-    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}?v={{ session['sketchup_version'] }}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sketchup_oulu.css') }}?v={{ session['sketchup_version'] }}" type="text/css">
+    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}?v={{get_system_parameter('version')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sketchup_oulu.css') }}?v={{get_system_parameter('version')}}" type="text/css">
     {% block custom_script_file %}
 	{% endblock %}
 

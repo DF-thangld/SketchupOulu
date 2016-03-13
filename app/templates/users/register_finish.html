@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block custom_css %}
+	body
+	{
+		background-color: #f9f9f9;
+	}
+{% endblock %}
+
+{% block menu %}
+	{% include 'inside_menu.html' %}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="row" style="margin-top:20px">
+	<div class="col-lg-1 col-centered">
+		<img src="{{ url_for('static', filename='images/oulu_logo_1.png') }}" style="height:30px;"/>
+	</div>
+
+	<div class="col-lg-4 col-centered" style="margin-top:10px;font-weight: 300;font-size: 24px;letter-spacing: -0.5px;">
+		<div>{{ gettext('Just one more step...') }}</div>
+	</div>
+
+	<div class="col-lg-4 col-centered" style="margin-top:20px;font-size: 14px;background-color: #fff;border: 1px solid #d8dee2;border-radius: 5px;">
+        <div style="text-align: center;margin:10px;">{{ gettext('Thank you for your registration. An email has been sent to your email address %(email)s, follow the link in that email to activate your account.', email=email)}}</div>
+        <center><a style="margin-bottom:10px;" class="btn btn-block" href="{{ url_for('users.login') }}">{{ gettext('Return to sign in') }}</a></center>
+	</div>
+
+</div>
+
+{% endblock %}

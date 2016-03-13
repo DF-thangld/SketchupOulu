@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block custom_script_file %}
-<script src="{{ url_for('static', filename='js/scenario_edit_control.js') }}?v={{ session['sketchup_version'] }}"></script>
+<script src="{{ url_for('static', filename='js/scenario_edit_control.js') }}?v={{get_system_parameter('version')}}"></script>
 {% endblock %}
 
 {% block custom_css %}

@@ -152,7 +152,7 @@ function render()
             data: {'addition_information': JSON.stringify(information), 'preview': renderer.domElement.toDataURL( 'image/png' )},
             dataType: 'json',
             success: function(data) {
-                show_alert('alert-success', 'Thumbnail saved');
+                show_alert('alert-success', '{{gettext('Thumbnail saved')}}');
             },
             error: function(data)
             {
@@ -175,7 +175,7 @@ function render()
                     url: "{{ url_for('sketchup.delete_building_model', building_model_id=building_model.id) }}",
                     dataType: 'json',
                     success: function(data) {
-                        show_alert('alert-success', 'Building model deleted');
+                        show_alert('alert-success', '{{gettext('Building model deleted')}}');
                         window.location = '{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}';
 
                     },
@@ -226,7 +226,7 @@ function render()
                     url: "{{ url_for('sketchup.clone_building_model', building_model_id=building_model.id) }}",
                     dataType: 'json',
                     success: function(data) {
-                        show_alert('alert-success', {{gettext('Building model cloned')}});
+                        show_alert('alert-success', '{{gettext('Building model cloned')}}');
                         window.location = '{{ url_for('sketchup.view_building_model') }}?id=' + data.id;
 
                     },

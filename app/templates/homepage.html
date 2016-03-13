@@ -97,7 +97,7 @@
     
 
     <!-- custom javascript file -->
-    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}?v={{get_system_parameter('version')}}"></script>
 
 
     <script>

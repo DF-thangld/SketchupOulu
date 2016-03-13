@@ -5,7 +5,7 @@ import os
 import shutil
 
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response, render_template_string
 from werkzeug import check_password_hash, generate_password_hash
 from flask.ext.babel import gettext
 
@@ -14,6 +14,7 @@ from app.users.forms import RegisterForm, LoginForm, UserProfileForm, ResetPassw
 from app.users.models import User, UserSession, Group
 from app.sketchup.models import Scenario, BuildingModel, CommentTopic, Comment
 from app.users.decorators import requires_login
+from app.journal.models import Journal
 import app.utilities as utilities
 import config
 
@@ -38,6 +39,41 @@ def profile(username):
 def own_profile():
     return profile(g.user.username)
 
+@mod.route('/resend_activation_email/<code>', methods=['GET'])
+def resend_activation_email(code):
+    if code.strip() == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.verification_code==code).first()
+    if user is None:
+        return render_template("404.html"), 404
+    
+    email_activation = Journal.query.filter(Journal.id==120).first().get_journal_content(session['locale'])
+    send_mail([user.email], email_activation.title, render_template_string(email_activation.content, activate_link=url_for('users.verify_account', code=code, _external=True)))
+    
+    return render_template("users/register_finish.html", email=user.email)
+    
+    
+@mod.route('/verify_account/<code>', methods=['GET'])
+def verify_account(code):
+    if code.strip() == '':
+        return render_template("404.html"), 404
+    user = User.query.filter(User.verification_code==code).first()
+    if user is None:
+        return render_template("404.html"), 404
+    session['user_id'] = user.id
+    g.user = user
+    user.banned = 0
+    user.verification_code = ''
+
+    #add remember
+    user_session = UserSession(user.id)
+    db.session.add(user_session)
+    db.session.commit()
+    response = make_response(render_template('users/verify_account.html'))
+    cookie_value = str(user.id) + '|' + user_session.token
+    response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
+    return response
+    
 
 @mod.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -63,6 +99,9 @@ def login():
                 return render_template("users/login.html", form=form, errors=errors)
             elif user and check_password_hash(user.password, form.password.data) and user.banned == 1:
                 errors.append(gettext('The account was banned, please contact an admin for more information'))
+                return render_template("users/login.html", form=form, errors=errors)
+            elif user and check_password_hash(user.password, form.password.data) and user.banned == 2:
+                errors.append(gettext('The account is not activated, please check your email for verification. <a href="%(resend_activation_email)s">Resend activation email</a>', resend_activation_email=url_for('users.resend_activation_email', code=user.verification_code)))
                 return render_template("users/login.html", form=form, errors=errors)
             elif user and check_password_hash(user.password, form.password.data):
                 # the session can't be modified as it's signed,
@@ -114,23 +153,15 @@ def register():
             # Insert the record in our database and commit it
             user = User(username=form.name.data.lower(), email=form.email.data,
                         password=generate_password_hash(form.password.data))
+            user.verification_code = utilities.generate_random_string(50)
+            user.banned = 2
             db.session.add(user)
             db.session.commit()
-            # TODO: send confirm email and redirect to confirm page
-
-            # Log the user in, as he now has an id
-            session['user_id'] = user.id
-            g.user = user
-
-            #add remember
-            user_session = UserSession(user.id)
-            db.session.add(user_session)
-            db.session.commit()
-            response = make_response(redirect(url_for('users.own_profile')))
-            cookie_value = str(user.id) + '|' + user_session.token
-            response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
-            return response
-
+            
+            # send confirm email and redirect to confirm page
+            email_activation = Journal.query.filter(Journal.id==120).first().get_journal_content(session['locale'])
+            send_mail([user.email], email_activation.title, render_template_string(email_activation.content, activate_link=url_for('users.verify_account', code=user.verification_code, _external=True)))
+            return render_template("users/register_finish.html", email=user.email)
         else:
             for error in form.name.errors:
                 errors.append(error)
@@ -157,13 +188,9 @@ def reset_password():
             user.password = generate_password_hash(new_password)
             user.password_token = ''
             db.session.commit()
-
-            email_content = gettext('Finally, support has come to help you :)<br /><br />')
-            email_content += gettext('Your new password: <b>%(new_password)s</b><br /><br />', new_password=new_password)
-            email_content += gettext('Thanks,<br />')
-            email_content += gettext('Sketchup Oulu team')
-	
-            send_mail([user.email], gettext('[SketchupOulu] Your new password'), email_content)
+            
+            email_content = Journal.query.filter(Journal.id==122).first().get_journal_content(session['locale'])
+            send_mail([user.email], email_content.title, render_template_string(email_content.content, new_password=new_password))
             return render_template("users/reset_password_confirmed.html"), 200
 
 
@@ -186,15 +213,8 @@ def reset_password():
             db.session.commit()
 
             # we use werzeug to validate user's password
-            email_content = gettext('We heard that you lost your password. Sorry about that!') + '<br /><br />'
-            email_content += gettext('But don\'t worry! You can use the following link to reset your password') + ':<br /><br />'
-            email_content += '<a href="' + url_for('users.reset_password', token=user.password_token, _external=True) + '">' + url_for('users.reset_password', token=user.password_token, _external=True) + '</a><br /><br />'
-            #email_content += 'If you don\'t use this link within 24 hours, it will expire. To get a new password reset link, visit ' + url_for('users.reset_password') + ' \n\n'
-            email_content += gettext('Thanks,') + '<br />'
-            email_content += gettext('SketchupOulu team')
-
-            send_mail([user.email], gettext('[SketchupOulu] Reset your password'), email_content)
-            user.password_token = ''
+            email_content = Journal.query.filter(Journal.id==121).first().get_journal_content(session['locale'])
+            send_mail([user.email], email_content.title, render_template_string(email_content.content, link=url_for('users.reset_password', token=user.password_token, _external=True)))
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
         else:

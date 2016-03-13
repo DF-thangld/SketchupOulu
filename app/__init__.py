@@ -25,6 +25,7 @@ app_dir = os.path.dirname(os.path.realpath(__file__))
 
 db = SQLAlchemy(app)
 
+
 @babel.localeselector
 def get_babel_locale():
     #TODO: change language back
@@ -166,6 +167,7 @@ def page_not_found():
 
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule
+from app.admin.models import SystemParameter
 from app.journal.views import mod as journalModule
 from app.sketchup.views import mod as sketchupModule
 
@@ -173,6 +175,16 @@ app.register_blueprint(adminModule)
 app.register_blueprint(usersModule)
 app.register_blueprint(journalModule)
 app.register_blueprint(sketchupModule)
+
+@app.context_processor
+def custom_functions():
+    def get_system_parameter(parameter_name):
+        version = SystemParameter.query.filter(SystemParameter.name==parameter_name).first()
+        if version is None:
+            return ''
+        else:
+            return version.value
+    return dict(get_system_parameter=get_system_parameter)
 
 # Later on you'll import the other blueprints the same way:
 #from app.comments.views import mod as commentsModule
