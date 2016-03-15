@@ -77,7 +77,7 @@ def get_user_info():
 
     user_id = request.args.get('user_id', 0)
     if user_id == 0:
-        return json.dump(gettext({'error': 'User not found'})), 404
+        return json.dump({'error': gettext('User not found')}), 404
 
     user = User.query.filter_by(id=user_id).first()
     if user is None:

@@ -261,9 +261,9 @@ function save_scenario_content()
 									new_comment_html += '    <div class="commentText" style="float:left;">';
 									if (data.description != '')
 									{
-										new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + {{gettext('data.description')}} + '</b><div>';
+										new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
 									}
-									new_comment_html += '        <p id="comment_content_' + data.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + {{gettext('data.content')}} + '</p> ';
+									new_comment_html += '        <p id="comment_content_' + data.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + data.content + '</p> ';
 									new_comment_html += '        <span class="date sub-text">{{gettext('By')}} <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
 									new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">{{gettext('Edit')}}</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">{{gettext('Delete')}}</a>)</span>';
 									new_comment_html += '    </div>';
@@ -400,7 +400,7 @@ function save_scenario_content()
                             <label autocapitalize="off" autofocus="autofocus" for="scenario_description">{{gettext('Description')}}</label>
                         </dt>
                         <dd>
-                            <textarea id="scenario_description" name="scenario_description" autocapitalize="off" autofocus="autofocus" style="width:100%;min-height:30px;height:100px;">{{ gettext('scenario.description')}} </textarea>
+                            <textarea id="scenario_description" name="scenario_description" autocapitalize="off" autofocus="autofocus" style="width:100%;min-height:30px;height:100px;">{{ scenario.description}} </textarea>
                         </dd>
                     </dl>
                     <div style="float:right;">
