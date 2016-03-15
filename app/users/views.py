@@ -3,6 +3,7 @@ import datetime
 import zipfile
 import os
 import shutil
+import re
 
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, make_response, render_template_string
@@ -84,7 +85,21 @@ def login():
     errors = []
     # make sure data are valid, but doesn't validate password is right
     if form.is_submitted():
-        if form.validate():
+        is_validated = True
+        #validate email
+        if form.email.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Email is required'))
+        #validate valid email
+        match = re.search(r'^.+@([^.@][^@]+)$', form.email.data.strip())
+        if not match:
+            is_validated = False
+            errors.append(gettext('Invalid email address'))
+        
+        if form.password.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Password field is required'))
+        if is_validated:
             user = User.query.filter_by(email=form.email.data.lower()).first()  # @UndefinedVariable
 
             # we use werzeug to validate user's password
@@ -121,10 +136,6 @@ def login():
                 response.set_cookie('session_id', cookie_value, expires=datetime.datetime.now() + datetime.timedelta(days=5), path='/')
                 return response
         else:
-            for error in form.email.errors:
-                errors.append(error)
-            for error in form.password.errors:
-                errors.append(error)
             return render_template("users/login.html", form=form, errors=errors)
 
     return render_template("users/login.html", form=form, errors=[])

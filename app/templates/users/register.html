@@ -37,7 +37,7 @@
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.name.label(autocapitalize="off", autofocus="autofocus") }}
+					<label autocapitalize="off" autofocus="autofocus" for="name">{{gettext('Username')}}</label>
 				</dt>
 				<dd>
                     {{ form.name(autocapitalize="off", autofocus="autofocus", size="30", value=form.name.data) }}
@@ -45,7 +45,7 @@
 			</dl>
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.email.label(autocapitalize="off") }}
+					<label autocapitalize="off" for="email">{{gettext('Email address')}}</label>
 				</dt>
 				<dd>
                     {{ form.email(autocapitalize="off", size="30", value=form.email.data) }}
@@ -54,7 +54,7 @@
 
 			<dl class="form successed">
 				<dt class="input-label">
-					{{ form.password.label }}
+					<label for="password">{{gettext('Password')}}</label>
 				</dt>
 				<dd>
                     {{ form.password(autocapitalize="off", size="30") }}
@@ -62,7 +62,7 @@
 			</dl>
 			<dl class="form successed">
 				<dt class="input-label">
-					{{ form.confirm.label }}
+					<label for="confirm">{{gettext('Repeat Password')}}</label>
 				</dt>
 				<dd>
                     {{ form.confirm(autocapitalize="off", size="30") }}

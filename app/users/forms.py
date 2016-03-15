@@ -4,13 +4,14 @@ from wtforms import TextField, PasswordField, BooleanField,validators, DateField
 from wtforms.validators import Required, EqualTo, Email
 
 class LoginForm(Form):
-    email = TextField(gettext('Email'), [Required(message=gettext('Email is required')), Email(message=gettext('Invalid email address'))], default='')
-    password = PasswordField(gettext('Password'), [Required(message=gettext('Password field is required'))], default='')
+
+    email = TextField(label=gettext('Email'), validators=[Required(message=gettext('Email is required')), Email(message=gettext('Invalid email address'))], default='')
+    password = PasswordField(label=gettext('Password'), validators=[Required(message=gettext('Password field is required'))], default='')
 
 class RegisterForm(Form):
-    name = TextField(gettext('Username'), [Required(message=gettext('Username is required'))], default='')
-    email = TextField(gettext('Email address'), [Required(message='Email is required'), Email(message=gettext('Invalid email address'))], default='')
-    password = PasswordField(gettext('Password'), [Required(message='Password is required')], default='')
+    name = TextField(label=gettext('Username'), validators=[Required(message=gettext('Username is required'))], default='')
+    email = TextField(gettext('Email address'), [Required(message=gettext('Email is required')), Email(message=gettext('Invalid email address'))], default='')
+    password = PasswordField(gettext('Password'), [Required(message=gettext('Password is required'))], default='')
     confirm = PasswordField(gettext('Repeat Password'), [
                                                 Required(message=gettext('You have to confirm your password')),
                                                 EqualTo('password', message=gettext('Passwords must match'))

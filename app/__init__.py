@@ -6,7 +6,7 @@ from base64 import decodestring, b64decode
 
 from flask import Flask, render_template, g, session, request, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask.ext.babel import Babel
+from flask.ext.babel import Babel, gettext, ngettext
 from smtplib import SMTP, SMTP_SSL
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

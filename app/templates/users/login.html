@@ -17,8 +17,8 @@
 		<img src="{{ url_for('static', filename='images/oulu_logo_1.png') }}" style="height:30px;"/>
 	</div>
 
-	<div class="col-lg-3 col-centered" style="margin-top:10px;font-weight: 300;font-size: 24px;letter-spacing: -0.5px;">
-		<div style="margin-left:75px;">{{ gettext('Sign in to System') }}</div>
+	<div class="col-lg-4 col-centered text-center" style="margin-top:10px;font-weight: 300;font-size: 24px;letter-spacing: -0.5px;">
+		<div style="">{{ gettext('Sign in to System') }}</div>
 	</div>
 
     {% if errors|length > 0 %}
@@ -35,14 +35,14 @@
 		<form method="POST" action="{{ url_for('users.login') }}">
 			{{ form.csrf_token }}
 			<div class="auth-form-body">
-				<label for="login_field" style="font-weight: normal;margin-bottom: 0px;">{{ form.email.label.text }}</label>
+				<label for="login_field" style="font-weight: normal;margin-bottom: 0px;">{{gettext('Email')}}</label>
 				{{ form.email(class='input-block', autocapitalize="off", autocorrect="off", autofocus="autofocus", tabindex="1") }}
-				<label for="password" style="font-weight: normal;margin-bottom: 5px;" class="input-block"> <div style="float:left;">{{ form.password.label.text }}</div> 
+				<label for="password" style="font-weight: normal;margin-bottom: 5px;" class="input-block"> <div style="float:left;">{{gettext('Password')}}</div> 
 				<div style="float:right;"><a href="{{ url_for('users.reset_password') }}" class="label-link">{{ gettext('Forgot password') }}?</a></div>
 				<div style="clear:both"></div>
 				</label>
 				{{ form.password(class='input-block', tabindex="2") }}
-				<input class="btn btn-primary btn-block" data-disable-with="Signing in" name="commit" tabindex="3" type="submit" value="Sign in">
+				<input class="btn btn-primary btn-block" data-disable-with="Signing in" name="commit" tabindex="3" type="submit" value="{{gettext('Sign in')}}">
 			</div>
 
       </form>
