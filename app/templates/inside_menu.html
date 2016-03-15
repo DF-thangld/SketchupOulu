@@ -57,6 +57,21 @@
             {% endif %}
 			<li class="header-nav-item"><a class="header-nav-link" href="{{ url_for('journal.view', journal_id=114) }}">{{ gettext('About us') }}</a>
 			</li>
+			<li class="header-nav-item">
+				{% if 'locale' in session and session['locale']=='en' %}
+					{% if request.url.find('?') != -1 %}
+	                <a class="header-nav-link" href="{{ request.url }}&lang=fi">Suomi</a>
+	                {% else %}
+	                <a class="header-nav-link" href="{{ request.url }}?lang=fi">Suomi</a>
+	                {% endif %}
+				{% else %}
+					{% if request.url.find('?') != -1 %}
+	                <a class="header-nav-link" href="{{ request.url }}&lang=en">English</a>
+	                {% else %}
+	                <a class="header-nav-link" href="{{ request.url }}?lang=en">English</a>
+	                {% endif %}
+				{% endif %}
+			</li>
 		</ul>
 	</div>
 </div>

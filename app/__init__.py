@@ -15,6 +15,7 @@ from werkzeug import secure_filename
 
 import config
 import app.utilities as utilities
+from flask.wrappers import Response
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -29,7 +30,11 @@ db = SQLAlchemy(app)
 @babel.localeselector
 def get_babel_locale():
     #TODO: change language back
-    return 'en' #session['locale']
+    if 'locale' in session and session['locale'] in config.LANGUAGES.keys():
+        return session['locale']
+    
+    session['locale'] = config.DEFAULT_LOCALE
+    return config.DEFAULT_LOCALE
 
 @app.before_request
 def check_locale():
@@ -158,7 +163,11 @@ def index():
 
 @app.route('/static/js/constants.js')
 def constants_js():
-    return render_template('constants.js'), 200
+    return Response(render_template('constants.js'), mimetype='application/javascript')
+
+@app.route('/static/js/comments.js')
+def comments_js():
+    return Response(render_template('js_sketchup_comment.html'), mimetype='application/javascript')
 
 @app.route('/404')
 def page_not_found():

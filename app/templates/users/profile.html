@@ -252,7 +252,7 @@
                 <li id="menu_comment"><a href="#comments" onclick="display_comments();">{{ gettext('Comments') }}</a></li>
                 {% if g.user and g.user.username==user.username %}
                 <li id="menu_profile"><a href="#profile" onclick="get_user_profile();">{{ gettext('Profile') }}</a></li>
-                <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">{{ gettext('Change_password') }}</a></li>
+                <li id="menu_change_password"><a href="#change_password" onclick="display_change_password();">{{ gettext('Change password') }}</a></li>
                 {% endif %}
                 <li id="menu_building_models" class=""><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">{{ gettext('Scenarios') }}</a></li>
                 <li id="menu_scenarios" class=""><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">{{ gettext('Models') }}</a></li>
@@ -268,7 +268,7 @@
             <div id="profile_basic_info" style="float:left;margin-left:10px;">
                 <div id="homepage_fullname" style="display: block;font-size: 26px;line-height: 30px;text-overflow: ellipsis;">{{ user.full_name }}</div>
                 <div id="homepage_username" style="margin-top:5px;display: block;font-size: 20px;font-style: normal;font-weight: 300;line-height: 24px;color: #666;text-overflow: ellipsis;">{{ user.username }}</div>
-                <div id="" style="border-top: 1px solid #eee;margin-top:5px;font-size: 14px;">{{ gettext('Joined on') }} {{ user.join_date }}</div>
+                <div id="" style="border-top: 1px solid #eee;margin-top:5px;font-size: 14px;">{{ gettext('Joined on %(time)s', time=user.join_date) }}</div>
             </div>
             <div style="clear:both"></div>
 

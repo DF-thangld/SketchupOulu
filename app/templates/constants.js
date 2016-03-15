@@ -13,3 +13,6 @@ var MODEL_PATH = '{{ url_for('static', filename='models/building_models/', _exte
 var BASE_URL = '{{ url_for('index') }}';
 var UPDATE_SCENARIO_URL = '{{ url_for('sketchup.update_scenario', scenario_id='') }}';
 var UPDATE_BUILDING_MODEL_URL = '{{ url_for('sketchup.update_building_model', building_model_id='') }}';
+
+var TEXT_BUILD_ON_TOP = '{{gettext("Build On Top")}}';
+var TEXT_BUILD_ON_GROUND = '{{gettext("Build On Ground")}}';

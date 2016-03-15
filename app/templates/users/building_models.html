@@ -173,7 +173,7 @@
                 $('#building_model_name').html('<a href="{{ url_for('sketchup.view_building_model') }}?id=' + data.id + '">' + data.name + '</a>');
                 $('#profile_picture').attr('src', '{{ url_for('static', filename='images/profile_pictures') }}/' + data.owner.profile_picture);
                 $('#created_user').html(data.owner.username);
-                $('#created_time').html(Date.parse(data.created_time).toString('dd.MM.yyyy hh:mm:ss'));
+                $('#created_time').html(data.created_time);
                 $('#object_id').val(data.id);
 
                 get_comments('building_model', data.id, 1, 'building_model_comment_panel');
@@ -223,7 +223,7 @@
                <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
                <li class = "active"><a href="{{ url_for('users.user_building_models_page', username=user.username) }}">{{ gettext('Building models') }}</a></li>
             </ol>
-            <h2 style="font-size: 45px;">{{ user.username }}'s building models</h2>
+            <h2 style="font-size: 45px;">{{ gettext("%(username)s's building models", username=user.username) }}</h2>
 
             <div class="col-md-4">
                 <div class="row" style="margin-bottom:10px;">
@@ -232,7 +232,7 @@
                             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> {{gettext('Add building model')}}
                         </a>
                         <form id="building_model_search_form" method="POST" action="{{ url_for('users.get_user_building_models', username=user.username) }}">
-                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_building_models();" placeholder="Search by name" type="text" value="">
+                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_building_models();" placeholder="{{gettext('Search by name')}}" type="text" value="">
                         </form>
                     </div>
                 </div>

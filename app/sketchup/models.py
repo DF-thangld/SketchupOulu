@@ -51,7 +51,7 @@ class BuildingModel(db.Model):
         self.addition_information = addition_information
         self.description = description
         self.created_time = datetime.datetime.now()
-        self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner, gettext('building_model'))
+        self.comment_topic = CommentTopic('Comments for building model id ' + self.id, owner, 'building_model')
 
     def to_dict(self, include_owner=False, include_comments=False):
         owner = None

@@ -113,11 +113,11 @@
 
                 if (data.banned == 0)
                 {
-                    $('#ban_button').html('<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>Ban');
+                    $('#ban_button').html('<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>{{gettext('Ban')}}');
                 }
                 else
                 {
-                    $('#ban_button').html('<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>Unban');
+                    $('#ban_button').html('<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>{{gettext('Unban')}}');
                 }
                 
 				$('input[id^="group_"]').prop("checked", false);

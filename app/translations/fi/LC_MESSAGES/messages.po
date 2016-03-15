@@ -3,214 +3,216 @@
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-13 16:52+0200\n"
-"PO-Revision-Date: 2016-03-13 16:52+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2016-03-15 20:08+0200\n"
 "Language: fi\n"
 "Language-Team: fi <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: app/admin/decorators.py:10
 msgid "You don't have privilege to view this page."
-msgstr ""
+msgstr "Sinulla ei ole pääsyoikeutta tälle sivulle."
 
 #: app/admin/forms.py:10
 msgid "Users"
-msgstr ""
+msgstr "Käyttäjät"
 
 #: app/admin/forms.py:10
 msgid "Insert users to send email"
-msgstr ""
+msgstr "Lisää käyttäjät joille lähetät sähköpostia"
 
 #: app/admin/forms.py:11 app/templates/admin/news_management.html:355
 msgid "Title"
-msgstr ""
+msgstr "Otsikko"
 
 #: app/admin/forms.py:11
 msgid "Email title is required"
-msgstr ""
+msgstr "Sähköpostin otsikko puuttuu"
 
 #: app/admin/forms.py:12
 msgid "Content"
-msgstr ""
+msgstr "Sisältö"
 
 #: app/admin/forms.py:12
 msgid "Email content is required"
-msgstr ""
+msgstr "Sähköpostin sisältö puuttuu"
 
 #: app/admin/forms.py:16
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: app/admin/forms.py:16 app/admin/forms.py:21
 msgid "Category name is required"
-msgstr ""
+msgstr "Luokan nimi puuttuu"
 
 #: app/admin/forms.py:17 app/admin/forms.py:22
 #: app/templates/sketchup/edit_scenario.html:400
 #: app/templates/sketchup/view_scenario.html:385
 #: app/templates/users/add_scenario.html:158
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: app/admin/forms.py:20
 msgid "Something went wrong..."
-msgstr ""
+msgstr "Jotain meni vikaan..."
 
 #: app/admin/forms.py:25
 msgid "Name (for admin view only) - Required"
-msgstr ""
+msgstr "Nimi (ainoastaan admin näkymälle) - Vaaditaan"
 
 #: app/admin/forms.py:25 app/admin/forms.py:31
 msgid "Journal name is required"
-msgstr ""
+msgstr "Dokumentin nimi puuttuu"
 
 #: app/admin/forms.py:26
 msgid "Description (for admin view only) - Required"
-msgstr ""
+msgstr "Kuvaus (ainoastaan admin näkymälle) - Vaaditaan"
 
 #: app/admin/forms.py:26
 msgid "Journal description is required"
-msgstr ""
+msgstr "Dokumentin kuvaus vaaditaan/puuttuu"
 
 #: app/admin/forms.py:27 app/admin/forms.py:33
 msgid "Is activated"
-msgstr ""
+msgstr "On aktivoitu"
 
 #: app/admin/forms.py:28 app/admin/forms.py:34
 msgid "Category"
-msgstr ""
+msgstr "Luokka"
 
 #: app/admin/forms.py:28 app/admin/forms.py:34 app/admin/views.py:386
 msgid "Category is required"
-msgstr ""
+msgstr "Luokka puuttuu"
 
 #: app/admin/forms.py:31
 msgid "Name (for admin view only)"
-msgstr ""
+msgstr "Nimi (ainoastaan admin näkymälle)"
 
 #: app/admin/forms.py:32
 msgid "Description (for admin view only)"
-msgstr ""
-
-#: app/admin/views.py:80
-msgid "errorUser not found"
-msgstr ""
+msgstr "Kuvaus (ainoastaan admin näkymälle)"
 
 #: app/admin/views.py:84 app/admin/views.py:107 app/admin/views.py:111
 msgid "User not found"
-msgstr ""
+msgstr "Käyttäjää ei löydy"
 
 #: app/admin/views.py:259 app/admin/views.py:277 app/admin/views.py:280
 #: app/admin/views.py:289 app/admin/views.py:292 app/admin/views.py:305
 msgid "Category not found"
-msgstr ""
+msgstr "Luokkaa ei löydy"
 
 #: app/admin/views.py:308
 msgid "Delete child journals first"
-msgstr ""
+msgstr "Poista alidokumentit ensin"
 
 #: app/admin/views.py:406 app/admin/views.py:409 app/admin/views.py:423
 #: app/admin/views.py:426
 msgid "Journal not found"
-msgstr ""
+msgstr "Dokumenttia ei löydy"
 
 #: app/admin/views.py:450
 msgid "===== Category ====="
-msgstr ""
+msgstr "===== Luokka ====="
 
 #: app/admin/views.py:484
 msgid "Journal category not found"
-msgstr ""
+msgstr "Dokumenttiluokkaa ei löydy"
 
 #: app/admin/views.py:518 app/admin/views.py:522 app/sketchup/views.py:69
 #: app/sketchup/views.py:73 app/sketchup/views.py:76 app/sketchup/views.py:86
 #: app/sketchup/views.py:90 app/sketchup/views.py:93 app/sketchup/views.py:142
-#: app/sketchup/views.py:146 app/sketchup/views.py:149
-#: app/sketchup/views.py:165 app/sketchup/views.py:169
-#: app/sketchup/views.py:172
+#: app/sketchup/views.py:146 app/sketchup/views.py:149 app/sketchup/views.py:165
+#: app/sketchup/views.py:169 app/sketchup/views.py:172
 msgid "Scenario not found"
-msgstr ""
+msgstr "Suunnitelmaa ei löydy"
 
 #: app/journal/models.py:70
 msgid "Comments for journal title "
-msgstr ""
-
-#: app/sketchup/models.py:54
-msgid "building_model"
-msgstr ""
-
-#: app/sketchup/models.py:109
-msgid "scenario"
-msgstr ""
+msgstr "Kommentit dokumentin otsikolle"
 
 #: app/sketchup/views.py:98
 msgid "Scenario name cannot be blank"
-msgstr ""
+msgstr "Suunnitelman nimi ei voi olla tyhjä"
 
 #: app/sketchup/views.py:174
 msgid "Cloned of %(scenario_name)s"
-msgstr ""
+msgstr "Kloonattu %(scenario_name)s"
 
-#: app/sketchup/views.py:187 app/sketchup/views.py:191
-#: app/sketchup/views.py:220 app/sketchup/views.py:224
-#: app/sketchup/views.py:229 app/sketchup/views.py:245
-#: app/sketchup/views.py:249 app/sketchup/views.py:252
-#: app/sketchup/views.py:312 app/sketchup/views.py:316
+#: app/sketchup/views.py:187 app/sketchup/views.py:191 app/sketchup/views.py:220
+#: app/sketchup/views.py:224 app/sketchup/views.py:229 app/sketchup/views.py:245
+#: app/sketchup/views.py:249 app/sketchup/views.py:252 app/sketchup/views.py:312
+#: app/sketchup/views.py:316
 msgid "Building model not found"
-msgstr ""
+msgstr "Rakennusmallia ei löydy"
 
 #: app/sketchup/views.py:226
 msgid "Cannot delete base item"
-msgstr ""
+msgstr "Peruskomponenttia ei voi poistaa"
 
 #: app/sketchup/views.py:260
 msgid "Model name is required"
-msgstr ""
+msgstr "Mallin nimi puuttuu"
 
 #: app/sketchup/views.py:282
 msgid ""
-"Error in saving addition information, please contact an admin for more "
+"Error in saving additional information, please contact an admin for more "
 "information"
-msgstr ""
+msgstr "Virhe (lisä)tiedon tallennuksessa, ota yhteyttä ylläpitäjään "
 
 #: app/templates/404.html:20
 msgid "404 - Page not found"
-msgstr ""
+msgstr "404 - Sivua ei löydy"
 
 #: app/templates/404.html:21
 msgid ""
-"If you think you have arrived here by our mistake, please <a "
-"href=\"mailto:df.thangld@hotmail.com\">contact us</a>"
+"If you think you have arrived here by our mistake, please <a href=\"mailto:df."
+"thangld@hotmail.com\">contact us</a>"
 msgstr ""
+"Jos olet tullut sivuillemme erehdyksessä, <a href=\"mailto:df.thangld@hotmail."
+"com\">ota yhteyttä meihin</a>"
 
 #: app/templates/404.html:22
 msgid ""
 "Or you can go <a href=\"javascript:window.history.back();\">back</a> to "
 "previous page"
 msgstr ""
+"Tai voit <a href=\"javascript:window.history.back();\">palata</a> edelliselle "
+"sivulle"
 
 #: app/templates/base.html:13 app/templates/homepage.html:13
 #: app/templates/homepage.html:184
 msgid "Design Your Dream City"
-msgstr ""
+msgstr "Suunnittele unelmiesi kaupunki"
+
+#: app/templates/homepage.html
+msgid "Don't know where to start?"
+msgstr "Tiedä mistä aloittaa?"
+
+#: app/templates/homepage.html
+msgid "Let's Get In Touch!"
+msgstr "Let's ota yhteyttä!"
+
+#: app/templates/homepage.html
+msgid "Have something to comment or just want to tell us some nice words? Send us an email and we will get back to you as soon as possible!"
+msgstr "On jotain kommentoida tai vain halua kertoa meille hienoja sanoja? Lähetä meille sähköpostia, ja saamme takaisin sinulle mahdollisimman pian!"
 
 #: app/templates/guest_menu.html:11 app/templates/inside_menu.html:21
 msgid "Sign up"
-msgstr ""
+msgstr "Rekisteröidy"
 
 #: app/templates/guest_menu.html:13 app/templates/inside_menu.html:23
 msgid "Sign in"
-msgstr ""
+msgstr "Kirjaudu"
 
 #: app/templates/guest_menu.html:20 app/templates/inside_menu.html:28
 #: app/templates/user_menu.html:20 app/templates/admin/create_journal.html:47
@@ -223,69 +225,72 @@ msgstr ""
 #: app/templates/users/building_models.html:222
 #: app/templates/users/scenarios.html:340
 msgid "Home"
-msgstr ""
+msgstr "Alku"
 
 #: app/templates/guest_menu.html:22 app/templates/homepage.html:169
 #: app/templates/inside_menu.html:30 app/templates/user_menu.html:22
 #: app/templates/sketchup/base_scenarios.html:264
 #: app/templates/sketchup/base_scenarios.html:266
 msgid "Base scenarios"
-msgstr ""
+msgstr "Pohjasuunnitelmat"
 
 #: app/templates/guest_menu.html:24 app/templates/user_menu.html:48
 msgid "Contact us"
-msgstr ""
+msgstr "Ota yhteyttä"
 
 #: app/templates/homepage.html:157
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Navigointi"
 
 #: app/templates/homepage.html:168 app/templates/inside_menu.html:58
 msgid "About us"
-msgstr ""
+msgstr "Tekijät"
 
 #: app/templates/homepage.html:171 app/templates/inside_menu.html:33
 #: app/templates/inside_menu.html:35 app/templates/user_menu.html:24
 #: app/templates/user_menu.html:26 app/templates/users/profile.html:245
 #: app/templates/users/profile.html:254
 msgid "Profile"
-msgstr ""
+msgstr "Käyttäjäprofiili"
 
 #: app/templates/homepage.html:173
 msgid "Login"
-msgstr ""
+msgstr "Kirjaudu"
 
 #: app/templates/homepage.html:186
 msgid ""
-"Have ideas about renovation of Oulu city, or just want to have fun using "
-"your imagination to build a city? Good, you are at the right place!"
+"Have ideas about renovation of Oulu city, or just want to have fun using your "
+"imagination to build a city? Good, you are at the right place!"
 msgstr ""
+"Onko sinulla ideoita Oulun kaupungin kehittämiseen, tai haluatko vain pitää "
+"hauskaa ja käyttää mielikuvitustasi kaupungin suunnittelussa? Hyvä, olet "
+"oikeassa paikassa!"
 
 #: app/templates/homepage.html:187
 msgid "Find Out More"
-msgstr ""
+msgstr "Lisätietoja"
 
 #: app/templates/inside_menu.html:15 app/templates/user_menu.html:15
 msgid "Sign out"
-msgstr ""
+msgstr "Kirjaudu ulos"
 
 #: app/templates/inside_menu.html:36 app/templates/user_menu.html:27
 msgid "My models"
-msgstr ""
+msgstr "Omat mallit"
 
 #: app/templates/inside_menu.html:37
 msgid "My scenarios"
-msgstr ""
+msgstr "Omat suunnitelmat"
 
 #: app/templates/inside_menu.html:43 app/templates/user_menu.html:33
 #: app/templates/admin/user_management.html:156
 msgid "Admin"
-msgstr ""
+msgstr "Ylläpitäjä"
 
 #: app/templates/inside_menu.html:46 app/templates/user_menu.html:36
 #: app/templates/users/profile.html:258
 msgid "Models"
-msgstr ""
+msgstr "Mallit"
 
 #: app/templates/inside_menu.html:47 app/templates/user_menu.html:37
 #: app/templates/sketchup/edit_scenario.html:361
@@ -293,136 +298,135 @@ msgstr ""
 #: app/templates/users/profile.html:257 app/templates/users/profile.html:278
 #: app/templates/users/scenarios.html:342
 msgid "Scenarios"
-msgstr ""
+msgstr "Suunnitelmat"
 
 #: app/templates/inside_menu.html:48 app/templates/user_menu.html:38
 msgid "Suggestions"
-msgstr ""
+msgstr "Ehdotukset"
 
 #: app/templates/inside_menu.html:49 app/templates/user_menu.html:39
 #: app/templates/sketchup/view_building_model.html:291
 #: app/templates/users/building_models.html:224
 #: app/templates/users/profile.html:298
 msgid "Building models"
-msgstr ""
+msgstr "Rakennusmallit"
 
 #: app/templates/inside_menu.html:51 app/templates/user_menu.html:41
 msgid "Users control"
-msgstr ""
+msgstr "Käyttäjävalvonta"
 
 #: app/templates/inside_menu.html:52 app/templates/user_menu.html:42
 msgid "User management"
-msgstr ""
+msgstr "Käyttäjähallinta"
 
 #: app/templates/inside_menu.html:53 app/templates/user_menu.html:43
 msgid "Journal management"
-msgstr ""
+msgstr "Dokumentin hallinta"
 
 #: app/templates/inside_menu.html:54 app/templates/user_menu.html:44
-#: app/templates/admin/send_email.html:57
-#: app/templates/admin/send_email.html:59
+#: app/templates/admin/send_email.html:57 app/templates/admin/send_email.html:59
 msgid "Send email"
-msgstr ""
+msgstr "Lähetä sähköpostia"
 
 #: app/templates/user_menu.html:28
 msgid "My scenario"
-msgstr ""
+msgstr "Oma suunnitelma"
 
 #: app/templates/admin/create_journal.html:48
 #: app/templates/admin/edit_journal.html:48
 #: app/templates/admin/news_management.html:211
 msgid "Admin tools"
-msgstr ""
+msgstr "Ylläpidon työkalut"
 
 #: app/templates/admin/create_journal.html:49
 #: app/templates/admin/edit_journal.html:49
 #: app/templates/admin/news_management.html:212
 #: app/templates/admin/news_management.html:215
 msgid "Journal Management"
-msgstr ""
+msgstr "Dokumentin hallinta"
 
 #: app/templates/admin/create_journal.html:64
 msgid "There were problems creating the journal"
-msgstr ""
+msgstr "Dokumentin luominen ei onnistunut"
 
 #: app/templates/admin/create_journal.html:74
 msgid "Journal created!"
-msgstr ""
+msgstr "Dokumentti luotu!"
 
 #: app/templates/admin/create_journal.html:112
 #: app/templates/admin/edit_journal.html:111
 msgid "Journal name in"
-msgstr ""
+msgstr "Dokumentin nimi on"
 
 #: app/templates/admin/create_journal.html:120
 #: app/templates/admin/edit_journal.html:119
 msgid "Journal content in"
-msgstr ""
+msgstr "Dokumentin sisältö on "
 
 #: app/templates/admin/create_journal.html:130
 msgid "Create Journal"
-msgstr ""
+msgstr "Luo Dokumentti"
 
 #: app/templates/admin/create_journal.html:131
 #: app/templates/admin/edit_journal.html:130
 msgid "Reset"
-msgstr ""
+msgstr "Alusta"
 
 #: app/templates/admin/edit_journal.html:50
 #: app/templates/admin/edit_journal.html:129
 msgid "Edit Journal"
-msgstr ""
+msgstr "Muokkaa dokumenttia"
 
 #: app/templates/admin/edit_journal.html:52
 msgid "View journal"
-msgstr ""
+msgstr "Näytä dokumentti"
 
 #: app/templates/admin/edit_journal.html:63
 msgid "There were problems creating the journal:"
-msgstr ""
+msgstr "Dokumentin luominen ei onnistunut:"
 
 #: app/templates/admin/edit_journal.html:73
 msgid "Journal edited!"
-msgstr ""
+msgstr "Dokumentti muokattu!"
 
 #: app/templates/admin/news_management.html:102
 #: app/templates/admin/news_management.html:122
 msgid "Category not found!!!"
-msgstr ""
+msgstr "Luokkaa ei löydy!!!"
 
 #: app/templates/admin/news_management.html:129
 msgid "Are you sure you want to delete the category?"
-msgstr ""
+msgstr "Haluatko varmasti poistaa luokan?"
 
 #: app/templates/admin/news_management.html:145
 msgid "Category deleted!"
-msgstr ""
+msgstr "Luokka poistettu!"
 
 #: app/templates/admin/news_management.html:158
 msgid "Are you sure you want to delete the journal?"
-msgstr ""
+msgstr "Haluatko varmasti poistaa dokumentin?"
 
 #: app/templates/admin/news_management.html:174
 msgid "Journal deleted!"
-msgstr ""
+msgstr "Dokumentti poistettu!"
 
 #: app/templates/admin/news_management.html:217
 msgid "New category"
-msgstr ""
+msgstr "Uusi luokka"
 
 #: app/templates/admin/news_management.html:226
 msgid "Create category"
-msgstr ""
+msgstr "Luo luokka"
 
 #: app/templates/admin/news_management.html:234
 msgid "There were problems creating the category:"
-msgstr ""
+msgstr "Luokan luominen ei onnistunut"
 
 #: app/templates/admin/news_management.html:256
 #: app/templates/admin/news_management.html:303
 #: app/templates/admin/user_management.html:190
 msgid "Save"
-msgstr ""
+msgstr "Talleta"
 
 #: app/templates/admin/news_management.html:257
 #: app/templates/admin/news_management.html:304
@@ -430,29 +434,29 @@ msgstr ""
 #: app/templates/sketchup/view_building_model.html:319
 #: app/templates/sketchup/view_scenario.html:393
 msgid "Cancel"
-msgstr ""
+msgstr "Peruuta"
 
 #: app/templates/admin/news_management.html:272
 msgid "Edit category"
-msgstr ""
+msgstr "Muokkaa luokkaa"
 
 #: app/templates/admin/news_management.html:280
 msgid "There were problems editing the category:"
-msgstr ""
+msgstr "Luokan muokkaaminen ei onnistunut"
 
 #: app/templates/admin/news_management.html:345
 #: app/templates/admin/news_management.html:382
 #: app/templates/sketchup/edit_scenario.html:268
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 #: app/templates/admin/news_management.html:354
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: app/templates/admin/news_management.html:356
 msgid "Tools"
-msgstr ""
+msgstr "Työkalut"
 
 #: app/templates/admin/news_management.html:368
 #: app/templates/sketchup/edit_scenario.html:268
@@ -460,86 +464,85 @@ msgstr ""
 #: app/templates/sketchup/view_building_model.html:302
 #: app/templates/sketchup/view_scenario.html:350
 msgid "Edit"
-msgstr ""
+msgstr "Muokkaa"
 
 #: app/templates/admin/news_management.html:373
 msgid "Activate"
-msgstr ""
+msgstr "Aktivoi"
 
 #: app/templates/admin/news_management.html:377
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktivoi"
 
 #: app/templates/admin/send_email.html:72
 msgid "There were problems sending your email:"
-msgstr ""
+msgstr "Sähköpostin lähettäminen ei onnistunut"
 
 #: app/templates/admin/send_email.html:83
 msgid "Email sent successfully!"
-msgstr ""
+msgstr "Sähköposti lähetetty!"
 
 #: app/templates/admin/send_email.html:85
-msgid "Email sent to"
-msgstr ""
-
-#: app/templates/admin/send_email.html:85
-msgid "to test"
-msgstr ""
+msgid "Email sent to %(email)s to test"
+msgstr "Testisähköposti lähetetty %(email)s"
 
 #: app/templates/admin/send_email.html:117
 msgid "Send"
-msgstr ""
+msgstr "Lähetä"
 
 #: app/templates/admin/send_email.html:118
 msgid "Test"
-msgstr ""
+msgstr "Testaa"
 
 #: app/templates/admin/user_management.html:157
 #: app/templates/admin/user_management.html:159
 msgid "User Management"
-msgstr ""
+msgstr "Käyttäjähallinta"
 
 #: app/templates/admin/user_management.html:187
 msgid "Login as"
-msgstr ""
+msgstr "Kirjaudu (sisään)"
 
 #: app/templates/admin/user_management.html:194
 msgid "Ban"
-msgstr ""
+msgstr "Estä"
+
+msgid "Unban"
+msgstr "Unban"
 
 #: app/templates/admin/user_management.html:201
 msgid "Basic information"
-msgstr ""
+msgstr "Perustiedot"
 
 #: app/templates/admin/user_management.html:202
 msgid "Groups"
-msgstr ""
+msgstr "Ryhmät"
 
 #: app/templates/admin/user_management.html:213 app/users/forms.py:12
 #: app/users/forms.py:22
 msgid "Email address"
-msgstr ""
+msgstr "Sähköpostiosoite"
 
 #: app/templates/admin/user_management.html:221 app/users/forms.py:11
 #: app/users/forms.py:21
 msgid "Username"
-msgstr ""
+msgstr "Käyttäjänimi"
 
 #: app/templates/admin/user_management.html:229
 msgid "Fullname"
-msgstr ""
+msgstr "Koko nimi"
 
 #: app/templates/admin/user_management.html:237
 msgid "Address"
-msgstr ""
+msgstr "Osoite"
 
 #: app/templates/admin/user_management.html:245
 msgid "Phone Number"
-msgstr ""
+msgstr "Puhelinnumero"
 
 #: app/templates/comments/macros.html:4
 msgid "Comment Box"
-msgstr ""
+msgstr "Kommenttiruutu"
 
 #: app/templates/comments/macros.html:9
 msgid "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
@@ -555,52 +558,46 @@ msgstr ""
 
 #: app/templates/comments/macros.html:27
 msgid ""
-"Hello this is a test comment and this comment is particularly very long "
-"and it goes on and on and on."
+"Hello this is a test comment and this comment is particularly very long and it "
+"goes on and on and on."
 msgstr ""
 
 #: app/templates/comments/macros.html:46
 msgid "Add"
-msgstr ""
+msgstr "Lisää"
 
 #: app/templates/journal/view.html:14
 msgid "This journal is deactivated"
-msgstr ""
+msgstr "Dokumentti on deaktivoitu"
 
 #: app/templates/journal/view.html:23
 #: app/templates/sketchup/base_scenarios.html:296
 #: app/templates/sketchup/edit_scenario.html:372
 #: app/templates/sketchup/view_scenario.html:357
 #: app/templates/users/scenarios.html:380
-msgid "Last edited by"
-msgstr ""
-
-#: app/templates/journal/view.html:23
-#: app/templates/sketchup/base_scenarios.html:296
-#: app/templates/sketchup/edit_scenario.html:370
-#: app/templates/sketchup/edit_scenario.html:372
-#: app/templates/sketchup/view_building_model.html:299
-#: app/templates/sketchup/view_scenario.html:355
-#: app/templates/sketchup/view_scenario.html:357
-#: app/templates/users/scenarios.html:380
-msgid "at"
-msgstr ""
+msgid "Last edited by %(username)s at %(time)s"
+msgstr "Viimeksi muokannut %(username)s %(time)s"
 
 #: app/templates/journal/view.html:26
 msgid "Edit journal"
-msgstr ""
+msgstr "Muokkaa dokumenttia"
+
+#: app/templates/journal/view.html
+msgid "Created by"
+msgstr "Perustaja"
 
 #: app/templates/sketchup/base_scenarios.html:194
 msgid "There is no base scenario at the moment"
-msgstr ""
+msgstr "Ei pohjasuunnitelmia käytettävissä"
 
 #: app/templates/sketchup/base_scenarios.html:295
 #: app/templates/users/building_models.html:258
 #: app/templates/users/scenarios.html:379
 msgid ""
-"Created by <span id=\"created_user\"></span> at <span "
-"id=\"created_time\"></span>"
+"Created by <span id=\"created_user\"></span> at <span id=\"created_time\"></"
+"span>"
 msgstr ""
+"Luonut <span id=\"created_user\"></span>  <span id=\"created_time\"></span>"
 
 #: app/templates/sketchup/base_scenarios.html:305
 msgid "100m"
@@ -608,241 +605,249 @@ msgstr "100m"
 
 #: app/templates/sketchup/edit_building_model.html:148
 msgid "Are you sure you want to save this thumbnail?"
-msgstr ""
+msgstr "Are you sure you want to save this thumbnail?"
 
 #: app/templates/sketchup/edit_building_model.html:174
 #: app/templates/sketchup/view_building_model.html:168
 msgid "Are you sure you want to delete this building model?"
-msgstr ""
+msgstr "Haluatko varmasti poistaa tämän rakennusmallin?"
 
 #: app/templates/sketchup/edit_building_model.html:225
 #: app/templates/sketchup/view_building_model.html:219
 msgid "Are you sure you want to clone this building model?"
-msgstr ""
+msgstr "Haluatko varmasti kloonata(kopioida) tämän rakennusmallin?"
 
 #: app/templates/sketchup/edit_building_model.html:252
 #: app/templates/sketchup/view_building_model.html:246
 msgid "Are you sure you want to change base status of this model?"
-msgstr ""
+msgstr "Haluatko varmasti vaihtaa tämän mallin tilan?"
 
 #: app/templates/sketchup/edit_building_model.html:275
 msgid "Model status changed"
-msgstr ""
+msgstr "Mallin tila vaihdettu"
 
 #: app/templates/sketchup/edit_scenario.html:131
 #: app/templates/sketchup/view_scenario.html:153
 msgid "Are you sure you want to change base status of this scenario?"
-msgstr ""
+msgstr "Haluatko varmasti vaihtaa tämän suunnitelman tilan?"
 
 #: app/templates/sketchup/edit_scenario.html:169
 #: app/templates/sketchup/view_scenario.html:191
 msgid "Are you sure you want to delete this scenario?"
-msgstr ""
+msgstr "Haluatko varmasti poistaa tämän suunnitelman?"
 
 #: app/templates/sketchup/edit_scenario.html:209
 msgid "Scenario saved!"
-msgstr ""
+msgstr "Suunnitelma talletettu!"
 
 #: app/templates/sketchup/edit_scenario.html:226
 #: app/templates/sketchup/edit_scenario.html:423
 #: app/templates/sketchup/view_scenario.html:219
 #: app/templates/sketchup/view_scenario.html:405
 msgid "Suggest scenario to admin"
-msgstr ""
+msgstr "Lähetä suunnitelma ehdotuksena"
 
 #: app/templates/sketchup/edit_scenario.html:246
 #: app/templates/sketchup/view_scenario.html:239
 msgid "Message content is required"
-msgstr ""
+msgstr "Viestin sisältö puuttuu"
 
 #: app/templates/sketchup/edit_scenario.html:267
-msgid "By"
-msgstr ""
+msgid "Comment by"
+msgstr "Kommentoitu"
+
+#: app/templates/sketchup/edit_scenario.html:267
+msgid "at"
+msgstr "toimesta"
 
 #: app/templates/sketchup/edit_scenario.html:275
 msgid "Suggestion sent"
-msgstr ""
+msgstr "Ehdotus lähetetty"
 
 #: app/templates/sketchup/edit_scenario.html:303
 #: app/templates/sketchup/view_scenario.html:291
 msgid "Are you sure you want to clone this scenario?"
-msgstr ""
+msgstr "Haluatko varmasti kloonata(kopioida) suunnitelman?"
 
 #: app/templates/sketchup/edit_scenario.html:313
 msgid "Scenario cloned"
-msgstr ""
+msgstr "Suunnitelma kloonattu(kopioitu)"
 
 #: app/templates/sketchup/edit_scenario.html:370
 #: app/templates/sketchup/view_building_model.html:299
 #: app/templates/sketchup/view_scenario.html:355
 msgid "Created by"
-msgstr ""
+msgstr "Luotu"
 
 #: app/templates/sketchup/edit_scenario.html:375
 #: app/templates/sketchup/view_scenario.html:360
 msgid "The scenario is deactivated"
-msgstr ""
+msgstr "Suunnitelma on deaktivoitu"
 
 #: app/templates/sketchup/edit_scenario.html:378
 #: app/templates/sketchup/view_scenario.html:363
 msgid "Delete scenario"
-msgstr ""
+msgstr "Poista suunnitelma"
 
 #: app/templates/sketchup/edit_scenario.html:380
 #: app/templates/sketchup/view_scenario.html:365
 msgid "Edit scenario"
-msgstr ""
+msgstr "Muokkaa suunnitelmaa"
 
 #: app/templates/sketchup/edit_scenario.html:384
 #: app/templates/sketchup/view_scenario.html:369
 #: app/templates/users/add_scenario.html:150
 msgid "Scenario name"
-msgstr ""
+msgstr "Suunnitelman nimi"
 
 #: app/templates/sketchup/edit_scenario.html:392
 #: app/templates/sketchup/view_scenario.html:377
 #: app/templates/users/add_scenario.html:166
 msgid "Public"
-msgstr ""
-
+msgstr "Julkinen"
 
 #: app/templates/sketchup/edit_scenario.html:407
 #: app/templates/sketchup/view_building_model.html:318
 #: app/templates/sketchup/view_scenario.html:392
 #: app/templates/users/profile.html:348
 msgid "Update"
-msgstr ""
+msgstr "Päivitä"
 
 #: app/templates/sketchup/edit_scenario.html:415
 #: app/templates/sketchup/view_scenario.html:400
 msgid "Full screen"
-msgstr ""
+msgstr "Kokonäyttö"
 
 #: app/templates/sketchup/edit_scenario.html:417
 #: app/templates/sketchup/view_scenario.html:402
 msgid "Clone this scenario"
-msgstr ""
+msgstr "Kloonaa(kopioi) suunnitelma"
 
 #: app/templates/sketchup/edit_scenario.html:420
 msgid "Save scenario"
-msgstr ""
+msgstr "Talleta suunnitelma"
 
 #: app/templates/sketchup/edit_scenario.html:426
 #: app/templates/sketchup/view_scenario.html:408
 msgid "Promote to base scenario"
-msgstr ""
+msgstr "Nosta perussuunnitelmaksi"
 
 #: app/templates/sketchup/edit_scenario.html:428
 #: app/templates/sketchup/view_scenario.html:410
 msgid "Demote to normal scenario"
-msgstr ""
+msgstr "Laske tavalliseksi suunnitelmaksi"
 
 #: app/templates/sketchup/edit_scenario.html:437
 #: app/templates/users/add_scenario.html:175
 msgid "Guide on editing scenario"
-msgstr ""
+msgstr "Ohje suunnitelman muokkaamiseksi"
 
 #: app/templates/sketchup/edit_scenario.html:443
 #: app/templates/users/add_scenario.html:180
 msgid "Scenario Control"
-msgstr ""
+msgstr "Suunnitelman hallinta"
 
 #: app/templates/sketchup/edit_scenario.html:445
 #: app/templates/users/add_scenario.html:182
 msgid "Shrink Scenario"
-msgstr ""
+msgstr "Pienennä suunnitelmaa"
 
 #: app/templates/sketchup/edit_scenario.html:446
 #: app/templates/users/add_scenario.html:183
 msgid "Enlarge Scenario"
-msgstr ""
+msgstr "Kasvata suunnitelmaa"
 
 #: app/templates/sketchup/edit_scenario.html:448
 #: app/templates/users/add_scenario.html:185
 msgid "Model Control"
-msgstr ""
+msgstr "Mallin hallinta"
 
 #: app/templates/sketchup/edit_scenario.html:449
 #: app/templates/users/add_scenario.html:186
 msgid "Move Model"
-msgstr ""
+msgstr "Siirrä mallia"
 
 #: app/templates/sketchup/edit_scenario.html:450
 #: app/templates/users/add_scenario.html:187
 msgid "Delete Model"
-msgstr ""
+msgstr "Poista malli"
 
 #: app/templates/sketchup/edit_scenario.html:452
 #: app/templates/users/add_scenario.html:189
 msgid "Shrink Model"
-msgstr ""
+msgstr "Pienennä mallia"
 
 #: app/templates/sketchup/edit_scenario.html:453
 #: app/templates/users/add_scenario.html:190
 msgid "Enlarge Model"
-msgstr ""
+msgstr "Suurenna mallia"
 
 #: app/templates/sketchup/edit_scenario.html:456
 #: app/templates/users/add_scenario.html:193
 msgid "Rotate Left"
-msgstr ""
+msgstr "Kierrä vasempaan"
 
 #: app/templates/sketchup/edit_scenario.html:457
 #: app/templates/users/add_scenario.html:194
 msgid "Rotate Right"
-msgstr ""
+msgstr "Kierrä oikeaan"
 
 #: app/templates/sketchup/edit_scenario.html:459
 #: app/templates/users/add_scenario.html:196
 msgid "Build On Top"
-msgstr ""
+msgstr "Rakenna päällekkäin"
+
+#: app/templates/sketchup/edit_scenario.html:459
+#: app/templates/users/add_scenario.html:196
+msgid "Build On Ground"
+msgstr "Rakentaa paikan päällä"
 
 #: app/templates/sketchup/edit_scenario.html:461
 #: app/templates/users/add_scenario.html:198
 msgid "Undo"
-msgstr ""
+msgstr "Peru"
 
 #: app/templates/sketchup/edit_scenario.html:462
 #: app/templates/users/add_scenario.html:199
 msgid "Redo"
-msgstr ""
+msgstr "Toista"
 
 #: app/templates/sketchup/edit_scenario.html:504
 #: app/templates/users/add_scenario.html:241
 msgid "Previous"
-msgstr ""
+msgstr "Edellinen"
 
 #: app/templates/sketchup/view_building_model.html:155
 msgid "Thumbnail saved"
-msgstr ""
+msgstr "Esikatselukuva talletettu"
 
 #: app/templates/sketchup/view_building_model.html:178
 msgid "Building model deleted"
-msgstr ""
+msgstr "Rakennusmalli poistettu"
 
 #: app/templates/sketchup/view_building_model.html:229
 msgid "Building model cloned"
-msgstr ""
+msgstr "Rakennusmalli kloonattu(kopioitu)"
 
 #: app/templates/sketchup/view_building_model.html:303
 msgid "Save thumbnail position"
-msgstr ""
+msgstr "Talleta esikatselukuvakulma"
 
 #: app/templates/sketchup/view_building_model.html:304
 msgid "Delete building model"
-msgstr ""
+msgstr "Poista rakennusmalli"
 
 #: app/templates/sketchup/view_building_model.html:307
 msgid "Edit building model"
-msgstr ""
+msgstr "Muokkaa rakennusmallia"
 
 #: app/templates/sketchup/view_building_model.html:311
 msgid "Building model name"
-msgstr ""
+msgstr "Rakennusmallin nimi"
 
 #: app/templates/sketchup/view_building_model.html:328
 msgid "Clone this building model"
-msgstr ""
+msgstr "Kloonaa(kopioi) rakennusmalli"
 
 #: app/templates/sketchup/view_building_model.html:332
 msgid "Promote to base model"
@@ -850,282 +855,325 @@ msgstr ""
 
 #: app/templates/sketchup/view_building_model.html:334
 msgid "Demote to normal model"
-msgstr ""
+msgstr "Laske tavalliseksi malliksi"
 
 #: app/templates/sketchup/view_scenario.html:224
 #: app/templates/users/suggest_scenario_email_content.html:3
 msgid "Suggest content"
-msgstr ""
+msgstr "Ehdota sisältöä"
 
 #: app/templates/sketchup/view_scenario.html:363
 msgid "Edit settings"
-msgstr ""
+msgstr "Muokkaa asetuksia"
 
 #: app/templates/users/add_scenario.html:126
 #: app/templates/users/add_scenario.html:128
 msgid "New Scenario"
-msgstr ""
+msgstr "Uusi suunnitelma"
 
 #: app/templates/users/add_scenario.html:141
 msgid "There were problems creating your scenario"
-msgstr ""
+msgstr "Suunnitelman luominen ei onnistunut"
 
 #: app/templates/users/add_scenario.html:174
 msgid "Model"
-msgstr ""
+msgstr "Malli"
 
 #: app/templates/users/add_scenario.html:245
 msgid "Next"
-msgstr ""
+msgstr "Seuraava"
 
 #: app/templates/users/add_scenario.html:253
 msgid "Create model"
-msgstr ""
+msgstr "Luo malli"
 
 #: app/templates/users/add_scenario.html:254
 msgid "Back"
-msgstr ""
+msgstr "Takaisin"
 
 #: app/templates/users/building_models.html:232
 msgid "Add building model"
-msgstr ""
+msgstr "Lisää rakennusmalli"
 
 #: app/templates/users/login.html:21
 msgid "Sign in to System"
-msgstr ""
+msgstr "Kirjaudu (sisään) järjestelmään"
 
 #: app/templates/users/login.html:41
 msgid "Forgot password"
-msgstr ""
+msgstr "Unohditko salasanan"
 
 #: app/templates/users/login.html:52
 msgid "New to System"
-msgstr ""
+msgstr "Uusi käyttäjä"
 
 #: app/templates/users/login.html:53 app/templates/users/register.html:85
 msgid "Create an account"
-msgstr ""
+msgstr "Luo tili"
 
 #: app/templates/users/profile.html:251
 msgid "Homepage"
-msgstr ""
+msgstr "Kotisivu"
 
 #: app/templates/users/profile.html:252
 msgid "Comments"
-msgstr ""
+msgstr "Kommentit"
 
 #: app/templates/users/profile.html:255
-msgid "Change_password"
-msgstr ""
+msgid "Change password"
+msgstr "Muuta salasanaa"
 
 #: app/templates/users/profile.html:271
 msgid "Joined on %(time)s"
-msgstr ""
+msgstr "Liittynyt %(time)s"
 
 #: app/templates/users/profile.html:321
 msgid "Old password is required"
-msgstr ""
+msgstr "Vanha salasana puuttuu"
 
 #: app/templates/users/profile.html:329
 msgid "Old password"
-msgstr ""
+msgstr "Vanha salasana"
 
 #: app/templates/users/profile.html:335
 msgid "New password"
-msgstr ""
+msgstr "Uusi salasana"
 
 #: app/templates/users/profile.html:341
 msgid "Confirm password"
-msgstr ""
+msgstr "Vahvista salasana"
 
 #: app/templates/users/register.html:17
 msgid "Join SketchupOulu"
-msgstr ""
+msgstr "Liity SketchupOuluun"
 
 #: app/templates/users/register.html:26
 msgid "Create your personal account"
-msgstr ""
+msgstr "Luo oma käyttäjätili"
 
 #: app/templates/users/register.html:31
 msgid "There were problems creating your account"
-msgstr ""
+msgstr "Tilin luominen ei onnistunut"
 
 #: app/templates/users/register.html:79
 #, python-format
 msgid ""
-"By clicking on \"Create an account\" below, you are agreeing to the <a "
-"href=\"%%term_of_service_link%%\" target=\"_blank\">Terms of Service</a> "
-"and the <a href=\"%%privacy_policy_link%%\" target=\"_blank\">Privacy "
-"Policy</a>."
+"By clicking on \"Create an account\" below, you are agreeing to the <a href="
+"\"%%term_of_service_link%%\" target=\"_blank\">Terms of Service</a> and the <a "
+"href=\"%%privacy_policy_link%%\" target=\"_blank\">Privacy Policy</a>."
 msgstr ""
+"Klikkaamalla \"Luo tili\" alla, hyväksyt <a href=\"%%term_of_service_link%%\" "
+"target=\"_blank\">Käyttöehdot</a> ja <a href=\"%%privacy_policy_link%%\" target="
+"\"_blank\">Tietosuojakäytännön</a>."
 
 #: app/templates/users/register_finish.html:21
 msgid "Just one more step..."
-msgstr ""
+msgstr "Vielä yksi askel..."
 
 #: app/templates/users/register_finish.html:25
 #, python-format
 msgid ""
-"Thank you for your registration. An email has been sent to your email "
-"address %(email)s, follow the link in that email to activate your "
-"account."
+"Thank you for your registration. An email has been sent to your email address "
+"%(email)s, follow the link in that email to activate your account."
 msgstr ""
+"Kiitos rekisteröinnistä. Sähköpostiosoitteeseesi %(email)s on lähetetty viesti, "
+"seuraa viestin linkkiä tilin aktivoimiseksi."
 
 #: app/templates/users/register_finish.html:26
 #: app/templates/users/reset_password_confirmed.html:26
 #: app/templates/users/reset_password_submited.html:26
 msgid "Return to sign in"
-msgstr ""
+msgstr "Palaa kirjautumiseen"
 
 #: app/templates/users/reset_password.html:21
 #: app/templates/users/reset_password_confirmed.html:21
 #: app/templates/users/reset_password_submited.html:21
 msgid "Reset your password"
-msgstr ""
+msgstr "Aseta salasanasi uudelleen"
 
 #: app/templates/users/reset_password_confirmed.html:25
 msgid "An email has been sent to your email address for your new password."
-msgstr ""
+msgstr "Sähköpostiosoitteeseesi on lähetetty uusi salasanasi"
 
 #: app/templates/users/reset_password_submited.html:25
 msgid "Don't worry, help is on the way"
-msgstr ""
+msgstr "Apua on tulossa"
 
 #: app/templates/users/scenarios.html:351
 msgid "Add scenario"
-msgstr ""
+msgstr "Lisää suunnitelmaan"
 
 #: app/templates/users/user_profile.html:6
 msgid "Profile picture"
-msgstr ""
+msgstr "Käyttäjäkuva"
 
 #: app/templates/users/user_profile.html:11
 msgid "Upload"
-msgstr ""
+msgstr "Lataa"
 
 #: app/templates/users/verify_account.html:25
 msgid "Your account has been activated"
-msgstr ""
+msgstr "Käyttäjätilisi on aktivoitu"
 
 #: app/templates/users/verify_account.html:29
 msgid "Go to your account"
-msgstr ""
+msgstr "Siirry käyttäjätiliisi"
 
 #: app/users/forms.py:7
 msgid "Email"
-msgstr ""
+msgstr "Sähköposti"
 
 #: app/users/forms.py:7 app/users/forms.py:29
 msgid "Email is required"
-msgstr ""
+msgstr "Sähköposti(osoite) puuttuu"
 
 #: app/users/forms.py:7 app/users/forms.py:12 app/users/forms.py:22
 #: app/users/forms.py:29
 msgid "Invalid email address"
-msgstr ""
+msgstr "Sähköpostiosoite ei kelpaa"
 
 #: app/users/forms.py:8 app/users/forms.py:13
 msgid "Password"
-msgstr ""
+msgstr "Salasana"
 
 #: app/users/forms.py:8
 msgid "Password field is required"
-msgstr ""
+msgstr "Salasana puuttuu"
 
 #: app/users/forms.py:11 app/users/forms.py:21
 msgid "Username is required"
-msgstr ""
+msgstr "Käyttäjänimi puuttuu"
 
 #: app/users/forms.py:14
 msgid "Repeat Password"
-msgstr ""
+msgstr "Toista salasana"
 
 #: app/users/forms.py:15
 msgid "You have to confirm your password"
-msgstr ""
+msgstr "Sinun tulee vahvistaa salasanasi"
 
 #: app/users/forms.py:16
 msgid "Passwords must match"
-msgstr ""
+msgstr "Salasanojen täytyy olla samat"
 
 #: app/users/forms.py:29
 msgid ""
-"Enter your email address and we will send you a link to reset your "
-"password"
+"Enter your email address and we will send you a link to reset your password"
 msgstr ""
+"Anna sähköpostiosoitteesi, niin lähetämme sinulle linkin salasanasi "
+"uudelleenasettamiseksi"
 
 #: app/users/views.py:92 app/users/views.py:98
 msgid "Wrong email or password"
-msgstr ""
+msgstr "Sähköpostiosoite tai salasana väärin"
 
 #: app/users/views.py:101 app/users/views.py:209
 msgid "The account was banned, please contact an admin for more information"
 msgstr ""
+"Tilisi käyttö on estetty, ota yhteyttä ylläpitäjään lisätietojen saamiseksi"
 
 #: app/users/views.py:104
 #, python-format
 msgid ""
-"The account is not activated, please check your email for verification. "
-"<a href=\"%(resend_activation_email)s\">Resend activation email</a>"
+"The account is not activated, please check your email for verification. <a href="
+"\"%(resend_activation_email)s\">Resend activation email</a>"
 msgstr ""
+"Tiliä ei ole aktivoitu, tarkista vahvistusviesti sähköpostistasi. <a href="
+"\"%(resend_activation_email)s\">Lähetä aktivointiviesti uudelleen</a>"
 
 #: app/users/views.py:146
 msgid "Duplicate email address"
-msgstr ""
+msgstr "Sähköpostiosoite varattu"
 
 #: app/users/views.py:148
 msgid "Duplicate username"
-msgstr ""
+msgstr "Käyttäjänimi varattu"
 
 #: app/users/views.py:205
 msgid "Account not found"
-msgstr ""
+msgstr "Tiliä ei löydy"
 
 #: app/users/views.py:311 app/users/views.py:333
 msgid "Comment topic not found"
-msgstr ""
+msgstr "Kommenttiaihetta ei löydy"
 
 #: app/users/views.py:355
 msgid "Suggest content is required"
-msgstr ""
+msgstr "Ehdotuksen sisältö puuttuu"
 
 #: app/users/views.py:365
 msgid "Suggest for scenario"
-msgstr ""
+msgstr "Ehdota suunnitelmaksi"
 
 #: app/users/views.py:387
 msgid "Comment content is required"
-msgstr ""
+msgstr "Kommentin sisältö puuttuu"
 
 #: app/users/views.py:390
 msgid "Comment object is required"
-msgstr ""
+msgstr "Kommentin kohde puuttuu"
 
 #: app/users/views.py:400
 msgid "You don't have permission to add comment here"
-msgstr ""
+msgstr "Sinulla ei ole oikeutta lisätä kommenttia tänne"
 
 #: app/users/views.py:416
 msgid "Comment type not found"
-msgstr ""
+msgstr "Kommentin tyyppiä ei löydy"
 
 #: app/users/views.py:431 app/users/views.py:436
 msgid "Comment not found"
-msgstr ""
+msgstr "Kommenttia ei löydy"
 
 #: app/users/views.py:444
 msgid "Unauthorized deletion"
-msgstr ""
+msgstr "Ei oikeutta poistoon"
 
 #: app/users/views.py:594
 msgid "Scenario name is required"
-msgstr ""
+msgstr "Suunnitelman nimi puuttuu"
 
 #: app/users/views.py:596
 msgid "Model file is required"
-msgstr ""
+msgstr "Mallitiedosto puuttuu"
 
 #: app/users/views.py:660
 msgid "Unrecognized model file format"
-msgstr ""
+msgstr "Tunnistamaton mallitiedoston formaatti"
 
+#: app/templates/users/scenarios.html:344
+msgid "%(username)s's scenarios"
+msgstr "%(username)s suunnitelmat"
+
+#: app/templates/users/building_models.html:226
+msgid "%(username)s's building models"
+msgstr "%(username)s rakennusmallit"
+
+#: app/templates/js_sketchup_comment.html:17
+msgid "Comment Box"
+msgstr "Kommentti-ruutuun"
+
+#: app/templates/js_sketchup_comment.html:25
+msgid "Your comment"
+msgstr "Kommenttisi"
+
+#: app/templates/js_sketchup_comment.html
+msgid "Comment added"
+msgstr "Kommentti lisätty"
+
+#: app/templates/js_sketchup_comment.html
+msgid "Comment deleted"
+msgstr "Kommentti poistettu"
+
+#: app/templates/js_sketchup_comment.html
+msgid "Comment content is required"
+msgstr "Kommentti sisältö puuttuu"
+
+#: app/templates/sketchup/base_scenarios.html
+#: app/templates/users/scenarios.html
+msgid "Search by scenario name"
+msgstr "Etsi skenaarion nimi"
+
+#: app/templates/users/building_models.html
+msgid "Search by name"
+msgstr "Hae nimen perusteella"

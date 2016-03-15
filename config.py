@@ -44,5 +44,5 @@ LANGUAGES = {
 ALLOWED_FILE_TYPES = ['zip', 'jpg', 'jpeg', 'png']
 
 BABEL_DEFAULT_LOCALE = 'en'
-DEFAULT_LOCALE = 'en'
+DEFAULT_LOCALE = 'fi'
 VERSION = '0.19'

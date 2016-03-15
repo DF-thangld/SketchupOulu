@@ -279,7 +279,7 @@ def update_building_model(building_model_id):
 
                 building_model.addition_information = json.dumps(original_addition_information)
             except:
-                return json.dumps([gettext('Error in saving addition information, please contact an admin for more information')]), 400
+                return json.dumps([gettext('Error in saving additional information, please contact an admin for more information')]), 400
     
     if 'preview' in request.form:
         preview = request.form.get('preview', '')

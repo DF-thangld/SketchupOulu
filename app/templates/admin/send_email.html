@@ -82,7 +82,7 @@ function upload_image(file, editor, welEditable)
                       {% if form.action.data == 'send' %}
                           {{ gettext("Email sent successfully!") }}
                       {% else %}
-                          {{ gettext("Email sent to")}} {{ g.user.email }} {{ gettext("to test") }}
+                          {{ gettext("Email sent to %(email)s to test", email=g.user.email)}}
                       {% endif %}
                   </div>
             </div>

@@ -354,7 +354,7 @@ function init()
             <div style="float:left; margin-left:10px;">
                 <div>{{gettext('Created by')}} <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> {{gettext('at')}} {{ scenario.created_time }}</div>
                 {% if scenario.last_edited_user %}
-                <div>{{gettext('Last edited by')}} <a href="{{ url_for('users.profile', username=scenario.last_edited_user.username) }}">{{ scenario.last_edited_user.username }}</a> {{gettext('at')}} {{ scenario.last_edited_time }}</div>
+                <div>{{gettext('Last edited by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.last_edited_user.username) +'">' + scenario.last_edited_user.username + '</a>', time=scenario.last_edited_time)}}</div>
                 {% endif %}
                 {% if scenario.is_public==0 %}
                 <div style="color:red">{{gettext('The scenario is deactivated')}}</div>

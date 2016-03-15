@@ -101,7 +101,7 @@ function save_scenario_content()
 		data: {'addition_information': JSON.stringify(sceneObjects), 'scenario_preview': controlling_renderer.domElement.toDataURL( 'image/png' )},
 		dataType: 'json',
 		success: function(data) {
-			show_alert('alert-success', 'Scenario saved!');
+			show_alert('alert-success', '{{ gettext('Scenario saved!') }}');
 		},
 		error: function(data)
 		{
@@ -264,7 +264,7 @@ function save_scenario_content()
 										new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
 									}
 									new_comment_html += '        <p id="comment_content_' + data.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + data.content + '</p> ';
-									new_comment_html += '        <span class="date sub-text">{{gettext('By')}} <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
+									new_comment_html += '        <span class="date sub-text">{{gettext('Comment by')}} <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> {{gettext('at')}} ' + data.created_time + '</span>';
 									new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="display_edit_comment_form(' + data.id.toString() + ');">{{gettext('Edit')}}</a> - <a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">{{gettext('Delete')}}</a>)</span>';
 									new_comment_html += '    </div>';
 									new_comment_html += '    <div style="clear:both;"></div>';
@@ -369,7 +369,7 @@ function save_scenario_content()
             <div style="float:left; margin-left:10px;">
                 <div>{{gettext('Created by')}} <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> {{gettext('at')}} {{ scenario.created_time }}</div>
                 {% if scenario.last_edited_user %}
-                <div>{{gettext('Last edited by')}} <a href="{{ url_for('users.profile', username=scenario.last_edited_user.username) }}">{{ scenario.last_edited_user.username }}</a> {{gettext('at')}} {{ scenario.last_edited_time }}</div>
+                <div>{{gettext('Last edited by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.last_edited_user.username) +'">' + scenario.last_edited_user.username + '</a>', time=scenario.last_edited_time)}}</div>
                 {% endif %}
                 {% if scenario.is_public==0 %}
                 <div style="color:red">{{gettext('The scenario is deactivated')}}</div>

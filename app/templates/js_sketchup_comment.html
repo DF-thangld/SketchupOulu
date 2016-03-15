@@ -1,0 +1,144 @@
+function get_comments(comment_type, comment_id, page, element_id, on_load)
+{
+    $.ajax({
+        type: "GET",
+        data: {'comment_type': comment_type,
+                'comment_id': comment_id,
+                'page': page},
+        url: get_comment_url,
+        dataType: 'json',
+        success: function(data)
+        {
+            $('#' + element_id).html('');
+            var comment_panel_html = '';
+            comment_panel_html += '<div id="comment_panel" style="margin-top:10px;">';
+            comment_panel_html += '    <div class="detailBox">';
+            comment_panel_html += '        <div class="titleBox">';
+            comment_panel_html += '          <label>{{gettext("Comment Box")}}</label>';
+            comment_panel_html += '        </div>';
+            comment_panel_html += '        <div class="commentBox">';
+            comment_panel_html += '            <input type="hidden" id="comment_type_' + comment_id + '" value="' + comment_type + '" />';
+            comment_panel_html += '            <input type="hidden" id="object_id_' + comment_id + '" value="' + comment_id + '" />';
+            comment_panel_html += '            <input type="hidden" id="page_' + comment_id + '" value="' + page.toString() + '" />';
+            if (data.can_add_comment)
+            {
+                comment_panel_html += '            <textarea id="new_comment_' + comment_id + '" name="new_comment_' + comment_id + '" style="width:100%" class="form-control form-group" type="text" placeholder="{{gettext("Your comment")}}" ></textarea>';
+                comment_panel_html += '            <div class="form-group">';
+                comment_panel_html += '                <button class="btn btn-default" onclick="add_comment(\'' + comment_type + '\', \'' + comment_id + '\', $(\'#new_comment_' + comment_id + '\').val());">{{gettext("Add")}}</button>';
+                comment_panel_html += '            </div>';
+            }
+            comment_panel_html += '        </div>';
+            comment_panel_html += '        <div class="actionBox">';
+            comment_panel_html += '            <ul class="commentList" id="comment_list_' + comment_id + '">';
+            for (var i=0; i < data.comments.length; i++)
+            {
+                var comment = data.comments[i];
+                comment_panel_html += '<li id="comment_' + comment.id.toString() + '">';
+                comment_panel_html += '    <div class="commenterImage">';
+                comment_panel_html += '        <a href="' + base_url + 'users/' + comment.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + comment.owner.profile_picture + '"></a>';
+                comment_panel_html += '    </div>';
+                comment_panel_html += '    <div class="commentText"  style="display: block;float:left;">';
+                if (comment.description != '')
+                {
+                	comment_panel_html += '        <div class="commentText"  style="display: block;"><b>' + comment.description + '</b><div>';
+                }
+                comment_panel_html += '        <p id="comment_content_' + comment.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + comment.content + '</p> ';
+                comment_panel_html += '        <span class="date sub-text">{{gettext("Comment by")}} <a href="' + base_url + 'users/' + comment.owner.username + '/profile/">' + comment.owner.username + '</a> {{gettext("at")}} ' + comment.created_time + '</span>';
+                if (comment.can_edit)
+                {
+                    comment_panel_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="delete_comment(' + comment.id.toString() + ');">{{gettext("Delete")}}</a>)</span>';
+                }
+                comment_panel_html += '    </div>';
+                comment_panel_html += '    <div style="clear:both;"></div>';
+                comment_panel_html += '</li>';
+                comment_panel_html += '<div style="clear:both;"></div>';
+            }
+            comment_panel_html += '            </ul>';
+            comment_panel_html += '        </div>';
+            comment_panel_html += '    </div>';
+            comment_panel_html += '</div>';
+            $('#' + element_id).html(comment_panel_html);
+            if (data.can_add_comment)
+                $('#new_comment_' + comment_id).autoHeight();
+            if (on_load !== undefined)
+                on_load(element_id);
+        }
+    });
+}
+
+function add_comment(comment_type, comment_id, comment_text, on_added)
+{
+    comment_type = ( comment_type !== undefined ) ? comment_type : $('#comment_type').val();
+    comment_id = ( comment_id !== undefined ) ? comment_id : $('#object_id').val();
+    comment_text = ( comment_text !== undefined ) ? comment_text : $('#new_comment').val();
+    if (comment_text.trim() == '')
+    {
+        show_alert('alert-danger', '{{gettext("Comment content is required")}}');
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url: add_comment_url,
+        data: {'comment_type': comment_type,
+                'object_id': comment_id,
+                'content': comment_text},
+        dataType: 'json',
+        success: function(data)
+        {
+            var new_comment_html = '<li id="comment_' + data.id.toString() + '">';
+            new_comment_html += '    <div class="commenterImage">';
+            new_comment_html += '        <a href="' + base_url + 'users/' + data.owner.username + '/profile/"><img class="img-thumbnail" style="max-width:100px;max-height:100px;" src="' + profile_url + data.owner.profile_picture + '"></a>';
+            new_comment_html += '    </div>';
+            new_comment_html += '    <div class="commentText" style="float:left;">';
+            if (data.description != '')
+            {
+            	new_comment_html += '        <div class="commentText"  style="display: block;"><b>' + data.description + '</b><div>';
+            }
+            new_comment_html += '        <p id="comment_content_' + data.id.toString() + '" style="font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans,  clean, sans-serif">' + data.content + '</p> ';
+            new_comment_html += '        <span class="date sub-text">By <a href="' + base_url + 'users/' + data.owner.username + '/profile/">' + data.owner.username + '</a> on ' + data.created_time + '</span>';
+            new_comment_html += '        <span class="date sub-text"> (<a href="javascript:void(0);" onclick="delete_comment(' + data.id.toString() + ');">Delete</a>)</span>';
+            new_comment_html += '    </div>';
+            new_comment_html += '    <div style="clear:both;"></div>';
+            new_comment_html += '</li>';
+            new_comment_html += '<div style="clear:both;"></div>';
+
+            $('#comment_list_' + comment_id).prepend(new_comment_html);
+            show_alert('alert-success', '{{gettext("Comment added")}}');
+            $('#new_comment_' + comment_id.toString()).val('');
+            if (on_added !== undefined)
+                on_added(comment_id);
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+
+function display_edit_comment_form()
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}
+
+function delete_comment(comment_id)
+{
+    $.ajax({
+        type: "POST",
+        url: delete_comment_url,
+        data: {'comment_id': comment_id},
+        dataType: 'json',
+        success: function(data)
+        {
+            $('#comment_' + data.comment_id).remove();
+            show_alert('alert-success', '{{gettext("Comment deleted")}}');
+        },
+        error: function(data)
+        {
+            show_alert('alert-danger', data.responseJSON[0]);
+        }
+    });
+}
+function edit_comment(comment_id)
+{
+    show_alert('alert-danger', 'Function not yet implemented :)');
+}

@@ -7,7 +7,7 @@
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-10 col-centered">
 		<center><h2 style="font-size: 45px;">{{ journal.title }}</h2></center>
-        <div>Created by {{ journal.created_user.username }} at {{ journal.post_time }}</div>
+        <div>{{gettext('Created by')}} {{ journal.created_user.username }} at {{ journal.post_time }}</div>
         {% if journal.is_activated == 0 %}
         <div id="js-flash-container" class="col-centered" style="color: #911;background-color: #fcdede;border-radius: 3px;border: 1px solid #d8dee2;padding:15px;margin-top:20px;font-size: 14px;border-radius: 5px;">
               <div class="">
@@ -20,7 +20,7 @@
 		<div>{{ journal.content|safe }}</div>
         <hr style="max-width:100%" />
         {% if journal.last_edited_user %}
-        <div style="float:right">{{gettext("Last edited by")}} {{ journal.last_edited_user.username }} {{ gettext("at") }} {{ journal.last_edited_time }}</div>
+        <div style="float:right">{{gettext("Last edited by %(username)s at %(time)s", username=journal.last_edited_user.username, time=journal.last_edited_time)}}</div>
         {% endif %}
         {% if g.user and g.user.is_admin() %}
         <div style="float:left;"><a href="{{ url_for('admin.edit_journal', journal_id=journal.id) }}">{{gettext("Edit journal")}}</a></div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{session['locale']}}">
 
 <head>
 
@@ -95,8 +95,8 @@
     <script src="{{ url_for('static', filename='js/dat.gui.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/stats.min.js') }}"></script>
     <script src="{{ url_for('constants_js') }}"></script>
+    <script src="{{ url_for('comments_js') }}"></script>
     
-
     <!-- custom files -->
     <script src="{{ url_for('static', filename='js/sketchup_oulu.js') }}?v={{get_system_parameter('version')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sketchup_oulu.css') }}?v={{get_system_parameter('version')}}" type="text/css">

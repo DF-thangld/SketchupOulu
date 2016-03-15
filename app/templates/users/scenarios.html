@@ -341,7 +341,7 @@ function render()
                <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
                <li class = "active"><a href="{{ url_for('users.user_scenarios_page', username=user.username) }}">{{ gettext('Scenarios') }}</a></li>
             </ol>
-            <h2 style="font-size: 45px;">{{ user.username }}'s Scenarios</h2>
+            <h2 style="font-size: 45px;">{{ gettext("%(username)s's scenarios", username=user.username) }}</h2>
 
             <div class="col-md-4">
                 <div class="row" style="margin-bottom:10px;">
@@ -352,7 +352,7 @@ function render()
                         </a>
 						{% endif %}
                         <form id="scenario_search_form" method="POST" action="{{ url_for('users.get_user_scenarios', username=user.username) }}">
-                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_scenarios();" placeholder="Search by scenario name" type="text" value="">
+                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_user_scenarios();" placeholder="{{gettext('Search by scenario name')}}" type="text" value="">
                         </form>
                     </div>
                 </div>
@@ -377,7 +377,7 @@ function render()
                 <div style="float:left; margin-left:10px;">
                 
                     <div>{{ gettext('Created by <span id="created_user"></span> at <span id="created_time"></span>') }}</div>
-                    <div id="last_edited_panel" style="display:none">{{ gettext('Last edited by') }} <span id="last_edited_user"></span> {{ gettext('at') }} <span id="last_edited_time"></span></div>
+                    <div id="last_edited_panel" style="display:none">{{ gettext("Last edited by %(username)s at %(time)s", username='<span id="last_edited_user"></span>', time='<span id="last_edited_time"></span>') }}</div>
                 </div>
                 <div style="clear:both;margin-bottom:10px;"></div>
 

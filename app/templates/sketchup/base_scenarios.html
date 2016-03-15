@@ -269,7 +269,7 @@ function render()
                 <div class="row" style="margin-bottom:10px;">
                     <div class="col-md-12">
                         <form id="scenario_search_form" method="POST" action="{{ url_for('sketchup.get_base_scenarios') }}">
-                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_base_scenarios();" placeholder="Search by scenario name" type="text" value="">
+                            <input class="form-control input-lg" id="filter_text" name="filter_text" name="user_info" onkeyup="get_base_scenarios();" placeholder="{{gettext('Search by scenario name')}}" type="text" value="">
                         </form>
                     </div>
                 </div>
@@ -293,7 +293,7 @@ function render()
                 </div>
                 <div style="float:left; margin-left:10px;">
                     <div>{{ gettext('Created by <span id="created_user"></span> at <span id="created_time"></span>') }}</div>
-                    <div id="last_edited_panel" style="display:none">{{ gettext("Last edited by") }} <span id="last_edited_user"></span>{{ gettext("at") }}  <span id="last_edited_time"></span></div>
+                    <div id="last_edited_panel" style="display:none">{{ gettext("Last edited by %(username)s at %(time)s", username='<span id="last_edited_user"></span>', time='<span id="last_edited_time"></span>') }}</div>
                 </div>
                 <div style="clear:both;margin-bottom:10px;"></div>
 

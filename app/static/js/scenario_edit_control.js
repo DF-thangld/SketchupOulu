@@ -282,7 +282,7 @@ function change_build_place()
 		IsOnTop=false;
 		intersectObjects=[plane];
 		//objects.splice( objects.indexOf( plane ), 1 );
-		document.getElementById("buildWhere").innerHTML="Build On Ground";
+		document.getElementById("buildWhere").innerHTML=TEXT_BUILD_ON_GROUND;
 	}
 	else
 	{
@@ -290,7 +290,7 @@ function change_build_place()
 		IsOnTop=true;
 		
 		intersectObjects=objects;
-		document.getElementById("buildWhere").innerHTML="Build On Top";
+		document.getElementById("buildWhere").innerHTML=TEXT_BUILD_ON_TOP;
 	}
 
 }
