@@ -196,15 +196,15 @@ msgstr "Suunnittele unelmiesi kaupunki"
 
 #: app/templates/homepage.html
 msgid "Don't know where to start?"
-msgstr "Tiedä mistä aloittaa?"
+msgstr "Miten aloitan?"
 
 #: app/templates/homepage.html
 msgid "Let's Get In Touch!"
-msgstr "Let's ota yhteyttä!"
+msgstr "Ota Yhteyttä!"
 
 #: app/templates/homepage.html
 msgid "Have something to comment or just want to tell us some nice words? Send us an email and we will get back to you as soon as possible!"
-msgstr "On jotain kommentoida tai vain halua kertoa meille hienoja sanoja? Lähetä meille sähköpostia, ja saamme takaisin sinulle mahdollisimman pian!"
+msgstr "Onko sinulla kommentoitavaa tai halutko muuten vain kertoa jotain? Lähetä meille sähköpostia niin olemme yhteydessä sinuun mahdollisimman pian!"
 
 #: app/templates/guest_menu.html:11 app/templates/inside_menu.html:21
 msgid "Sign up"
@@ -225,14 +225,14 @@ msgstr "Kirjaudu"
 #: app/templates/users/building_models.html:222
 #: app/templates/users/scenarios.html:340
 msgid "Home"
-msgstr "Alku"
+msgstr "Alkuun"
 
 #: app/templates/guest_menu.html:22 app/templates/homepage.html:169
 #: app/templates/inside_menu.html:30 app/templates/user_menu.html:22
 #: app/templates/sketchup/base_scenarios.html:264
 #: app/templates/sketchup/base_scenarios.html:266
 msgid "Base scenarios"
-msgstr "Pohjasuunnitelmat"
+msgstr "Pohjasuunnitelmat - Muokkaa"
 
 #: app/templates/guest_menu.html:24 app/templates/user_menu.html:48
 msgid "Contact us"
@@ -244,7 +244,7 @@ msgstr "Navigointi"
 
 #: app/templates/homepage.html:168 app/templates/inside_menu.html:58
 msgid "About us"
-msgstr "Tekijät"
+msgstr "Tietoa meistä"
 
 #: app/templates/homepage.html:171 app/templates/inside_menu.html:33
 #: app/templates/inside_menu.html:35 app/templates/user_menu.html:24
@@ -267,8 +267,8 @@ msgstr ""
 "oikeassa paikassa!"
 
 #: app/templates/homepage.html:187
-msgid "Find Out More"
-msgstr "Lisätietoja"
+msgid "Start here"
+msgstr "Aloita tästä"
 
 #: app/templates/inside_menu.html:15 app/templates/user_menu.html:15
 msgid "Sign out"
@@ -298,7 +298,7 @@ msgstr "Mallit"
 #: app/templates/users/profile.html:257 app/templates/users/profile.html:278
 #: app/templates/users/scenarios.html:342
 msgid "Scenarios"
-msgstr "Suunnitelmat"
+msgstr "Suunnitelmat – Muokkaa"
 
 #: app/templates/inside_menu.html:48 app/templates/user_menu.html:38
 msgid "Suggestions"
@@ -529,7 +529,7 @@ msgid "Username"
 msgstr "Käyttäjänimi"
 
 #: app/templates/admin/user_management.html:229
-msgid "Fullname"
+msgid "Full name"
 msgstr "Koko nimi"
 
 #: app/templates/admin/user_management.html:237
@@ -597,7 +597,7 @@ msgid ""
 "Created by <span id=\"created_user\"></span> at <span id=\"created_time\"></"
 "span>"
 msgstr ""
-"Luonut <span id=\"created_user\"></span>  <span id=\"created_time\"></span>"
+"Luonut <span id=\"created_user\"></span> <span id=\"created_time\"></span>"
 
 #: app/templates/sketchup/base_scenarios.html:305
 msgid "100m"
@@ -672,6 +672,22 @@ msgstr "Haluatko varmasti kloonata(kopioida) suunnitelman?"
 #: app/templates/sketchup/edit_scenario.html:313
 msgid "Scenario cloned"
 msgstr "Suunnitelma kloonattu(kopioitu)"
+
+#: app/templates/sketchup/view_building_model.html
+msgid "Created by <a href="%(link)s">%(username)s</a> at %(time)s"
+msgstr "Luonut <a href="%(link)s">%(username)s</a> %(time)s"
+
+#: app/templates/sketchup/view_building_model.html
+msgid "Promote to base model"
+msgstr "Nosta perusmalliksi"
+
+#: app/templates/sketchup/view_building_model.html
+msgid "Demote to normal model"
+msgstr "Laske tavalliseksi malliksi"
+
+#: app/templates/sketchup/view_building_model.html
+msgid "Download model file"
+msgstr "Lataa mallitiedosto"
 
 #: app/templates/sketchup/edit_scenario.html:370
 #: app/templates/sketchup/view_building_model.html:299
@@ -800,7 +816,7 @@ msgstr "Rakenna päällekkäin"
 #: app/templates/sketchup/edit_scenario.html:459
 #: app/templates/users/add_scenario.html:196
 msgid "Build On Ground"
-msgstr "Rakentaa paikan päällä"
+msgstr "Rakenna maan päälle"
 
 #: app/templates/sketchup/edit_scenario.html:461
 #: app/templates/users/add_scenario.html:198
@@ -1063,6 +1079,18 @@ msgstr ""
 "Anna sähköpostiosoitteesi, niin lähetämme sinulle linkin salasanasi "
 "uudelleenasettamiseksi"
 
+#:
+msgid "Search by email or name"
+msgstr "Etsi sähköpostitse tai nimi"
+
+#:
+msgid "Update success!"
+msgstr "Päivitä menestys!"
+
+#: app/users/views.py
+msgid "Captcha was incorrect"
+msgstr "Captcha oli virheellinen"
+
 #: app/users/views.py:92 app/users/views.py:98
 msgid "Wrong email or password"
 msgstr "Sähköpostiosoite tai salasana väärin"
@@ -1177,3 +1205,7 @@ msgstr "Etsi skenaarion nimi"
 #: app/templates/users/building_models.html
 msgid "Search by name"
 msgstr "Hae nimen perusteella"
+
+#: app/templates/sketchup/view_scenario.html
+msgid "Send"
+msgstr "Lähetä"

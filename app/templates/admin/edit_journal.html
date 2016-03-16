@@ -49,7 +49,7 @@ function upload_image(file, editor, welEditable)
            <li><a href = "{{ url_for('admin.news_management') }}">{{gettext("Journal Management")}}</a></li>
            <li class = "active"><a href="{{ url_for('admin.edit_journal', journal_id=journal_id) }}">{{gettext("Edit Journal")}}</a></li>
         </ol>
-		<h2 style="font-size: 45px;">Edit Journal - <a href="{{ url_for('journal.view', journal_id=journal_id) }}" target="journal_{{ journal_id }}">{{gettext("View journal")}}</a></h2>
+		<h2 style="font-size: 45px;">{{gettext("Edit Journal")}} - <a href="{{ url_for('journal.view', journal_id=journal_id) }}" target="journal_{{ journal_id }}">{{gettext("View journal")}}</a></h2>
 		<form accept-charset="UTF-8" action="{{ url_for('admin.edit_journal', journal_id=journal_id) }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
 			method="post">
@@ -76,7 +76,7 @@ function upload_image(file, editor, welEditable)
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.category_id.label(autocapitalize="off", autofocus="autofocus") }}
+					<label for="category_id" autocapitalize="off"  autofocus="autofocus">gettext('Category')</label>
 				</dt>
 				<dd>
                     {{ form.category_id(autocapitalize="off", autofocus="autofocus", value=form.category_id.data, style="width:100%") }}
@@ -84,12 +84,12 @@ function upload_image(file, editor, welEditable)
 			</dl>
             <dl class="form successed">
 				<dt class="input-label">
-					{{ form.is_activate.label }} {{ form.is_activate() }}
+					<label for="is_activate">{{gettext('Is activated')}}</label> {{ form.is_activate() }}
 				</dt>
 			</dl>
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.title.label(autocapitalize="off") }}
+					<label for="title" autocapitalize="off">{{gettext('Name (for admin view only) - Required')}}</label>
 				</dt>
 				<dd>
                     {{ form.title(autocapitalize="off", value=form.title.data, style="width:100%") }}
@@ -98,7 +98,7 @@ function upload_image(file, editor, welEditable)
 
 			<dl class="form successed">
 				<dt class="input-label">
-					{{ form.content.label }}
+					<label for="content">{{gettext('Description (for admin view only)')}}</label>
 				</dt>
 				<dd>
                     {{ form.content(value=form.content.data, style="height:50px;min-height:50px;") }}

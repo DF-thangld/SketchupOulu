@@ -89,7 +89,7 @@ function upload_image(file, editor, welEditable)
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.emails.label(autocapitalize="off", autofocus="autofocus") }}
+					<label for="emails" autocapitalize="off" autofocus="autofocus">{{gettext('Users')}}</label>
 				</dt>
 				<dd>
                     {{ form.emails(autocapitalize="off", autofocus="autofocus", value=form.emails.data, style="width:100%") }}
@@ -97,7 +97,7 @@ function upload_image(file, editor, welEditable)
 			</dl>
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.title.label(autocapitalize="off") }}
+					<label for="title" autocapitalize="off">{{gettext('Title')}}</label>
 				</dt>
 				<dd>
                     {{ form.title(autocapitalize="off", value=form.title.data, style="width:100%") }}
@@ -106,7 +106,7 @@ function upload_image(file, editor, welEditable)
 
 			<dl class="form successed">
 				<dt class="input-label">
-					{{ form.content.label }}
+					<label for="content" autocapitalize="off" autofocus="autofocus">{{gettext('Content')}}</label>
 				</dt>
 				<dd>
                     {{ form.content(value=form.content.data) }}

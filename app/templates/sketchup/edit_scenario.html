@@ -375,7 +375,7 @@ function save_scenario_content()
                 <div style="color:red">{{gettext('The scenario is deactivated')}}</div>
                 {% endif %}
                 {% if g.user and (g.user.username==scenario.owner.username or g.user.is_admin()) %}
-                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());$('#facebox #scenario_description').autoHeight();">Edit settings</a> - <a href="javascript:void(0);" onclick="delete_scenario();">{{gettext('Delete scenario')}}</a></div>
+                <div><a href="javascript:void(0);" onclick="$.facebox($('#edit_scenario').html());$('#facebox #scenario_description').autoHeight();">{{gettext('Edit settings')}}</a> - <a href="javascript:void(0);" onclick="delete_scenario();">{{gettext('Delete scenario')}}</a></div>
                 <div id="edit_scenario" style="display:none">
                     <h1 style="width:100%; border-bottom: 1px solid #bbb;">{{gettext('Edit scenario')}}</h1>
                     <div style="color:red;display:none;" id="update_scenario_errors"></div>

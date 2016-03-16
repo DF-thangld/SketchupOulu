@@ -150,37 +150,42 @@ function init()
 {% if g.user and g.user.is_admin %}
     function change_base_scenario_status()
     {
-        bootbox.confirm("{{gettext('Are you sure you want to change base status of this scenario?')}}", function(result)
-        {
-            bootbox.hideAll();
-            if (result)
-            {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url_for('admin.change_base_scenario_status', scenario_id=scenario.id) }}",
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.new_status == 0)
-                        {
-                            $('#base_scenario_button').removeClass('btn-danger');
-                            $('#base_scenario_button').addClass('btn-warning');
-                            $('#base_scenario_button').html('Promote to base scenario');
-                        }
-                        else
-                        {
-                            $('#base_scenario_button').removeClass('btn-warning');
-                            $('#base_scenario_button').addClass('btn-danger');
-                            $('#base_scenario_button').html('Demote to normal scenario');
-                        }
-                        show_alert('alert-success', 'Scenario status changed');
-
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
-            }
+        bootbox.confirm({
+	        message: "{{gettext('Are you sure you want to change base status of this scenario?')}}", 
+	        buttons: {
+	        	confirm: {label: "{{gettext('OK')}}"},
+	        	cancel: {label: "{{gettext('Cancel')}}"}},
+	        callback: function(result) {
+	            bootbox.hideAll();
+	            if (result)
+	            {
+	                $.ajax({
+	                    type: "GET",
+	                    url: "{{ url_for('admin.change_base_scenario_status', scenario_id=scenario.id) }}",
+	                    dataType: 'json',
+	                    success: function(data) {
+	                        if (data.new_status == 0)
+	                        {
+	                            $('#base_scenario_button').removeClass('btn-danger');
+	                            $('#base_scenario_button').addClass('btn-warning');
+	                            $('#base_scenario_button').html('Promote to base scenario');
+	                        }
+	                        else
+	                        {
+	                            $('#base_scenario_button').removeClass('btn-warning');
+	                            $('#base_scenario_button').addClass('btn-danger');
+	                            $('#base_scenario_button').html('Demote to normal scenario');
+	                        }
+	                        show_alert('alert-success', 'Scenario status changed');
+	
+	                    },
+	                    error: function(data)
+	                    {
+	                        show_alert('alert-danger', data.responseJSON[0]);
+	                    }
+	                });
+	            }
+	        }
         });
     }
 {% endif %}
@@ -188,27 +193,33 @@ function init()
 {% if can_edit %}
     function delete_scenario()
     {
-        bootbox.confirm('{{gettext('Are you sure you want to delete this scenario?')}}', function(result)
-        {
-            bootbox.hideAll();
-            if (result)
-            {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url_for('sketchup.delete_scenario', scenario_id=scenario.id) }}",
-                    dataType: 'json',
-                    success: function(data) {
-                        show_alert('alert-success', 'Scenario deleted');
-                        window.location = '{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}';
-
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
-            }
-        });
+        bootbox.confirm({
+	        message: '{{gettext('Are you sure you want to delete this scenario?')}}', 
+	        buttons: {
+	        	confirm: {label: "{{gettext('OK')}}"},
+	        	cancel: {label: "{{gettext('Cancel')}}"}},
+	        callback: function(result)
+	        {
+	            bootbox.hideAll();
+	            if (result)
+	            {
+	                $.ajax({
+	                    type: "GET",
+	                    url: "{{ url_for('sketchup.delete_scenario', scenario_id=scenario.id) }}",
+	                    dataType: 'json',
+	                    success: function(data) {
+	                        show_alert('alert-success', 'Scenario deleted');
+	                        window.location = '{{ url_for('users.user_scenarios_page', username=scenario.owner.username) }}';
+	
+	                    },
+	                    error: function(data)
+	                    {
+	                        show_alert('alert-danger', data.responseJSON[0]);
+	                    }
+	                });
+	            }
+	        }
+	    });
     }
 {% endif %}
 
@@ -230,7 +241,7 @@ function init()
                     '</div>  </div>',
                 buttons: {
                     success: {
-                        label: "Send",
+                        label: "{{gettext('Send')}}",
                         className: "btn-success",
                         callback: function ()
 						{

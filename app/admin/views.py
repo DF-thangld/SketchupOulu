@@ -202,19 +202,24 @@ def send_email():
     serialized_users = []
 
     if form.is_submitted():
+        is_validated = True
         emails = form.emails.data.split(',')
-        if form.validate():
+        
+        if len(emails) == 0:
+            is_validated = False
+            errors.append(gettext("Insert users to send email"))
+        if form.title.data.strip() == '':
+            is_validated = False
+            errors.append(gettext("Email title is required"))
+        if form.content.data.strip() == '':
+            is_validated = False
+            errors.append(gettext("Email content is required"))
+        
+        if is_validated:
             if form.action.data == 'send':
                 send_mail(emails, form.title.data, form.content.data)
             else:
                 send_mail([g.user.email], form.title.data, form.content.data)
-        else:
-            for error in form.emails.errors:
-                errors.append(error)
-            for error in form.title.errors:
-                errors.append(error)
-            for error in form.content.errors:
-                errors.append(error)
 
         query_text = ''
         for index, email in enumerate(emails):
@@ -238,14 +243,17 @@ def send_email():
 def create_journal_category():
     create_category_form = CreateJournalCategoryForm()
     errors = []
-    if create_category_form.validate():
+    
+    is_validated = True
+    if create_category_form.name.data.strip() == '':
+        is_validated = False
+        errors.append(gettext("Category name is required"))
+    if is_validated:
         category = JournalCategory(create_category_form.name.data, create_category_form.description.data)
         db.session.add(category)
         db.session.commit()
         return json.dumps({'success': True}), 201
     else:
-        for error in create_category_form.name.errors:
-            errors.append(error)
         return json.dumps(errors), 400
 
 @mod.route('/edit_journal_category/', methods=['POST'])
@@ -253,7 +261,13 @@ def create_journal_category():
 def edit_journal_category():
     edit_category_form = EditJournalCategoryForm()
     errors = []
-    if edit_category_form.validate():
+    
+    if edit_category_form.name.data.strip() == '':
+        errors.append(gettext('Category name is required'))
+    if edit_category_form.category_id.data is None or edit_category_form.name.data.strip() == '':
+        errors.append(gettext('Something went wrong...'))
+    
+    if len(errors) == 0:
         category = JournalCategory.query.filter_by(id=edit_category_form.category_id.data).first()
         if category is None:
             return json.dumps([gettext('Category not found')]), 404
@@ -263,10 +277,6 @@ def edit_journal_category():
         db.session.commit()
         return json.dumps({'id': category.id, 'name': category.name}), 200
     else:
-        for error in edit_category_form.name.errors:
-            errors.append(error)
-        for error in edit_category_form.category_id.errors:
-            errors.append(error)
         return json.dumps(errors), 400
 
 @mod.route('/get_category_data/', methods=['GET'])
@@ -361,22 +371,20 @@ def create_journal():
         create_journal_form.category_id.default = create_journal_form.category_id.data
     else:
         create_journal_form.category_id.default = category_id
+        
+    if create_journal_form.title.data.strip() == '':
+        errors.append(gettext('Journal name is required'))
+    if create_journal_form.title.data is None or create_journal_form.title.data.strip() == '' or create_journal_form.title.data.strip() == '0':
+        errors.append(gettext('Category is required'))
 
     if not create_journal_form.is_submitted():
         create_journal_form.is_activate.checked = True
         create_journal_form.process()
         return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
-    elif not create_journal_form.validate():
-        # validate false,
-        for error in create_journal_form.title.errors:
-            errors.append(error)
-        for error in create_journal_form.content.errors:
-            errors.append(error)
-        for error in create_journal_form.category_id.errors:
-            errors.append(error)
+    elif not len(errors) == 0:
 
         return render_template("admin/create_journal.html", form=create_journal_form, errors=errors, languages=config.LANGUAGES)
-    elif create_journal_form.validate():
+    elif len(errors) == 0:
         # create journal
         journal_activated = 0
         if create_journal_form.is_activate.data:
@@ -468,6 +476,12 @@ def edit_journal():
 
         return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 200
     else:
+        
+        if edit_journal_form.title.data.strip() == '':
+            errors.append(gettext('Journal name is required'))
+        if edit_journal_form.title.data is None or edit_journal_form.title.data.strip() == '' or edit_journal_form.title.data.strip() == '0':
+            errors.append(gettext('Category is required'))
+        
         for language in config.LANGUAGES:
             if language not in journal_contents:
                 journal_contents[language] = {  'locale': language,
@@ -478,7 +492,7 @@ def edit_journal():
             if ('content_' +  language) in request.form:
                 journal_contents[language]['content'] = request.form.get('content_' + language)
 
-        if edit_journal_form.validate():
+        if len(errors) == 0:
             category = JournalCategory.query.filter_by(id=edit_journal_form.category_id.data).first()
             if category is None:
                 errors.append(gettext('Journal category not found'))
@@ -501,12 +515,6 @@ def edit_journal():
             db.session.commit()
             return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 200
         else:
-            for error in edit_journal_form.title.errors:
-                errors.append(error)
-            for error in edit_journal_form.content.errors:
-                errors.append(error)
-            for error in edit_journal_form.category_id.errors:
-                errors.append(error)
             return render_template("admin/edit_journal.html", journal_id=journal_id, form=edit_journal_form, errors=errors, languages=config.LANGUAGES, journal_contents=journal_contents), 400
 
 

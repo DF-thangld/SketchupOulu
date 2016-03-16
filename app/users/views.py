@@ -99,6 +99,7 @@ def login():
         if form.password.data.strip() == '':
             is_validated = False
             errors.append(gettext('Password field is required'))
+            
         if is_validated:
             user = User.query.filter_by(email=form.email.data.lower()).first()  # @UndefinedVariable
 
@@ -148,9 +149,39 @@ def register():
     
     form = RegisterForm(request.form)
     errors = []
+    
 
     if form.is_submitted():
-        if form.validate():
+        is_validated = True
+        if form.name.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Username is required'))
+        #validate email
+        if form.email.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Email is required'))
+        #validate valid email
+        match = re.search(r'^.+@([^.@][^@]+)$', form.email.data.strip())
+        if not match:
+            is_validated = False
+            errors.append(gettext('Invalid email address'))
+        
+        if form.password.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Password field is required'))
+            
+        if form.confirm.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('You have to confirm your password'))
+        if form.confirm.data != form.password.data:
+            is_validated = False
+            errors.append(gettext('Passwords must match'))
+        
+        if len(form.recaptcha.errors) > 0:
+            is_validated = False
+            errors.append(gettext('Captcha was incorrect'))
+            
+        if is_validated:
             same_username_user = User.query.filter_by(username=form.name.data).first()
             same_email_user = User.query.filter_by(email=form.email.data).first()
             if same_email_user is not None:
@@ -174,16 +205,6 @@ def register():
             send_mail([user.email], email_activation.title, render_template_string(email_activation.content, activate_link=url_for('users.verify_account', code=user.verification_code, _external=True)))
             return render_template("users/register_finish.html", email=user.email)
         else:
-            for error in form.name.errors:
-                errors.append(error)
-            for error in form.email.errors:
-                errors.append(error)
-            for error in form.password.errors:
-                errors.append(error)
-            for error in form.confirm.errors:
-                errors.append(error)
-            for error in form.recaptcha.errors:
-                errors.append(error)
             return render_template("users/register.html", form=form, errors=errors)
     return render_template("users/register.html", form=form, errors=[])
 
@@ -209,7 +230,17 @@ def reset_password():
     errors = []
     # make sure data are valid, but doesn't validate password is right
     if form.is_submitted():
-        if form.validate():
+        is_validated = True
+        if form.email.data.strip() == '':
+            is_validated = False
+            errors.append(gettext('Email is required'))
+        #validate valid email
+        match = re.search(r'^.+@([^.@][^@]+)$', form.email.data.strip())
+        if not match:
+            is_validated = False
+            errors.append(gettext('Invalid email address'))
+            
+        if is_validated:
             user = User.query.filter_by(email=form.email.data).first()  # @UndefinedVariable
 
             if user is None:
@@ -229,8 +260,6 @@ def reset_password():
             db.session.commit()
             return render_template("users/reset_password_submited.html"), 200
         else:
-            for error in form.email.errors:
-                errors.append(error)
             return render_template("users/reset_password.html", form=form, errors=errors), 200
 
     return render_template("users/reset_password.html", form=form, errors=[])

@@ -105,7 +105,9 @@
 
     <script>
     
-
+    bootbox.setDefaults({
+        locale: "{{session['locale']}}"
+  });
     {% block js_script %}
     {% endblock %}
     

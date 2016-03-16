@@ -47,9 +47,9 @@ function upload_image(file, editor, welEditable)
            <li><a href = "{{ url_for('index') }}">{{gettext("Home")}}</a></li>
             <li><a href = "{{ url_for('index') }}">{{gettext("Admin tools")}}</a></li>
             <li><a href = "{{ url_for('admin.news_management') }}">{{gettext("Journal Management")}}</a></li>
-           <li class = "active">{{Create+" "+Journal}}</li>
+           <li class = "active">{{gettext("Create Journal")}}</li>
         </ol>
-		<h2 style="font-size: 45px;">{{Create+" "+Journal}}</h2>
+		<h2 style="font-size: 45px;">{{gettext("Create Journal")}}</h2>
 
 		<form accept-charset="UTF-8" action="{{ url_for('admin.create_journal') }}" autocomplete="off"
 			class="setup-form js-form-signup-detail"
@@ -77,7 +77,7 @@ function upload_image(file, editor, welEditable)
             {% endif %}
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.category_id.label(autocapitalize="off", autofocus="autofocus") }}
+					<label for="category_id" autocapitalize="off"  autofocus="autofocus">gettext('Category')</label>
 				</dt>
 				<dd>
                     {{ form.category_id(autocapitalize="off", autofocus="autofocus", value=form.category_id.data, style="width:100%") }}
@@ -85,12 +85,12 @@ function upload_image(file, editor, welEditable)
 			</dl>
             <dl class="form successed">
 				<dt class="input-label">
-					{{ form.is_activate.label }} {{ form.is_activate() }}
+					<label for="is_activate">{{gettext('Is activated')}}</label> {{ form.is_activate() }}
 				</dt>
 			</dl>
 			<dl class="form">
 				<dt class="input-label">
-					{{ form.title.label(autocapitalize="off") }}
+					<label for="title" autocapitalize="off">{{gettext('Name (for admin view only) - Required')}}</label>
 				</dt>
 				<dd>
                     {{ form.title(autocapitalize="off", value=form.title.data, style="width:100%") }}
@@ -99,7 +99,7 @@ function upload_image(file, editor, welEditable)
 
 			<dl class="form successed">
 				<dt class="input-label">
-					{{ form.content.label }}
+					<label for="content">{{gettext('Description (for admin view only)')}}</label>
 				</dt>
 				<dd>
                     {{ form.content(value=form.content.data, style="height:50px;min-height:50px;") }}
@@ -127,7 +127,7 @@ function upload_image(file, editor, welEditable)
             <div style="width:100%; border:1px solid black"></div>
 
 			<div class="form-actions" style="margin-top:10px;">
-                <button type="submit" class="btn btn-primary" id="create_button">{{ gettext("Create  Journal") }}</button>
+                <button type="submit" class="btn btn-primary" id="create_button">{{ gettext("Create Journal") }}</button>
 				<button type="reset" class="btn btn-warning" id="reset_button">{{gettext("Reset")}}</button>
 			</div>
 

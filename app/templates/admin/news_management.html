@@ -325,19 +325,19 @@
                             <div class="pull-right m_buttons">
                                 <!-- Buttons on category -->
                                 <a type="button" class="noProp btn btn-info" name="{{ category.id }}" href="{{ url_for('admin.create_journal',category_id=category.id) }}" >
-                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New journal
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> {{gettext("Create Journal")}}
                                 </a>
                                 <a type="button" class="btn btn-info" href="#" onclick="display_edit_journal_category_form({{ category.id }});">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> {{gettext("Edit")}}
                                 </a>
                                 <span id="activate_button_{{ category.id }}">
                                     {% if category.is_activated == 0 %}
                                     <a type="button" class="btn btn-success" onclick="activate_deactivate_category({{ category.id }}, false);">
-                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Activate
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{gettext("Activate")}}
                                     </a>
                                     {% else %}
                                     <a type="button" class="btn btn-warning" onclick="activate_deactivate_category({{ category.id }}, true);">
-                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deactivate
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {{gettext("Deactivate")}}
                                     </a>
                                     {% endif %}
                                 </span>

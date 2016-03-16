@@ -165,26 +165,31 @@ function render()
 
     function delete_building_model()
     {
-        bootbox.confirm('{{gettext('Are you sure you want to delete this building model?')}}', function(result)
-        {
-            bootbox.hideAll();
-            if (result)
-            {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url_for('sketchup.delete_building_model', building_model_id=building_model.id) }}",
-                    dataType: 'json',
-                    success: function(data) {
-                        show_alert('alert-success', '{{gettext('Building model deleted')}}');
-                        window.location = '{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}';
-
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
-            }
+        bootbox.confirm({
+	        message: '{{gettext('Are you sure you want to delete this building model?')}}', 
+	        buttons: {
+	        	confirm: {label: "{{gettext('OK')}}"},
+	        	cancel: {label: "{{gettext('Cancel')}}"}},
+	        callback: function(result){
+	            bootbox.hideAll();
+	            if (result)
+	            {
+	                $.ajax({
+	                    type: "GET",
+	                    url: "{{ url_for('sketchup.delete_building_model', building_model_id=building_model.id) }}",
+	                    dataType: 'json',
+	                    success: function(data) {
+	                        show_alert('alert-success', '{{gettext('Building model deleted')}}');
+	                        window.location = '{{ url_for('users.user_building_models_page', username=building_model.owner.username) }}';
+	
+	                    },
+	                    error: function(data)
+	                    {
+	                        show_alert('alert-danger', data.responseJSON[0]);
+	                    }
+	                });
+	            }
+	        }
         });
     }
 
@@ -216,65 +221,76 @@ function render()
 {% if g.user %}
     function clone_building_model()
     {
-        bootbox.confirm('{{gettext('Are you sure you want to clone this building model?')}}', function(result)
-        {
-            bootbox.hideAll();
-            if (result)
-            {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url_for('sketchup.clone_building_model', building_model_id=building_model.id) }}",
-                    dataType: 'json',
-                    success: function(data) {
-                        show_alert('alert-success', '{{gettext('Building model cloned')}}');
-                        window.location = '{{ url_for('sketchup.view_building_model') }}?id=' + data.id;
-
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
-            }
-        });
+        bootbox.confirm({
+        	message: '{{gettext('Are you sure you want to clone this building model?')}}', 
+        	buttons: {
+	        	confirm: {label: "{{gettext('OK')}}"},
+	        	cancel: {label: "{{gettext('Cancel')}}"}},
+        	callback: function(result)
+	        {
+	            bootbox.hideAll();
+	            if (result)
+	            {
+	                $.ajax({
+	                    type: "GET",
+	                    url: "{{ url_for('sketchup.clone_building_model', building_model_id=building_model.id) }}",
+	                    dataType: 'json',
+	                    success: function(data) {
+	                        show_alert('alert-success', '{{gettext('Building model cloned')}}');
+	                        window.location = '{{ url_for('sketchup.view_building_model') }}?id=' + data.id;
+	
+	                    },
+	                    error: function(data)
+	                    {
+	                        show_alert('alert-danger', data.responseJSON[0]);
+	                    }
+	                });
+	            }
+	        }
+	    });
 
     }
 {% endif %}
 {% if g.user and g.user.is_admin() %}
     function change_base_model_status()
     {
-        bootbox.confirm('{{gettext('Are you sure you want to change base status of this model?')}}', function(result)
-        {
-            bootbox.hideAll();
-            if (result)
-            {
-                $.ajax({
-                    type: "POST",
-                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
-                    data: {'is_base_item': 1},
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.building_model.is_base_item == 0)
-                        {
-                            $('#base_model_button').removeClass('btn-danger');
-                            $('#base_model_button').addClass('btn-warning');
-                            $('#base_model_button').html('Promote to base model');
-                        }
-                        else
-                        {
-                            $('#base_model_button').removeClass('btn-warning');
-                            $('#base_model_button').addClass('btn-danger');
-                            $('#base_model_button').html('Demote to normal model');
-                        }
-                        show_alert('alert-success', 'Model status changed');
-
-                    },
-                    error: function(data)
-                    {
-                        show_alert('alert-danger', data.responseJSON[0]);
-                    }
-                });
-            }
+        bootbox.confirm({
+	        message: '{{gettext('Are you sure you want to change base status of this model?')}}',
+	        buttons: {
+	        	confirm: {label: "{{gettext('OK')}}"},
+	        	cancel: {label: "{{gettext('Cancel')}}"}}, 
+	        callback: function(result) {
+	            bootbox.hideAll();
+	            if (result)
+	            {
+	                $.ajax({
+	                    type: "POST",
+	                    url: "{{ url_for('sketchup.update_building_model', building_model_id=building_model.id) }}",
+	                    data: {'is_base_item': 1},
+	                    dataType: 'json',
+	                    success: function(data) {
+	                        if (data.building_model.is_base_item == 0)
+	                        {
+	                            $('#base_model_button').removeClass('btn-danger');
+	                            $('#base_model_button').addClass('btn-warning');
+	                            $('#base_model_button').html('{{gettext("Promote to base model")}}');
+	                        }
+	                        else
+	                        {
+	                            $('#base_model_button').removeClass('btn-warning');
+	                            $('#base_model_button').addClass('btn-danger');
+	                            $('#base_model_button').html('{{gettext("Demote to normal model")}}');
+	                        }
+	                        show_alert('alert-success', '{{gettext("Model status changed")}}');
+	
+	                    },
+	                    error: function(data)
+	                    {
+	                        show_alert('alert-danger', data.responseJSON[0]);
+	                    }
+	                });
+	            }
+	        }
         });
     }
 {% endif %}
@@ -296,7 +312,9 @@ function render()
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+building_model.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
             <div style="float:left; margin-left:10px;">
-                <div>{{gettext('Created by')}}<a href="{{ url_for('users.profile', username=building_model.owner.username) }}">{{ building_model.owner.username }}</a> {{gettext('at')}} {{ building_model.created_time }}</div>
+                <div>
+                	{{gettext('Created by <a href="%(link)s">%(username)s</a> at %(time)s', link=url_for('users.profile', username=building_model.owner.username), username=building_model.owner.username, time=building_model.created_time)|e}}
+                </div>
                 {% if g.user and (g.user.username==building_model.owner.username or g.user.is_admin()) %}
                 <div>
                     <a href="javascript:void(0);" onclick="$.facebox($('#edit_building_model').html());">{{gettext('Edit')}}</a> -
@@ -323,7 +341,7 @@ function render()
                 </div>
                 {% endif %}
                 <div>
-                <a class="btn btn-info" href="{{ url_for('static', filename='models/building_models/' + building_model.data_file) }}" download>Download model file</a>
+                <a class="btn btn-info" href="{{ url_for('static', filename='models/building_models/' + building_model.data_file) }}" download>{{gettext("Download model file")}}</a>
                 {% if g.user %}
                 <button class="btn btn-primary" onclick="clone_building_model();">{{gettext('Clone this building model')}}</button>
                 {% endif %}

@@ -60,15 +60,15 @@
 			<li class="header-nav-item">
 				{% if 'locale' in session and session['locale']=='en' %}
 					{% if request.url.find('?') != -1 %}
-	                <a class="header-nav-link" href="{{ request.url }}&lang=fi">Suomi</a>
+	                <a class="header-nav-link" href="{{ request.url }}&lang=fi">Suomeksi</a>
 	                {% else %}
-	                <a class="header-nav-link" href="{{ request.url }}?lang=fi">Suomi</a>
+	                <a class="header-nav-link" href="{{ request.url }}?lang=fi">Suomeksi</a>
 	                {% endif %}
 				{% else %}
 					{% if request.url.find('?') != -1 %}
-	                <a class="header-nav-link" href="{{ request.url }}&lang=en">English</a>
+	                <a class="header-nav-link" href="{{ request.url }}&lang=en">In English</a>
 	                {% else %}
-	                <a class="header-nav-link" href="{{ request.url }}?lang=en">English</a>
+	                <a class="header-nav-link" href="{{ request.url }}?lang=en">In English</a>
 	                {% endif %}
 				{% endif %}
 			</li>
