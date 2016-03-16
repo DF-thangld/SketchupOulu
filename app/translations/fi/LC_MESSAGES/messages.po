@@ -1081,15 +1081,15 @@ msgstr ""
 
 #:
 msgid "Search by email or name"
-msgstr "Etsi sähköpostitse tai nimi"
+msgstr "Etsi sähköpostiosoitteella tai nimellä"
 
 #:
 msgid "Update success!"
-msgstr "Päivitä menestys!"
+msgstr "Päivitys onnistui!"
 
 #: app/users/views.py
 msgid "Captcha was incorrect"
-msgstr "Captcha oli virheellinen"
+msgstr "Tekstitunnistus (captcha) väärin"
 
 #: app/users/views.py:92 app/users/views.py:98
 msgid "Wrong email or password"
