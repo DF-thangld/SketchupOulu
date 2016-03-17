@@ -76,7 +76,7 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
 
     #save file
     full_filename = os.path.join(app_dir, stored_directory, filename)
-    upload_file.save(full_filename)
+	upload_file.save(full_filename)
 
     return {'filename': filename,
             'extension': file_extension.lower(),
@@ -84,7 +84,9 @@ def upload_file(upload_file, stored_directory, generate_filename=True, file_type
             'full_filename': full_filename,
             'filename_without_extension': filename_without_extension}
 
-def save_image(image_filename, image_dir, base64_content):
+def save_image(image_filename, image_dir, base64_content, override=True):
+	if not override and os.path.exists(os.path.join(app_dir, image_dir, image_filename)):
+		return False
     fh = open(os.path.join(app_dir, image_dir, image_filename), "wb")
     
     b64data = base64_content.split(',')[1] # [sic]
@@ -92,6 +94,7 @@ def save_image(image_filename, image_dir, base64_content):
     
     #fh.write(decodestring(base64_content))
     fh.close()
+	return True
     
 def delete_file(dir, filename):
     try:

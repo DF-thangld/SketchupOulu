@@ -1,15 +1,17 @@
 import json
+import os.path
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from flask.ext.uploads import UploadSet, IMAGES
 from sqlalchemy.dialects import mysql
 
-from app import db, send_mail, upload_file, save_image, delete_file
+from app import db, send_mail, upload_file, save_image, delete_file, app_dir
 from app.users.decorators import requires_login
 from app.users.models import User
 from app.sketchup.models import Scenario, BuildingModel, Comment, CommentTopic
 import app.utilities as utilities
 from flask.ext.babel import gettext
+
 
 mod = Blueprint('sketchup', __name__, url_prefix='/sketchup')
 
@@ -247,6 +249,16 @@ def update_building_model(building_model_id):
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
         return json.dumps([gettext('Building model not found')]), 404
+		
+	if 'preview' in request.form:
+        preview = request.form.get('preview', '')
+        if preview != '':
+            try:
+                image_saved = save_image(building_model.id + '.png', 'static/images/building_model_previews', preview, override=building_model.can_edit(g.user))
+                if image_saved:
+					building_model.has_preview = 1
+            except:
+                pass
 
     if not building_model.can_edit(g.user):
         return json.dumps([gettext('Building model not found')]), 404
@@ -281,14 +293,7 @@ def update_building_model(building_model_id):
             except:
                 return json.dumps([gettext('Error in saving additional information, please contact an admin for more information')]), 400
     
-    if 'preview' in request.form:
-        preview = request.form.get('preview', '')
-        if preview != '':
-            try:
-                save_image(building_model.id + '.png', 'static/images/building_model_previews', preview)
-                building_model.has_preview = 1
-            except:
-                pass
+    
         
 
     db.session.commit()
