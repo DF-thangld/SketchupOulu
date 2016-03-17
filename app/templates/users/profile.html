@@ -244,7 +244,7 @@
            <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
            <li class = "active">{{ gettext('Profile') }}</li>
         </ol>
-		<h2 style="font-size: 45px;">{{ user.username }}'s profile</h2>
+		<h2 style="font-size: 45px;">{{ gettext("%(username)s's profile", username=user.username) }}</h2>
 
         <div class="col-md-3">
 			<ul class="nav nav-pills nav-stacked" id="profile_menu">

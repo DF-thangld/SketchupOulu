@@ -22,27 +22,27 @@
                         </div>
                     </div>
                     <div class="form-group">
-                    	<label class="control-label col-xs-3" for="email">{{gettext('Username')}}</label>
+                    	<label class="control-label col-xs-3" for="username">{{gettext('Username')}}</label>
                         <div class="col-xs-8">
                             {{ form.username(class="form-control", placeholder="{{gettext('Username')}}", readonly="", value=form.username.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                    	<label class="control-label col-xs-3" for="email">Full name</label>
+                    	<label class="control-label col-xs-3" for="fullname">{{gettext('Full name')}}</label>
                         <div class="col-xs-8">
                             {{ form.fullname(class="form-control", placeholder="{{gettext('Full name')}}", value=form.fullname.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                    	<label class="control-label col-xs-3" for="email">{{gettext('Address')}}</label>
+                    	<label class="control-label col-xs-3" for="address">{{gettext('Address')}}</label>
                         <div class="col-xs-8">
                             {{ form.address(class="form-control", placeholder="{{gettext('Address')}}", value=form.address.data) }}
                         </div>
                     </div>
                     <div class="form-group">
-                    	<label class="control-label col-xs-3" for="email">{{gettext('Phone number')}}</label>
+                    	<label class="control-label col-xs-3" for="phone_number">{{gettext('Phone Number')}}</label>
                         <div class="col-xs-8">
-                            {{ form.phone_number(class="form-control", placeholder="{{gettext('Phone number')}}", value=form.phone_number.data) }}
+                            {{ form.phone_number(class="form-control", placeholder="{{gettext('Phone Number')}}", value=form.phone_number.data) }}
                         </div>
                     </div>
 
@@ -95,8 +95,10 @@
             {
                 $('#profile_picture').attr('src', data);
                 upload_form.reset();
-                show_alert('alert-success', 'Profile uploaded!');
-            }
+                show_alert('alert-success', '{{gettext("Profile uploaded!")}}');
+            },
+			dragDropStr: "{{gettext('Drag and Drop your picture')}}",
+			uploadStr: "{{gettext('Upload')}}"
         });
     });
 </script>

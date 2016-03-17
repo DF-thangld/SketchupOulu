@@ -232,7 +232,7 @@ msgstr "Alkuun"
 #: app/templates/sketchup/base_scenarios.html:264
 #: app/templates/sketchup/base_scenarios.html:266
 msgid "Base scenarios"
-msgstr "Pohjasuunnitelmat - Muokkaa"
+msgstr "Pohjasuunnitelmat"
 
 #: app/templates/guest_menu.html:24 app/templates/user_menu.html:48
 msgid "Contact us"
@@ -298,7 +298,7 @@ msgstr "Mallit"
 #: app/templates/users/profile.html:257 app/templates/users/profile.html:278
 #: app/templates/users/scenarios.html:342
 msgid "Scenarios"
-msgstr "Suunnitelmat – Muokkaa"
+msgstr "Suunnitelmat"
 
 #: app/templates/inside_menu.html:48 app/templates/user_menu.html:38
 msgid "Suggestions"
@@ -1027,6 +1027,18 @@ msgstr "Käyttäjäkuva"
 msgid "Upload"
 msgstr "Lataa"
 
+#: app/templates/users/user_profile.html
+msgid "Profile uploaded!"
+msgstr "Ladataan profiilia!"
+
+#: app/templates/users/user_profile.html
+msgid "Drag and Drop your picture"
+msgstr "Vedä ja pudota kuvasi"
+
+#: app/templates/users/user_profile.html
+msgid "%(username)s's profile"
+msgstr "%(username)s'n profiili"
+
 #: app/templates/users/verify_account.html:25
 msgid "Your account has been activated"
 msgstr "Käyttäjätilisi on aktivoitu"
@@ -1171,11 +1183,11 @@ msgstr "Tunnistamaton mallitiedoston formaatti"
 
 #: app/templates/users/scenarios.html:344
 msgid "%(username)s's scenarios"
-msgstr "%(username)s suunnitelmat"
+msgstr "%(username)s'n suunnitelmat"
 
 #: app/templates/users/building_models.html:226
 msgid "%(username)s's building models"
-msgstr "%(username)s rakennusmallit"
+msgstr "%(username)s'n rakennusmallit"
 
 #: app/templates/js_sketchup_comment.html:17
 msgid "Comment Box"
