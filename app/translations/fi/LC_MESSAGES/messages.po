@@ -1029,11 +1029,11 @@ msgstr "Lataa"
 
 #: app/templates/users/user_profile.html
 msgid "Profile uploaded!"
-msgstr "Ladataan profiilia!"
+msgstr "Profiili ladattu!"
 
 #: app/templates/users/user_profile.html
 msgid "Drag and Drop your picture"
-msgstr "Vedä ja pudota kuvasi"
+msgstr "Siirrä ja Pudota kuvasi"
 
 #: app/templates/users/user_profile.html
 msgid "%(username)s's profile"
