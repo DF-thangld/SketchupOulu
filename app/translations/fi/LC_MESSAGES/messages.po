@@ -599,6 +599,10 @@ msgid ""
 msgstr ""
 "Luonut <span id=\"created_user\"></span> <span id=\"created_time\"></span>"
 
+#: app/templates/sketchup/view_scenario.html
+msgid "Created by %(username)s at %(time)s"
+msgstr "Luonut %(username)s %(time)s"
+
 #: app/templates/sketchup/base_scenarios.html:305
 msgid "100m"
 msgstr "100m"
@@ -663,6 +667,10 @@ msgstr "toimesta"
 #: app/templates/sketchup/edit_scenario.html:275
 msgid "Suggestion sent"
 msgstr "Ehdotus lähetetty"
+
+#: app/templates/sketchup/edit_scenario.html
+msgid "Scenario status changed"
+msgstr "Suunnitelman tila vaihdettu"
 
 #: app/templates/sketchup/edit_scenario.html:303
 #: app/templates/sketchup/view_scenario.html:291
@@ -1017,7 +1025,7 @@ msgstr "Apua on tulossa"
 
 #: app/templates/users/scenarios.html:351
 msgid "Add scenario"
-msgstr "Lisää suunnitelmaan"
+msgstr "Lisää uusi suunnitelma"
 
 #: app/templates/users/user_profile.html:6
 msgid "Profile picture"
@@ -1221,3 +1229,27 @@ msgstr "Hae nimen perusteella"
 #: app/templates/sketchup/view_scenario.html
 msgid "Send"
 msgstr "Lähetä"
+
+#: app/templates/users/add_building_model.html
+msgid "New building model"
+msgstr "Uusi rakennusmalli"
+
+#: app/templates/users/add_building_model.html
+msgid "New Building Model"
+msgstr "Uusi Rakennusmalli"
+
+#: app/templates/users/add_building_model.html
+msgid "Model name"
+msgstr "Mallin nimi"
+
+#: app/templates/users/add_building_model.html
+msgid "Data file (max file size: 10MB)"
+msgstr "Datatiedosto (max tiedoston koko: 10MB)"
+
+#: app/templates/users/add_building_model.html
+msgid "Accepted file types"
+msgstr "Hyväksytyt tiedostotyypit"
+
+#: app/templates/users/add_building_model.html
+msgid "How to upload models"
+msgstr "Ohje mallien lataukseen"

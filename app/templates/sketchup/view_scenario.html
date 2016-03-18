@@ -168,15 +168,15 @@ function init()
 	                        {
 	                            $('#base_scenario_button').removeClass('btn-danger');
 	                            $('#base_scenario_button').addClass('btn-warning');
-	                            $('#base_scenario_button').html('Promote to base scenario');
+	                            $('#base_scenario_button').html('{{gettext("Promote to base scenario")}}');
 	                        }
 	                        else
 	                        {
 	                            $('#base_scenario_button').removeClass('btn-warning');
 	                            $('#base_scenario_button').addClass('btn-danger');
-	                            $('#base_scenario_button').html('Demote to normal scenario');
+	                            $('#base_scenario_button').html('{{gettext("Demote to normal scenario")}}');
 	                        }
-	                        show_alert('alert-success', 'Scenario status changed');
+	                        show_alert('alert-success', '{{gettext("Scenario status changed")}}');
 	
 	                    },
 	                    error: function(data)
@@ -276,7 +276,7 @@ function init()
 									new_comment_html += '<div style="clear:both;"></div>';
 
 									$('#comment_list_{{scenario.id}}').prepend(new_comment_html);
-									show_alert('alert-success', 'Suggestion sent');
+									show_alert('alert-success', '{{gettext("Suggestion sent")}}');
 								},
 								error: function(data)
 								{
@@ -363,7 +363,7 @@ function init()
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
             <div style="float:left; margin-left:10px;">
-                <div>{{gettext('Created by')}} <a href="{{ url_for('users.profile', username=scenario.owner.username) }}">{{ scenario.owner.username }}</a> {{gettext('at')}} {{ scenario.created_time }}</div>
+            	<div>{{gettext('Created by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.owner.username) +'">' + scenario.owner.username + '</a>', time=scenario.created_time)}}</div>
                 {% if scenario.last_edited_user %}
                 <div>{{gettext('Last edited by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.last_edited_user.username) +'">' + scenario.last_edited_user.username + '</a>', time=scenario.last_edited_time)}}</div>
                 {% endif %}

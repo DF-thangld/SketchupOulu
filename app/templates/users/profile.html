@@ -240,7 +240,7 @@
 <div class="row" style="margin-top: 20px;">
 	<div class="col-lg-10 col-centered">
         <ol class = "breadcrumb">
-           <li><a href = "{{ url_for('index') }}">Home</a></li>
+           <li><a href = "{{ url_for('index') }}">{{gettext('Home')}}</a></li>
            <li class = "active"><a href="{{ url_for('users.profile', username=user.username) }}">{{ user.username }}</a></li>
            <li class = "active">{{ gettext('Profile') }}</li>
         </ol>

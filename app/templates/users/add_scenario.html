@@ -251,7 +251,7 @@ function do_switch_mode(mode)
 			</dl>
 			<div class="form-actions">
                 <button type="submit" class="btn btn-warning" id="bttn_create">{{ gettext('Create model') }}</button>
-				<button type="reset" class="btn btn-primary" id="bttn_reset">{{ gettext('Back') }}</button>
+				<button type="button" onclick="window.history.back();" class="btn btn-primary" id="bttn_reset">{{ gettext('Back') }}</button>
 			</div>
 
 		</form>

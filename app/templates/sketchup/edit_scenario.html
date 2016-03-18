@@ -142,15 +142,15 @@ function save_scenario_content()
                         {
                             $('#base_scenario_button').removeClass('btn-danger');
                             $('#base_scenario_button').addClass('btn-warning');
-                            $('#base_scenario_button').html('Promote to base scenario');
+                            $('#base_scenario_button').html('{{gettext("Promote to base scenario")}}');
                         }
                         else
                         {
                             $('#base_scenario_button').removeClass('btn-warning');
                             $('#base_scenario_button').addClass('btn-danger');
-                            $('#base_scenario_button').html('Demote to normal scenario');
+                            $('#base_scenario_button').html('{{gettext("Demote to normal scenario")}}');
                         }
-                        show_alert('alert-success', 'Scenario status changed');
+                        show_alert('alert-success', '{{gettext("Scenario status changed")}}');
 
                     },
                     error: function(data)
