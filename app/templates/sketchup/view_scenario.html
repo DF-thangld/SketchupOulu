@@ -363,7 +363,7 @@ function init()
                 <img src="{{ url_for('static', filename='images/profile_pictures/'+scenario.owner.profile_picture) }}" style="max-width:100px;max-height:100px;" class="img-thumbnail" />
             </div>
             <div style="float:left; margin-left:10px;">
-            	<div>{{gettext('Created by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.owner.username) +'">' + scenario.owner.username + '</a>', time=scenario.created_time)}}</div>
+            	<div>{{gettext('Created by <a href="%(link)s">%(username)s</a> at %(time)s', link=url_for('users.profile', username=scenario.owner.username), username=scenario.owner.username, time=scenario.created_time)|e}}</div>
                 {% if scenario.last_edited_user %}
                 <div>{{gettext('Last edited by %(username)s at %(time)s', username='<a href="' + url_for('users.profile', username=scenario.last_edited_user.username) +'">' + scenario.last_edited_user.username + '</a>', time=scenario.last_edited_time)}}</div>
                 {% endif %}
