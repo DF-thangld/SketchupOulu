@@ -101,8 +101,17 @@
 
 
     <script>
+	    function onWindowResize()
+	    {
+	    	
+	    	$('#tutorial_video').width($(window).width()*1/2);
+			$('#tutorial_video').height($('#tutorial_video').width()*3/4);
+	    }
 		$( document ).ready(function()
 		{
+			window.addEventListener( 'resize', onWindowResize, false );
+			$('#tutorial_video').width($(window).width()*1/2);
+			$('#tutorial_video').height($('#tutorial_video').width()*3/4);
 			$.facebox.settings.closeImage = '{{ url_for('static', filename='images/closelabel.png') }}';
 			$.facebox.settings.loadingImage = '{{ url_for('static', filename='images/loading.gif') }}';
 			// jQuery for page scrolling feature - requires jQuery Easing plugin
@@ -190,18 +199,19 @@
 	</header>
 	
     <section class="bg-primary" id="about">
-        <div class="container">
+        <div class="header-content">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <h2 class="section-heading">{{gettext("Don't know where to start?")}}</h2>
-                    <embed width="640" height="480"
-					src="http://www.youtube.com/embed/6ANruTkTzLo">
+                    <h2 class="section-heading"><iframe style="" id="tutorial_video"
+						src="http://www.youtube.com/embed/6ANruTkTzLo">
+						</iframe></h2>
                 </div>
             </div>
         </div>
     </section>
 	<section id="contact">
-        <div class="container">
+        <div class="header-content">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <h2 class="section-heading">{{gettext("Let's Get In Touch!")}}</h2>

@@ -249,14 +249,14 @@ def update_building_model(building_model_id):
     building_model = BuildingModel.query.filter_by(id=building_model_id).first()
     if building_model is None:
         return json.dumps([gettext('Building model not found')]), 404
-		
-	if 'preview' in request.form:
+
+    if 'preview' in request.form:
         preview = request.form.get('preview', '')
         if preview != '':
             try:
                 image_saved = save_image(building_model.id + '.png', 'static/images/building_model_previews', preview, override=building_model.can_edit(g.user))
                 if image_saved:
-					building_model.has_preview = 1
+                    building_model.has_preview = 1
             except:
                 pass
 

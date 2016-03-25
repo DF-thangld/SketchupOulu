@@ -5391,21 +5391,7 @@ body.menu-active .modal-backdrop {
 	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15)
 }
 
-.dropdown-menu:before {
-	position: absolute;
-	display: inline-block;
-	content: "";
-	border: 8px solid transparent;
-	border-bottom-color: rgba(0, 0, 0, 0.15)
-}
 
-.dropdown-menu:after {
-	position: absolute;
-	display: inline-block;
-	content: "";
-	border: 7px solid transparent;
-	border-bottom-color: #fff
-}
 
 .dropdown-item {
 	display: block;
