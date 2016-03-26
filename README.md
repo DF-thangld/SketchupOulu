@@ -24,6 +24,8 @@ pip install -r requirements.txt
 python install.py
 ```
 
+- Insert required database records at /database/sketchup_oulu.sql
+
 - Run
 
 ```
