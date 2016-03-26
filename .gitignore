@@ -13,3 +13,11 @@ python2.7
 config.py
 *.pyc
 SketchupOulu.git.pyproj
+app/static/models/scenario_models
+app/static/models/building_models
+app/static/images/building_model_previews
+app/static/images/scenario_previews
+app/static/images/building_models
+app/static/images/email_pictures
+app/static/images/journal_images
+app/static/images/profile_pictures
