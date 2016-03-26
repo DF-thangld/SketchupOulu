@@ -10,7 +10,6 @@ import config
 @app.before_request
 def before_request():
     g.user = None
-    session['sketchup_version'] = config.VERSION
     if session.get('user_id'):
         user = User.query.filter_by(id=session.get('user_id')).first()
         g.user = user
