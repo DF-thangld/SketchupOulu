@@ -16,7 +16,7 @@ Python 3.4
 pip install -r requirements.txt
 ```
 
-- Config settings at config.py
+- Rename config.template.py to config.py then change database, email and captcha settings inside the file. 
 
 - Install database
 
