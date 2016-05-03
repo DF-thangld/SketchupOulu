@@ -108,7 +108,7 @@ def send_mail(emails, title, content):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = title
     msgRoot['From'] = config.EMAIL['from']
-    msgRoot['To'] = 'df.thangld@hotmail.com'
+    
 
     # Encapsulate the plain and HTML versions of the message body in an
     # 'alternative' part, so message agents can decide which they want to display.
@@ -123,6 +123,7 @@ def send_mail(emails, title, content):
     smtp.login(config.EMAIL['address'], config.EMAIL['password'])
     for email in emails:
         if validate_email(email):
+            msgRoot['To'] = email
             smtp.sendmail(config.EMAIL['address'], email, msgRoot.as_string())
     smtp.quit()
 
@@ -174,8 +175,11 @@ def comments_js():
 
 @app.route('/404')
 def page_not_found():
-    print(request.url)
     return render_template('404.html'), 404
+
+@app.route('/experiment')
+def experiment_page():
+    return redirect('http://vm0106.virtues.fi/sketchup/view_scenario/?id=yzb9Gk6X2Sy8vfjMdYKiPWUpchhwclx43g7WcNKfYa1KPG7z7k')
 
 from app.users.views import mod as usersModule
 from app.admin.views import mod as adminModule
